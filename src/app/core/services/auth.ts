@@ -2,6 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { LoginInterface } from '../../auth/interfaces/login';
+import { Router } from '@angular/router';
 // import { LoginInterface } from '../interfaces/login';
 
 // export interface AuthResponse {
@@ -49,6 +50,7 @@ export interface AuthResponse {
 export class Auth {
 
   private http = inject(HttpClient);
+  private router = inject(Router);
   private readonly API_URL = 'http://localhost:3000/auth';
 
   // 1. Estado privado (Signal) - Almacena el objeto completo del back
@@ -68,17 +70,22 @@ export class Auth {
   public login(credentials: LoginInterface): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
       tap((response) => {
-        // Guardamos en la Signal el objeto que contiene access_token y user
-        this._authStatus.set(response);
         // Persistencia básica para recargas de página
         localStorage.setItem('token', response.access_token);
+        // Guardamos en la Signal el objeto que contiene access_token y user
+        this._authStatus.set(response);
       })
     );
   }
 
   public logout(): void {
+    localStorage.clear()
     this._authStatus.set(null);
-    localStorage.removeItem('token');
+    this.router.navigateByUrl('/auth').then(() => {
+      // Opcional: Aquí podrías mostrar un mensaje de "Has cerrado sesión
+      window.location.reload(); // Forzamos recarga para limpiar cualquier estado residual"
+    });
+    // localStorage.removeItem('token');
   }
 
   public checkAuthStatus(): Observable<boolean> {

@@ -39,4 +39,8 @@ export class AdminLayoutComponent {
     map((result) => result.matches),
     shareReplay(),
   );
+
+  logout(){
+    this.authService.logout();
+  }
 }
