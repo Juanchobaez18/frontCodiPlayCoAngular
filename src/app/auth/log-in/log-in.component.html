@@ -1,0 +1,65 @@
+<div class="logo-corner">
+  <a routerLink="/">
+    <img
+       src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate"
+      alt="CodiPlayCo Logo"
+      class="logo-animate"
+    />
+  </a>
+</div>
+
+<main class="main-form-bg main-center-absolute">
+  <div class="form">
+
+    <!-- Estrellas animadas -->
+    <div class="bg-stars">
+      <div class="star" *ngFor="let s of stars"></div>
+    </div>
+
+    <div class="form-title"><span></span> Inicia sesión</div>
+    <div class="title-2"><span>CodiPlayCo</span></div>
+
+    <!-- Formulario de login -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" autocomplete="on">
+
+      <div class="input-container">
+        <label for="email">Correo electrónico</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="Escribe tu correo electrónico"
+          autofocus
+        />
+      </div>
+
+      <div class="input-container">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          placeholder="Tu contraseña"
+          class="input-pwd"
+        />
+      </div>
+
+      <!-- Mensaje de error -->
+      <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <button type="submit" class="submit" [disabled]="loginForm.invalid || loading">
+        {{ loading ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+
+      <p class="signup-link">
+        ¿Aún no tienes cuenta?
+        <a routerLink="/registroclasegratis" class="up">Regístrate aquí</a>
+      </p>
+
+    </form>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+</footer>

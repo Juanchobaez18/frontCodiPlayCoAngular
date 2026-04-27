@@ -1,0 +1,407 @@
+/* =====================================================
+   CodiPlayCo — Login Component Styles
+   Migrado de Java Spring → Angular
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Rubik:wght@400;500;700&family=Quicksand:wght@500;700&display=swap');
+
+/* ---- HOST (equivale al body en Spring) ---- */
+:host {
+  display: block;
+  font-family: 'Rubik', sans-serif;
+  background-image: url('/img/ab52e048-112b-4037-b524-a6e290351461.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+  min-height: 100vh;
+}
+
+:host::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(20, 20, 30, 0.45);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- LOGO ---- */
+.logo-corner {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.logo-animate {
+  height: 9rem;
+  max-width: 420px;
+  width: auto;
+  animation: logoBounce 1.8s cubic-bezier(.68, -0.55, .27, 1.55) infinite alternate;
+  transition: filter 0.3s;
+}
+
+@media (min-width: 768px) {
+  .logo-animate {
+    height: 12rem;
+  }
+}
+
+@keyframes logoBounce {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 0 #fff0);
+  }
+  80% {
+    filter: drop-shadow(0 8px 24px #a100ff44);
+  }
+  100% {
+    transform: translateY(-12px) scale(1.05);
+    filter: drop-shadow(0 12px 32px #00d4ff88);
+  }
+}
+
+/* ---- LAYOUT PRINCIPAL ---- */
+.main-form-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.main-center-absolute {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- CARD DEL FORMULARIO ---- */
+.form {
+  position: relative;
+  display: block;
+  padding: 2.2rem;
+  max-width: 440px;
+  width: 100%;
+  background:
+    linear-gradient(14deg, rgba(2,0,36,0.65) 0%, rgba(24,24,65,0.55) 66%, rgba(20,76,99,0.5) 100%),
+    radial-gradient(circle, rgba(2,0,36,0.4) 0%, rgba(32,15,53,0.15) 65%, rgba(14,29,28,0.5) 100%),
+    url('/img/5a24ac78-8349-434f-88be-2fb5b5c4c925.png');
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay, normal, normal;
+  border: 2px solid #fff;
+  box-shadow: 0px 0px 50px -15px #00d4ff;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* ---- INPUTS ---- */
+.input-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.input-container label {
+  display: block;
+  color: #fff;
+  font-family: 'Fredoka', monospace, sans-serif;
+  font-weight: 700;
+  font-size: 1.13rem;
+  margin-bottom: 0.2rem;
+  margin-top: 0.5rem;
+  text-shadow: 1px 1px 6px #000a;
+}
+
+.input-container input {
+  outline: none;
+  border: 2px solid #ffffff;
+  margin: 8px 0;
+  font-family: monospace;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 1rem 1.2rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+  color: #181841;
+  font-weight: 600;
+  border-radius: 0.7rem;
+  transition: all 0.3s ease;
+}
+
+.input-container input:focus {
+  border-color: #00d4ff;
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.input-container input::placeholder {
+  color: #181841cc;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.input-pwd:focus::placeholder {
+  opacity: 0;
+  transition: opacity 0.9s;
+}
+
+/* ---- BOTÓN SUBMIT ---- */
+.submit {
+  position: relative;
+  display: block;
+  padding: 8px;
+  background-color: #1effb4;
+  color: #181841;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  font-size: 1.13rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.25rem;
+  width: 100%;
+  text-transform: uppercase;
+  overflow: hidden;
+  border-radius: 999px;
+  box-shadow: 0 2px 12px #00d4ff55;
+  border: 2px solid #fff;
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+  outline: none;
+  font-family: 'Rubik', sans-serif;
+}
+
+.submit:hover:not(:disabled) {
+  border-radius: 3.9px;
+  box-shadow: 4px 5px 17px -4px #ffffff;
+  cursor: pointer;
+}
+
+.submit:hover::before {
+  animation: sh02 0.5s 0s linear;
+}
+
+.submit::before {
+  content: '';
+  display: block;
+  width: 0px;
+  height: 85%;
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  opacity: 0;
+  background: #fff;
+  box-shadow: 0 0 50px 30px #fff;
+  transform: skewX(-20deg);
+}
+
+.submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@keyframes sh02 {
+  from { opacity: 0; left: 0%; }
+  50% { opacity: 1; }
+  to { opacity: 0; left: 100%; }
+}
+
+/* ---- LINK REGISTRO ---- */
+.signup-link {
+  color: #fff;
+  font-size: 1.08rem;
+  line-height: 1.5rem;
+  text-align: center;
+  font-family: monospace;
+  text-shadow: 1px 1px 6px #000a;
+  margin-top: 1rem;
+}
+
+.signup-link a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.up:hover {
+  text-decoration: underline;
+}
+
+/* ---- TÍTULOS DEL FORM ---- */
+.form-title {
+  font-size: 1.45rem;
+  line-height: 2rem;
+  font-family: monospace;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  text-shadow: 2px 2px 6px #000a, 0 1px 0 #000c, 0 0 4px #1effb4, 0 0 2px #fff;
+  animation-duration: 1.5s;
+  overflow: hidden;
+  transition: 0.12s;
+}
+
+.form-title span {
+  animation: flickering 2s linear infinite both;
+}
+
+.title-2 {
+  display: block;
+  margin-top: -0.5rem;
+  font-size: 2.3rem;
+  font-weight: 900;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  -webkit-text-stroke: #fff 0.1rem;
+  letter-spacing: 0.22rem;
+  color: transparent;
+  position: relative;
+  text-shadow: 0px 0px 16px #CECECE, 2px 2px 8px #000a;
+  margin-bottom: 1rem;
+}
+
+.title-2 span::before,
+.title-2 span::after {
+  content: '—';
+}
+
+@keyframes flickering {
+  0%, 100% { opacity: 1; }
+  41.99% { opacity: 1; }
+  42% { opacity: 0; }
+  43% { opacity: 0; }
+  43.01% { opacity: 1; }
+  47.99% { opacity: 1; }
+  48% { opacity: 0; }
+  49% { opacity: 0; }
+  49.01% { opacity: 1; }
+}
+
+/* ---- ESTRELLAS ANIMADAS ---- */
+.bg-stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background-size: cover;
+  animation: animateBg 50s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes animateBg {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.star {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.1), 0 0 0 8px rgba(255,255,255,0.1), 0 0 20px rgba(255,255,255,0.1);
+  animation: animateStar 3s linear infinite;
+}
+
+.star::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  height: 1px;
+  background: linear-gradient(90deg, #fff, transparent);
+}
+
+@keyframes animateStar {
+  0% { transform: rotate(315deg) translateX(0); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: rotate(315deg) translateX(-1000px); opacity: 0; }
+}
+
+/* Delays de las estrellas */
+.star:nth-child(1)  { top: 0; right: 0;      left: initial; animation-delay: 0s;    animation-duration: 1s;    }
+.star:nth-child(2)  { top: 0; right: 100px;   left: initial; animation-delay: 0.2s;  animation-duration: 3s;    }
+.star:nth-child(3)  { top: 0; right: 220px;   left: initial; animation-delay: 2.75s; animation-duration: 2.75s; }
+.star:nth-child(4)  { top: 0; right: -220px;  left: initial; animation-delay: 1.6s;  animation-duration: 1.6s;  }
+.star:nth-child(5)  { top: 0; right: 50px;    left: initial; animation-delay: 0.5s;  animation-duration: 2s;    }
+.star:nth-child(6)  { top: 0; right: 180px;   left: initial; animation-delay: 1s;    animation-duration: 2.5s;  }
+.star:nth-child(7)  { top: 0; right: -100px;  left: initial; animation-delay: 1.3s;  animation-duration: 1.8s;  }
+.star:nth-child(8)  { top: 0; right: 300px;   left: initial; animation-delay: 2s;    animation-duration: 3.2s;  }
+.star:nth-child(9)  { top: 0; right: -50px;   left: initial; animation-delay: 0.8s;  animation-duration: 2.2s;  }
+.star:nth-child(10) { top: 0; right: 140px;   left: initial; animation-delay: 1.5s;  animation-duration: 1.4s;  }
+.star:nth-child(11) { top: 0; right: 260px;   left: initial; animation-delay: 2.3s;  animation-duration: 2.8s;  }
+.star:nth-child(12) { top: 0; right: -160px;  left: initial; animation-delay: 0.9s;  animation-duration: 1.9s;  }
+
+/* ---- ERROR ---- */
+.error-msg {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 0.8rem;
+  font-family: monospace;
+  text-shadow: 1px 1px 4px #000a;
+}
+
+/* ---- FOOTER ---- */
+footer {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+  .logo-corner {
+    top: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .logo-animate {
+    height: 6rem;
+  }
+
+  .form {
+    padding: 1.5rem;
+    max-width: 95%;
+    margin: 0 auto;
+    margin-top: 7rem; /* espacio para el logo centrado */
+  }
+
+  .input-container input {
+    padding: 0.9rem 1rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .input-container input {
+    padding: 0.8rem 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .form {
+    padding: 1rem;
+    max-width: 100%;
+  }
+}
