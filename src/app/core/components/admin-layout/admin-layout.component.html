@@ -1,50 +1,14 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
-    <mat-toolbar>Menu</mat-toolbar>
-    @if (authService.isAuthenticated()) {
-    <mat-nav-list>
-      @for (moduleName of menuItems(); track moduleName) {
-      <a mat-list-item [routerLink]="'/' + moduleName.toLowerCase()" routerLinkActive="active-link">
-        <!-- <mat-icon matListItemIcon>{{ getIcon(moduleName) }}</mat-icon> -->
-        <span matListItemTitle>{{ moduleName }}</span>
-      </a>
-      }
-      <a mat-list-item (click)="logout()">
-        <!-- <mat-icon matListItemIcon>{{ getIcon(moduleName) }}</mat-icon> -->
-        <span matListItemTitle>cerrar sesion</span>
-      </a>
-      <!-- <a mat-list-item 
-          routerLink="/users" 
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Usuarios</span>
-        </a>
-        <a mat-list-item 
-          routerLink="/roles" 
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Roles</span>
-        </a>
-        <a mat-list-item 
-          routerLink="/modules" 
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Modulos</span>
-        </a> -->
-    </mat-nav-list>
-    }
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      @if (isHandset$ | async) {
-      <button type="button" aria-label="Toggle sidenav" matIconButton (click)="drawer.toggle()">
-        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-      </button>
-      }
-      <span>adso_3063267</span>
-    </mat-toolbar>
-    <!-- Add Content Here -->
-    <router-outlet></router-outlet>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<mat-sidenav-container class="sidenav-container"> <mat-sidenav #drawer class="sidenav" fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'" [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"> <mat-toolbar>Menu</mat-toolbar> @if (authService.isAuthenticated()) {
+    <mat-nav-list> @for (moduleName of menuItems(); track moduleName) { <a mat-list-item
+        [routerLink]="'/' + moduleName.toLowerCase()" routerLinkActive="active-link">
+        <!-- <mat-icon matListItemIcon>{{ getIcon(moduleName) }}</mat-icon> --> <span matListItemTitle>{{ moduleName
+          }}</span> </a> } <a mat-list-item (click)="logout()">
+        <!-- <mat-icon matListItemIcon>{{ getIcon(moduleName) }}</mat-icon> --> <span matListItemTitle>cerrar
+          sesion</span> </a>
+      <!-- <a mat-list-item routerLink="/users" routerLinkActive="active-link"> <mat-icon matListItemIcon>people</mat-icon> <span matListItemTitle>Usuarios</span> </a> <a mat-list-item routerLink="/roles" routerLinkActive="active-link"> <mat-icon matListItemIcon>people</mat-icon> <span matListItemTitle>Roles</span> </a> <a mat-list-item routerLink="/modules" routerLinkActive="active-link"> <mat-icon matListItemIcon>people</mat-icon> <span matListItemTitle>Modulos</span> </a> -->
+    </mat-nav-list> } </mat-sidenav> <mat-sidenav-content> <mat-toolbar color="primary"> @if (isHandset$ | async) {
+      <button type="button" aria-label="Toggle sidenav" matIconButton (click)="drawer.toggle()"> <mat-icon
+          aria-label="Side nav toggle icon">menu</mat-icon> </button> } <span>adso_3063267</span> </mat-toolbar>
+    <!-- Add Content Here --> <router-outlet></router-outlet> </mat-sidenav-content> </mat-sidenav-container>

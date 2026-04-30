@@ -1,1 +1,97 @@
-<p>sign-in works!</p>
+<div class="logo-corner">
+  <a routerLink="/">
+    <img
+       src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate"
+      alt="CodiPlayCo Logo"
+      class="logo-animate"
+    />
+  </a>
+</div>
+
+
+	<main class="main-form-bg">
+
+		<div class="form">
+
+
+
+			<div class="form-title">Registro de pago</div>
+
+			<div class="title-2"><span>CodiPlayCo</span></div>
+
+
+
+			<form (ngSubmit)="onSubmit()">
+
+
+
+				<div class="form-row">
+					<div class="input-container">
+						<label>Nombre</label>
+						<input type="text" name="nombre" [(ngModel)]="registro.nombre">
+					</div>
+					<div class="input-container">
+						<label>Apellido</label>
+						<input type="text" name="apellido" [(ngModel)]="registro.apellido">
+					</div>
+				</div>
+
+				<div class="form-row">
+					<div class="input-container">
+						<label>Tipo Documento</label>
+						<input type="text" name="tipoDocumento" [(ngModel)]="registro.tipoDocumento" required placeholder="Tipo Documento"/>
+					</div>
+					<div class="input-container">
+						<label>Documento</label>
+						<input type="text" name="documento" [(ngModel)]="registro.documento" required placeholder="Numero Documento" />
+					</div>
+				</div>
+
+				<div class="form-row">
+					<div class="input-container">
+						<label>Correo electrónico</label>
+						<input type="email" name="email" [(ngModel)]="registro.email" required placeholder="E-mail" />
+					</div>
+					<div class="input-container">
+						<label>Número de teléfono</label>
+						<input type="tel" name="telefono" [(ngModel)]="registro.telefono" required placeholder="Telefono" />
+					</div>
+				</div>
+
+				<div class="input-container">
+					<label for="password"> Contraseña</label>
+					<div style="position:relative; width:320px;">
+						<input id="password" type="password" placeholder="Crea una contraseña" required
+							style="padding-right:2.5rem; width:320px;" />
+						<span class="material-icons toggle-password" id="togglePassword"
+							style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:#111; user-select:none; font-size:1.5rem; background:transparent;">
+							visibility_off
+						</span>
+					</div>
+				</div>
+
+				<div class="input-container">
+					<label>Curso</label>
+					<input id="curso" [(ngModel)]="registro.cursoNombre" disabled />
+				</div>
+
+				<input type="hidden" [(ngModel)]="registro.cursoId" name="cursoId">
+				<input type="hidden" [(ngModel)]="registro.cursoNombre" name="cursoNombre">
+				<input type="hidden" [(ngModel)]="registro.precio" name="precio">
+
+				<button type="submit" class="submit">Registrar e ir al Pago</button>
+
+			</form>
+
+
+
+		</div>
+
+	</main>
+
+<footer>
+  <p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+</footer>
+
+
+
