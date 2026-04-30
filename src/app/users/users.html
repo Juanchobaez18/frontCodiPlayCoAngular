@@ -1,1 +1,8 @@
-<p>users works!</p>
+<div *ngIf="isLoading">Cargando...</div>
+
+<div *ngIf="user">
+  <h2>{{ user.name }} {{ user.lastName }}</h2>
+  <p>{{ user.email }}</p>
+  <p>{{ user.isActive ? 'Activo' : 'Inactivo' }}</p>
+  <p *ngFor="let rol of user.roles">{{ rol.name }}</p>
+</div>
