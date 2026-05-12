@@ -470,7 +470,14 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   isEstudiante(u: ManagedUser): boolean {
-    return u.roles?.some((r) => String(r.name).toUpperCase() === 'ESTUDIANTE') ?? false;
+    return (
+      u.roles?.some(
+        (r) =>
+          String(r.name).toUpperCase() === 'USUARIO' ||
+          String(r.name).toUpperCase() === 'ESTUDIANTE' ||
+          r.id === 3,
+      ) ?? false
+    );
   }
 
   isAdminPanelUser(u: ManagedUser): boolean {
