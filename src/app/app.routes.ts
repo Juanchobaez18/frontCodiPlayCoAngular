@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './core/components/admin-layout/admin-layout.component';
+import { adminGuard } from './core/guards/admin.guard';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -8,14 +9,52 @@ export const routes: Routes = [
         loadChildren: () => import('./auth/auth.routes').then(m => m.AUTH_ROUTES)
     },
     {
+        path: 'admin/cursos/nuevo',
+        component: AdminLayoutComponent,
+        canActivate: [adminGuard],
+        data: { mode: 'create' },
+    },
+    {
+        path: 'admin/cursos/:id/editar',
+        component: AdminLayoutComponent,
+        canActivate: [adminGuard],
+        data: { mode: 'edit' },
+    },
+    {
+        path: 'admin/cursos',
+        component: AdminLayoutComponent,
+        canActivate: [adminGuard],
+    },
+    {
+        path: 'admin/mensajes',
+        component: AdminLayoutComponent,
+        canActivate: [adminGuard],
+    },
+    {
+        path: 'admin/docentes',
+        component: AdminLayoutComponent,
+        canActivate: [adminGuard],
+    },
+    {
+        path: 'admin/usuarios',
+        component: AdminLayoutComponent,
+        canActivate: [adminGuard],
+    },
+    {
+        path: 'admin/dashboard',
+        component: AdminLayoutComponent,
+        canActivate: [adminGuard],
+    },
+    {
+        path: 'admin',
+        pathMatch: 'full',
+        redirectTo: '/admin/dashboard',
+    },
+    {
         path: '',
-        component: AdminLayoutComponent, // El cascarón de Material
+        component: AdminLayoutComponent,
         canActivate: [authGuard],
         children: [
-            // {
-            //     path: 'dashboard',
-            //     loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
-            // },
             {
                 path: 'users',
                 loadComponent: () => import('./users/users').then(m => m.Users)

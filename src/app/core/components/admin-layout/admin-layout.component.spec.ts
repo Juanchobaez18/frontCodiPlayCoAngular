@@ -1,19 +1,19 @@
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { AdminLayoutComponent } from './admin-layout.component';
 
 describe('AdminLayoutComponent', () => {
   let component: AdminLayoutComponent;
   let fixture: ComponentFixture<AdminLayoutComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [AdminLayoutComponent],
-      imports: [MatButtonModule, MatIconModule, MatListModule, MatSidenavModule, MatToolbarModule],
-    });
-  }));
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [AdminLayoutComponent],
+      providers: [provideRouter([]), provideHttpClient(), provideNoopAnimations()],
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(AdminLayoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
