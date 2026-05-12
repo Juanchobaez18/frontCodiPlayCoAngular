@@ -1,50 +1,941 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
-    <mat-toolbar>Menu</mat-toolbar>
-    @if (authService.isAuthenticated()) {
-    <mat-nav-list>
-      @for (moduleName of menuItems(); track moduleName) {
-      <a mat-list-item [routerLink]="'/' + moduleName.toLowerCase()" routerLinkActive="active-link">
-        <!-- <mat-icon matListItemIcon>{{ getIcon(moduleName) }}</mat-icon> -->
-        <span matListItemTitle>{{ moduleName }}</span>
-      </a>
+@if (isAdminShell()) {
+  <div class="admin-container" (click)="closeMenu()">
+    <div class="bg-element bg-element-1"></div>
+    <div class="bg-element bg-element-2"></div>
+
+    <nav class="top-nav">
+      <div class="nav-container">
+        <div class="logo-section">
+          <div class="logo-icon">
+            <img src="/assetsAdmin/images/ChatGPT Image 4 jul 2025, 02_22_14 p.m..png" alt="CodiPlayCo Logo" />
+          </div>
+          <div class="logo-text">
+            <h1>CodiPlayCo</h1>
+            <p>Admin Dashboard</p>
+          </div>
+        </div>
+
+        <div class="nav-tabs">
+          <a routerLink="/admin/dashboard" class="nav-tab" [class.active]="navActive('dash')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Dashboard</span>
+          </a>
+          <a routerLink="/admin/usuarios" class="nav-tab" [class.active]="navActive('users')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Usuarios</span>
+          </a>
+          <a routerLink="/admin/docentes" class="nav-tab" [class.active]="navActive('teach')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Registrar Docentes</span>
+          </a>
+          <a routerLink="/admin/cursos" class="nav-tab" [class.active]="navActive('courses')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+            </svg>
+            <span>Cursos</span>
+          </a>
+          <a routerLink="/admin/mensajes" class="nav-tab" [class.active]="navActive('msg')">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            <span>Mensajes</span>
+          </a>
+        </div>
+
+        <div class="nav-actions">
+          <label [attr.aria-checked]="isLightTheme ? 'true' : 'false'" role="switch" class="switch">
+            <input type="checkbox" id="theme-switch-admin" [checked]="isLightTheme" (change)="toggleTheme($event)" />
+            <span class="slider">
+              <span class="slider-inner"></span>
+            </span>
+          </label>
+          <a routerLink="/users" class="nav-tab nav-tab--inline" title="Volver a la app">Módulos</a>
+          <div class="user-profile" [class.active]="isMenuOpen" (click)="toggleMenu($event)">
+            <div class="user-avatar">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div class="user-info">
+              <h3>{{ authService.currentUser()?.name || 'Admin' }} {{ authService.currentUser()?.lastName || '' }}</h3>
+              <p>{{ authService.currentUser()?.roles?.[0]?.name || 'Administrador' }}</p>
+            </div>
+            <i class="fas fa-chevron-down user-profile-arrow"></i>
+            @if (isMenuOpen) {
+              <div class="user-profile-menu">
+                <a (click)="logout()" class="user-menu-item" style="cursor: pointer">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span>Cerrar Sesión</span>
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      @switch (adminPanelView()) {
+        @case ('dashboard') {
+          <div class="dashboard-content">
+            <div class="view-container">
+              <div class="grid grid-cols-12">
+                <div class="col-span-12">
+                  <div class="hero-card">
+                    <div class="hero-content">
+                      <h1>¡Bienvenido de nuevo! 👋</h1>
+                      <p>Aquí está lo que está sucediendo en CodiPlayCo hoy</p>
+                      <div class="hero-stats">
+                        <div class="hero-stat">
+                          <p>Estudiantes Activos</p>
+                          <h3>
+                            <span>{{ dashboardLoading ? '…' : (dashboardStats?.totalEstudiantes ?? 0) }}</span>
+                          </h3>
+                        </div>
+                        <div class="hero-stat">
+                          <p>Tasa de Completación</p>
+                          <h3>87%</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-span-3">
+                  <a routerLink="/admin/usuarios" class="glass-card stat-card students">
+                    <div class="stat-header">
+                      <div class="stat-icon gradient-blue">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+                          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="9" cy="7" r="4"></circle>
+                          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        </svg>
+                      </div>
+                      <span class="stat-change">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <line x1="7" y1="17" x2="17" y2="7"></line>
+                          <polyline points="7 7 17 7 17 17"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                    <h3 class="stat-value">
+                      <span>{{ dashboardLoading ? '…' : (dashboardStats?.totalEstudiantes ?? 0) }}</span>
+                    </h3>
+                    <p class="stat-label">Estudiantes Activos</p>
+                    <div class="mini-chart">
+                      <div class="chart-bar" style="height: 40%; background: #3b82f6;"></div>
+                      <div class="chart-bar" style="height: 60%; background: #3b82f6;"></div>
+                      <div class="chart-bar" style="height: 45%; background: #3b82f6;"></div>
+                      <div class="chart-bar" style="height: 80%; background: #3b82f6;"></div>
+                      <div class="chart-bar" style="height: 55%; background: #3b82f6;"></div>
+                      <div class="chart-bar" style="height: 90%; background: #3b82f6;"></div>
+                      <div class="chart-bar" style="height: 70%; background: #3b82f6;"></div>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="col-span-3">
+                  <a routerLink="/admin/cursos" class="glass-card stat-card progress">
+                    <div class="stat-header">
+                      <div class="stat-icon gradient-purple">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+                          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                      </div>
+                      <span class="stat-change"></span>
+                    </div>
+                    <h3 class="stat-value">
+                      <span>{{ dashboardLoading ? '…' : (dashboardStats?.totalCursosActivos ?? 0) }}</span>
+                    </h3>
+                    <p class="stat-label">Cursos Activos</p>
+                    <div class="mini-chart">
+                      <div class="chart-bar" style="height: 50%; background: #a855f7;"></div>
+                      <div class="chart-bar" style="height: 65%; background: #a855f7;"></div>
+                      <div class="chart-bar" style="height: 55%; background: #a855f7;"></div>
+                      <div class="chart-bar" style="height: 75%; background: #a855f7;"></div>
+                      <div class="chart-bar" style="height: 60%; background: #a855f7;"></div>
+                      <div class="chart-bar" style="height: 85%; background: #a855f7;"></div>
+                      <div class="chart-bar" style="height: 72%; background: #a855f7;"></div>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="col-span-3">
+                  <a routerLink="/admin/docentes" class="glass-card stat-card teachers">
+                    <div class="stat-header">
+                      <div class="stat-icon gradient-green">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+                          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                          <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                        </svg>
+                      </div>
+                      <span class="stat-change"></span>
+                    </div>
+                    <h3 class="stat-value">
+                      <span>{{ dashboardLoading ? '…' : (dashboardStats?.totalDocentesActivos ?? 0) }}</span>
+                    </h3>
+                    <p class="stat-label">Docentes Activos</p>
+                    <div class="mini-chart">
+                      <div class="chart-bar" style="height: 45%; background: #10b981;"></div>
+                      <div class="chart-bar" style="height: 58%; background: #10b981;"></div>
+                      <div class="chart-bar" style="height: 50%; background: #10b981;"></div>
+                      <div class="chart-bar" style="height: 70%; background: #10b981;"></div>
+                      <div class="chart-bar" style="height: 62%; background: #10b981;"></div>
+                      <div class="chart-bar" style="height: 88%; background: #10b981;"></div>
+                      <div class="chart-bar" style="height: 75%; background: #10b981;"></div>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="col-span-3">
+                  <div class="glass-card stat-card">
+                    <div class="stat-header">
+                      <div class="stat-icon gradient-orange">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+                          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                          <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                      </div>
+                      <span class="stat-change"></span>
+                    </div>
+                    <h3 class="stat-value">87%</h3>
+                    <p class="stat-label">Tasa de Éxito</p>
+                    <div class="mini-chart">
+                      <div class="chart-bar" style="height: 48%; background: #f97316;"></div>
+                      <div class="chart-bar" style="height: 62%; background: #f97316;"></div>
+                      <div class="chart-bar" style="height: 55%; background: #f97316;"></div>
+                      <div class="chart-bar" style="height: 78%; background: #f97316;"></div>
+                      <div class="chart-bar" style="height: 65%; background: #f97316;"></div>
+                      <div class="chart-bar" style="height: 92%; background: #f97316;"></div>
+                      <div class="chart-bar" style="height: 80%; background: #f97316;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <section class="quick-actions">
+              <h3 class="section-title">
+                <i class="fas fa-bolt"></i>
+                Acciones Rápidas
+              </h3>
+              <div class="actions-grid">
+                <a routerLink="/admin/usuarios" class="action-card">
+                  <i class="fas fa-user-edit"></i>
+                  <span>Editar Usuarios</span>
+                </a>
+                <a routerLink="/admin/docentes" class="action-card">
+                  <i class="fas fa-user-plus"></i>
+                  <span>Registrar Docente</span>
+                </a>
+                <a routerLink="/admin/cursos" class="action-card">
+                  <i class="fas fa-list-alt"></i>
+                  <span>Ver Cursos</span>
+                </a>
+              </div>
+            </section>
+            @if (dashboardError) {
+              <p class="page-subtitle" style="color: #f87171">{{ dashboardError }}</p>
+            }
+          </div>
+        }
+        @case ('usuarios') {
+          <div class="dashboard-content">
+            <div class="page-header-section">
+              <div>
+                <h1 class="page-main-title">Gestionar Usuarios</h1>
+                <p class="page-subtitle">Lista completa de usuarios registrados</p>
+              </div>
+            </div>
+
+            <div class="search-filters-container">
+              <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Buscar usuarios..." class="search-input" />
+              </div>
+              <button type="button" class="filter-btn">
+                <i class="fas fa-filter"></i>
+                Filtros
+              </button>
+            </div>
+
+            @if (usersLoading) {
+              <p class="page-subtitle">Cargando…</p>
+            } @else if (usersError) {
+              <p class="page-subtitle" style="color: #f87171">{{ usersError }}</p>
+            } @else if (!users.length) {
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <h3>No hay usuarios registrados</h3>
+                <p>Aún no se han registrado usuarios en el sistema.</p>
+              </div>
+            } @else {
+              <div class="view-container">
+                <div class="grid grid-cols-12" id="usersContainer">
+                  @for (u of users; track u.id) {
+                    <div class="col-span-3">
+                      <div class="glass-card stat-card user-card-item">
+                        <div class="stat-header">
+                          <div
+                            class="stat-icon user-avatar-icon"
+                            [class.gradient-green]="isDocente(u)"
+                            [class.gradient-blue]="isEstudiante(u)"
+                            [class.gradient-purple]="!isDocente(u) && !isEstudiante(u)"
+                          >
+                            <i
+                              class="fas"
+                              [class.fa-chalkboard-teacher]="isDocente(u)"
+                              [class.fa-user-graduate]="isEstudiante(u)"
+                              [class.fa-user-friends]="!isDocente(u) && !isEstudiante(u)"
+                            ></i>
+                          </div>
+                          <span class="user-status-badge user-status" [class.active]="u.isActive" [class.inactive]="!u.isActive">
+                            {{ u.isActive ? 'Activo' : 'Inactivo' }}
+                          </span>
+                        </div>
+
+                        <h3 class="stat-value">{{ u.name }} {{ u.lastName }}</h3>
+                        <p class="stat-label">{{ u.email }}</p>
+
+                        <div class="user-card-details">
+                          <div class="user-detail-item">
+                            <span class="detail-label">Rol:</span>
+                            <span class="detail-value">{{ rolesLabel(u) }}</span>
+                          </div>
+                        </div>
+
+                        <div class="user-actions user-actions--row">
+                          <button
+                            type="button"
+                            class="action-btn toggle-btn"
+                            [disabled]="isAdminPanelUser(u)"
+                            [attr.title]="isAdminPanelUser(u) ? 'No disponible para administradores' : (u.isActive ? 'Desactivar usuario' : 'Activar usuario')"
+                            (click)="toggleUserActiveStatus(u)"
+                          >
+                            <i class="fas" [class.fa-user-slash]="u.isActive" [class.fa-user-check]="!u.isActive"></i>
+                            {{ u.isActive ? 'Desactivar' : 'Activar' }}
+                          </button>
+                          <button
+                            type="button"
+                            class="action-btn edit-btn"
+                            [disabled]="isAdminPanelUser(u)"
+                            [attr.title]="isAdminPanelUser(u) ? 'No disponible para administradores' : 'Editar usuario'"
+                            (click)="openUserEdit(u)"
+                          >
+                            <i class="fas fa-edit"></i>
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            class="action-btn delete-btn"
+                            [disabled]="isAdminPanelUser(u)"
+                            [attr.title]="isAdminPanelUser(u) ? 'No disponible para administradores' : 'Eliminar usuario'"
+                            (click)="deleteUser(u)"
+                          >
+                            <i class="fas fa-trash"></i>
+                            Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+            @if (userEditModalOpen) {
+              <div class="user-edit-backdrop" (click)="closeUserEdit()">
+                <div class="user-edit-dialog" (click)="$event.stopPropagation()">
+                  <div class="user-edit-dialog__header">
+                    <h2>Editar usuario</h2>
+                    <button type="button" class="user-edit-close" aria-label="Cerrar" (click)="closeUserEdit()">×</button>
+                  </div>
+                  <form (ngSubmit)="saveUserEdit()" #userEditNgForm="ngForm" class="user-edit-form">
+                    <div class="form-group">
+                      <label for="ue-name">Nombre</label>
+                      <input id="ue-name" name="ueName" type="text" [(ngModel)]="userEditForm.name" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="ue-last">Apellidos</label>
+                      <input id="ue-last" name="ueLast" type="text" [(ngModel)]="userEditForm.lastName" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="ue-email">Correo</label>
+                      <input id="ue-email" name="ueEmail" type="email" [(ngModel)]="userEditForm.email" required />
+                    </div>
+                    <div class="form-group form-row-inline">
+                      <div>
+                        <label for="ue-doctype">Tipo doc.</label>
+                        <select id="ue-doctype" name="ueDocType" [(ngModel)]="userEditForm.docType">
+                          <option value="CC">CC</option>
+                          <option value="CE">CE</option>
+                          <option value="TI">TI</option>
+                          <option value="PA">PA</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label for="ue-docnum">Número</label>
+                        <input id="ue-docnum" name="ueDocNum" type="text" [(ngModel)]="userEditForm.docNumber" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="checkbox-inline">
+                        <input type="checkbox" name="ueActive" [(ngModel)]="userEditForm.isActive" />
+                        Usuario activo
+                      </label>
+                    </div>
+                    <div class="form-group">
+                      <label for="ue-pass">Nueva contraseña (opcional)</label>
+                      <input
+                        id="ue-pass"
+                        name="uePass"
+                        type="password"
+                        [(ngModel)]="userEditForm.password"
+                        autocomplete="new-password"
+                        placeholder="Dejar vacío para no cambiar"
+                      />
+                    </div>
+                    <fieldset class="form-group user-edit-roles">
+                      <legend>Roles</legend>
+                      @for (r of rolesCatalog; track r.id) {
+                        <label class="row-inline user-edit-role-row">
+                          <input
+                            type="checkbox"
+                            [checked]="userEditHasRole(r.id)"
+                            (change)="toggleUserEditRole(r.id, ($any($event.target)).checked)"
+                          />
+                          <span>{{ r.name }}</span>
+                        </label>
+                      }
+                    </fieldset>
+                    @if (userEditError) {
+                      <p class="user-edit-error">{{ userEditError }}</p>
+                    }
+                    <div class="user-edit-dialog__actions">
+                      <button type="button" class="action-btn toggle-btn" (click)="closeUserEdit()">Cancelar</button>
+                      <button type="submit" class="btn-primary" [disabled]="userEditSaving || userEditNgForm.invalid">
+                        {{ userEditSaving ? 'Guardando…' : 'Guardar' }}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            }
+          </div>
+        }
+        @case ('docentes') {
+          <div class="dashboard-content">
+            <div class="page-header-section">
+              <div>
+                <div class="page-header-title-group">
+                  <h1 class="page-main-title">Registrar Docentes</h1>
+                  <p class="page-subtitle">Completa todos los campos para registrar un nuevo docente</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-container">
+              <div class="form-wrapper">
+                @if (docenteMessage) {
+                  <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span>{{ docenteMessage }}</span>
+                  </div>
+                }
+                @if (docenteError) {
+                  <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ docenteError }}</span>
+                  </div>
+                }
+
+                <form (ngSubmit)="submitDocente()" class="registration-form" #docForm="ngForm">
+                  <div class="form-header">
+                    <h2><i class="fas fa-chalkboard-teacher"></i> Información del Docente</h2>
+                  </div>
+
+                  <div class="form-grid">
+                    <div class="form-section">
+                      <h3 class="section-title">
+                        <i class="fas fa-user"></i>
+                        Información Personal
+                      </h3>
+
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label for="nombre">
+                            <i class="fas fa-user"></i>
+                            Nombres *
+                          </label>
+                          <input type="text" id="nombre" name="nombre" [(ngModel)]="docenteRegModel.name" placeholder="Ingrese los nombres completos" required />
+                        </div>
+                        <div class="form-group">
+                          <label for="apellido">
+                            <i class="fas fa-user"></i>
+                            Apellidos *
+                          </label>
+                          <input type="text" id="apellido" name="apellido" [(ngModel)]="docenteRegModel.lastName" placeholder="Ingrese los apellidos completos" required />
+                        </div>
+                      </div>
+
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label for="tipoDocumento">
+                            <i class="fas fa-id-card"></i>
+                            Tipo de Documento *
+                          </label>
+                          <select id="tipoDocumento" name="tipoDocumento" [(ngModel)]="docenteRegModel.docType" required>
+                            <option value="CC">Cédula de Ciudadanía</option>
+                            <option value="CE">Cédula de Extranjería</option>
+                            <option value="TI">Tarjeta de Identidad</option>
+                            <option value="PA">Pasaporte</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="documento">
+                            <i class="fas fa-hashtag"></i>
+                            Número de Documento *
+                          </label>
+                          <input type="text" id="documento" name="documento" [(ngModel)]="docenteRegModel.docNumber" placeholder="Número de documento" required />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-section">
+                      <h3 class="section-title">
+                        <i class="fas fa-address-book"></i>
+                        Información de Contacto
+                      </h3>
+
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label for="email">
+                            <i class="fas fa-envelope"></i>
+                            Correo electrónico *
+                          </label>
+                          <input type="email" id="email" name="email" [(ngModel)]="docenteRegModel.email" placeholder="correo@ejemplo.com" required />
+                        </div>
+                        <div class="form-group">
+                          <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Contraseña *
+                          </label>
+                          <input type="password" id="password" name="password" [(ngModel)]="docenteRegModel.password" placeholder="Mínimo 6 caracteres" required minlength="6" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <button type="submit" class="btn-primary" [disabled]="docenteSending || docForm.invalid">
+                      <i class="fas fa-save"></i>
+                      {{ docenteSending ? 'Guardando…' : 'Registrar Docente' }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        }
+        @case ('cursos') {
+          <div class="dashboard-content">
+            <div class="page-header-section">
+              <div>
+                <div class="page-header-title-group">
+                  <h1 class="page-main-title">Cursos Disponibles</h1>
+                  <p class="page-subtitle">Gestiona y monitorea todos los cursos de la plataforma</p>
+                </div>
+              </div>
+            </div>
+
+            <section class="quick-actions">
+              <div class="section-header">
+                <h3 class="section-title">
+                  <i class="fas fa-graduation-cap"></i>
+                  Gestión de Cursos
+                </h3>
+                <a routerLink="/admin/cursos/nuevo" class="btn-primary">
+                  <i class="fas fa-plus"></i>
+                  Crear Nuevo Curso
+                </a>
+              </div>
+
+              <div class="search-filters-container">
+                <div class="search-input-wrapper">
+                  <i class="fas fa-search search-icon"></i>
+                  <input type="text" placeholder="Buscar cursos..." class="search-input" />
+                </div>
+                <button type="button" class="filter-btn">
+                  <i class="fas fa-filter"></i>
+                  Filtros
+                </button>
+              </div>
+
+              @if (cursosLoading) {
+                <p class="page-subtitle">Cargando…</p>
+              } @else if (cursosError) {
+                <p class="page-subtitle">{{ cursosError }}</p>
+              } @else if (!cursos.length) {
+                <div class="empty-state">
+                  <div class="empty-icon">
+                    <i class="fas fa-book-open"></i>
+                  </div>
+                  <h3>No hay cursos creados</h3>
+                  <p>Comienza creando tu primer curso para la plataforma.</p>
+                  <a routerLink="/admin/cursos/nuevo" class="btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Crear Primer Curso
+                  </a>
+                </div>
+              } @else {
+                <div class="courses-container" id="coursesContainer">
+                  @for (curso of cursos; track curso.id) {
+                    <div class="course-card" [class.course-inactive]="!curso.estado">
+                      <div class="course-header">
+                        <div class="course-icon">
+                          <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="course-info">
+                          <h4>{{ curso.nombre }}</h4>
+                          <p>
+                            <i class="fas fa-align-left"></i>
+                            <span>{{ shortText(curso.descripcion, 80) }}</span>
+                          </p>
+                        </div>
+                        <div class="course-price">
+                          <span class="course-status" [class.status-active]="curso.estado" [class.status-inactive]="!curso.estado">
+                            {{ estadoLabel(curso) }}
+                          </span>
+                          <span class="price">${{ curso.precio }}</span>
+                        </div>
+                      </div>
+
+                      <div class="course-description">
+                        <p>{{ shortText(curso.descripcion, 100) }}</p>
+                      </div>
+
+                      <div class="course-details">
+                        <div class="instructor-rating">
+                          <div class="instructor-info">
+                            <div class="instructor-avatar">
+                              <span>{{ docenteInicial(curso) }}</span>
+                            </div>
+                            <div class="instructor-info-text">
+                              <p class="instructor-name">{{ docenteNombre(curso) }}</p>
+                              <div class="rating-stars">
+                                @for (i of [1, 2, 3, 4, 5]; track i) {
+                                  <i class="fas fa-star" [class.star-filled]="i <= dificultadNivel(curso)" [class.star-empty]="i > dificultadNivel(curso)"></i>
+                                }
+                                <span class="rating-text">{{ dificultadNivel(curso) }}/5</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="course-actions">
+                        <a [routerLink]="['/admin/cursos', curso.id, 'editar']" class="action-btn edit-btn">
+                          <i class="fas fa-edit"></i>
+                          Editar
+                        </a>
+                        <button type="button" class="action-btn toggle-btn" (click)="toggleCurso(curso)">
+                          {{ curso.estado ? 'Desactivar' : 'Activar' }}
+                        </button>
+                        <button type="button" class="action-btn delete-btn" (click)="eliminarCurso(curso)">
+                          <i class="fas fa-trash"></i>
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </section>
+          </div>
+        }
+        @case ('curso-create') {
+          <ng-container *ngTemplateOutlet="cursoFormTpl" />
+        }
+        @case ('curso-edit') {
+          <ng-container *ngTemplateOutlet="cursoFormTpl" />
+        }
+        @case ('mensajes') {
+          <div class="dashboard-content">
+            <div class="page-header-section">
+              <div>
+                <div class="page-header-title-group">
+                  <h1 class="page-main-title">Mensajes</h1>
+                  <p class="page-subtitle">Envía mensajes a los usuarios inscritos en los cursos</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-container">
+              <div class="form-wrapper">
+                @if (msgLoading) {
+                  <p class="page-subtitle">Cargando…</p>
+                } @else {
+                  <div class="registration-form">
+                    <div class="form-header">
+                      <h2><i class="fas fa-paper-plane"></i> Enviar Mensaje</h2>
+                    </div>
+
+                    <div class="form-grid">
+                      <div class="form-section">
+                        <h3 class="section-title">
+                          <i class="fas fa-envelope"></i>
+                          Correos de estudiantes
+                        </h3>
+
+                        <div class="form-group">
+                          <label><i class="fas fa-users"></i> Seleccionar destinatarios</label>
+                          <div class="correos-container">
+                            <ul class="usuarios-lista" style="list-style: none; padding: 0; margin: 0 0 1rem">
+                              @for (s of msgStudents; track s.id) {
+                                <li style="margin-bottom: 0.35rem">
+                                  <label class="row-inline" style="cursor: pointer">
+                                    <input type="checkbox" [checked]="isMsgChecked(s.email)" (change)="toggleMsgEmail(s.email, ($any($event.target)).checked)" />
+                                    <span>{{ s.name }} {{ s.lastName }} — {{ s.email }}</span>
+                                  </label>
+                                </li>
+                              }
+                            </ul>
+                            <label class="row-inline" style="cursor: pointer">
+                              <input type="checkbox" (change)="selectAllMsgs(($any($event.target)).checked)" />
+                              Seleccionar todos
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-section">
+                        <h3 class="section-title">
+                          <i class="fas fa-comment-alt"></i>
+                          Mensaje
+                        </h3>
+
+                        <div class="form-group">
+                          <label for="mensaje">
+                            <i class="fas fa-comment-alt"></i>
+                            Escribe tu mensaje
+                          </label>
+                          <textarea
+                            id="mensaje"
+                            name="mensaje"
+                            class="mensaje-textarea"
+                            [(ngModel)]="msgBody"
+                            [ngModelOptions]="{ standalone: true }"
+                            rows="10"
+                            placeholder="Escribe tu mensaje aquí..."
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+
+                    @if (msgInfo) {
+                      <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ msgInfo }}</span>
+                      </div>
+                    }
+                    @if (msgError) {
+                      <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>{{ msgError }}</span>
+                      </div>
+                    }
+
+                    <div class="form-actions">
+                      <button type="button" class="btn-primary" (click)="sendMsgs()" [disabled]="msgSending">
+                        <i class="fas fa-paper-plane"></i>
+                        {{ msgSending ? 'Enviando…' : 'Enviar mensaje' }}
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+        @default {
+          <div class="dashboard-content">
+            <p class="page-subtitle">Cargando vista…</p>
+          </div>
+        }
       }
-      <a mat-list-item (click)="logout()">
-        <!-- <mat-icon matListItemIcon>{{ getIcon(moduleName) }}</mat-icon> -->
-        <span matListItemTitle>cerrar sesion</span>
-      </a>
-      <!-- <a mat-list-item 
-          routerLink="/users" 
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Usuarios</span>
+    </main>
+
+    <ng-template #cursoFormTpl>
+    <div class="dashboard-content">
+      <div class="page-header-section">
+        <a routerLink="/admin/cursos" class="btn-back">
+          <i class="fas fa-arrow-left"></i>
+          <span>Volver</span>
         </a>
-        <a mat-list-item 
-          routerLink="/roles" 
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Roles</span>
-        </a>
-        <a mat-list-item 
-          routerLink="/modules" 
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Modulos</span>
-        </a> -->
-    </mat-nav-list>
-    }
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      @if (isHandset$ | async) {
-      <button type="button" aria-label="Toggle sidenav" matIconButton (click)="drawer.toggle()">
-        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-      </button>
+        <div class="page-header-title-group">
+          <h1 class="page-main-title">
+            <i class="fas" [class.fa-plus-circle]="cursoFormMode === 'create'" [class.fa-edit]="cursoFormMode === 'edit'"></i>
+            {{ cursoFormMode === 'create' ? 'Crear Nuevo Curso' : 'Editar Curso' }}
+          </h1>
+          <p class="page-subtitle">Complete todos los campos para {{ cursoFormMode === 'create' ? 'crear' : 'actualizar' }} el curso educativo</p>
+        </div>
+      </div>
+
+      @if (cursoFormLoading) {
+        <p class="page-subtitle">Cargando…</p>
+      } @else {
+        <div class="form-container">
+          <div class="form-wrapper">
+            <form (ngSubmit)="submitCurso()" class="course-form" #curForm="ngForm">
+              <div class="form-header">
+                <div class="form-icon"><i class="fas fa-book-open"></i></div>
+                <h2>Información del Curso</h2>
+                <p>Complete todos los campos requeridos</p>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="curso"><i class="fas fa-graduation-cap"></i> Nombre del Curso *</label>
+                  <input type="text" id="curso" name="nombre" [(ngModel)]="cursoModel.nombre" placeholder="Ej: HTML para Principiantes" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="descripcion"><i class="fas fa-align-left"></i> Descripción *</label>
+                  <textarea id="descripcion" name="descripcion" rows="3" [(ngModel)]="cursoModel.descripcion" required placeholder="Describe brevemente el contenido del curso"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="dirigido"><i class="fas fa-users"></i> Dirigido a</label>
+                  <input type="text" id="dirigido" name="dirigido" [(ngModel)]="cursoDirigido" placeholder="Ej: Principiantes en programación (se incluye al inicio de la descripción si lo completas)" />
+                </div>
+
+                <div class="form-group">
+                  <label for="asignacionDocente"><i class="fas fa-chalkboard-teacher"></i> Docente Asignado *</label>
+                  <select id="asignacionDocente" name="docenteId" [(ngModel)]="cursoModel.docenteId" required>
+                    <option [ngValue]="0">Seleccionar docente...</option>
+                    @for (d of cursoDocentes; track d.id) {
+                      <option [ngValue]="d.id">{{ d.user.name }} {{ d.user.lastName }}</option>
+                    }
+                  </select>
+                  @if (!cursoDocentes.length) {
+                    <div class="alert alert-warning">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <span>No hay docentes registrados. Primero registra un docente.</span>
+                    </div>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="dificultadSel"><i class="fas fa-star"></i> Nivel de Dificultad *</label>
+                  <select id="dificultadSel" name="dificultad" [(ngModel)]="cursoModel.dificultad" required>
+                    <option value="Baja">Baja</option>
+                    <option value="Media">Media</option>
+                    <option value="Alta">Alta</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="precio"><i class="fas fa-dollar-sign"></i> Precio *</label>
+                  <input type="number" id="precio" name="precio" min="0" step="0.01" [(ngModel)]="cursoModel.precio" required />
+                </div>
+
+                <div class="form-group">
+                  <label class="checkbox-inline">
+                    <input type="checkbox" name="estado" [(ngModel)]="cursoModel.estado" />
+                    Curso activo
+                  </label>
+                </div>
+              </div>
+
+              @if (cursoFormError) {
+                <div class="alert alert-error">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span>{{ cursoFormError }}</span>
+                </div>
+              }
+
+              <div class="form-actions">
+                <button type="submit" class="btn-primary" [disabled]="cursoFormSaving || curForm.invalid || !cursoDocentes.length">
+                  <i class="fas fa-save"></i>
+                  {{ cursoFormSaving ? 'Guardando…' : 'Guardar curso' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       }
-      <span>adso_3063267</span>
-    </mat-toolbar>
-    <!-- Add Content Here -->
-    <router-outlet></router-outlet>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+    </div>
+    </ng-template>
+  </div>
+} @else {
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav
+      #drawer
+      class="sidenav"
+      fixedInViewport
+      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+      [mode]="(isHandset$ | async) ? 'over' : 'side'"
+      [opened]="(isHandset$ | async) === false"
+    >
+      <mat-toolbar>{{ isAdminShell() ? 'CodiPlayCo Admin' : 'Menu' }}</mat-toolbar>
+      @if (authService.isAuthenticated()) {
+        <mat-nav-list>
+          @if (isAdminShell()) {
+            <p class="nav-section-title">Panel administración</p>
+            <a mat-list-item routerLink="/admin/dashboard" routerLinkActive="active-link">Dashboard</a>
+            <a mat-list-item routerLink="/admin/usuarios" routerLinkActive="active-link">Usuarios</a>
+            <a mat-list-item routerLink="/admin/docentes" routerLinkActive="active-link">Registrar docentes</a>
+            <a mat-list-item routerLink="/admin/cursos" routerLinkActive="active-link">Cursos</a>
+            <a mat-list-item routerLink="/admin/mensajes" routerLinkActive="active-link">Mensajes</a>
+            <p class="nav-section-title">Aplicación</p>
+            <a mat-list-item routerLink="/users" routerLinkActive="active-link">Módulos (inicio)</a>
+          } @else {
+            @if (isAppAdmin()) {
+              <a mat-list-item routerLink="/admin/dashboard" routerLinkActive="active-link">
+                <span matListItemTitle>Panel administración</span>
+              </a>
+            }
+            @for (moduleName of menuItems(); track moduleName) {
+              <a mat-list-item [routerLink]="'/' + moduleName.toLowerCase()" routerLinkActive="active-link">
+                <span matListItemTitle>{{ moduleName }}</span>
+              </a>
+            }
+          }
+          <a mat-list-item (click)="logout()">
+            <span matListItemTitle>Cerrar sesión</span>
+          </a>
+        </mat-nav-list>
+      }
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <mat-toolbar color="primary">
+        @if (isHandset$ | async) {
+          <button type="button" aria-label="Alternar menú" matIconButton (click)="drawer.toggle()">
+            <mat-icon aria-hidden="true">menu</mat-icon>
+          </button>
+        }
+        <span>{{ isAdminShell() ? 'CodiPlayCo — Administración' : 'adso_3063267' }}</span>
+      </mat-toolbar>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+}
