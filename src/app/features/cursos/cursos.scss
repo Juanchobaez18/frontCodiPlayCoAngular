@@ -1,5 +1,5 @@
 /* =====================================================
-   CodiPlayCo — Landing Page Styles
+   Cursos Page Styles
    ===================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Rubik:wght@400;500;700&family=Quicksand:wght@500;700&display=swap');
@@ -31,12 +31,6 @@
   z-index: 0;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background: transparent;
-}
-
 /* ---- NAVBAR ---- */
 .glass-navbar {
   background: rgba(24, 24, 65, 0.6);
@@ -45,18 +39,15 @@ body {
   position: relative;
   z-index: 10;
 
-  /* Hamburger oculto por defecto (desktop) */
   .hamburger {
     display: none;
   }
 
-  /* Hamburger visible en mobile */
   @media (max-width: 768px) {
     .hamburger {
       display: flex;
     }
 
-    /* Nav oculto en mobile */
     #main-nav {
       display: none;
     }
@@ -203,65 +194,6 @@ body {
   }
 }
 
-.btn-trade {
-  padding: 1.2rem 2.8rem;
-  background: #a100ff;
-  color: white;
-  text-decoration: none;
-  border: 2px solid #00d4ff;
-  border-radius: 0.5rem;
-  font-weight: 700;
-  font-family: 'Fredoka', sans-serif;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  box-shadow: 
-    0 0 25px rgba(161, 0, 255, 0.7),
-    0 0 50px rgba(0, 212, 255, 0.4);
-  display: inline-block;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-
-  span {
-    position: relative;
-    z-index: 2;
-    display: block;
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transform: translateX(-100%);
-    transition: transform 0.6s ease;
-    z-index: 1;
-  }
-
-  &:hover {
-    transform: translateY(-3px) scale(1.01);
-    box-shadow: 
-      0 0 35px rgba(161, 0, 255, 0.9),
-      0 0 70px rgba(0, 212, 255, 0.6),
-      0 10px 30px rgba(0, 212, 255, 0.3);
-    background: linear-gradient(135deg, #a100ff 0%, #7d00cc 100%);
-    border-color: #fff;
-
-    &::before {
-      transform: translateX(100%);
-    }
-  }
-
-  &:active {
-    transform: translateY(-1px) scale(0.99);
-  }
-}
-
 /* ---- HAMBURGER ---- */
 .hamburger {
   flex-direction: column;
@@ -317,26 +249,16 @@ body {
   }
 }
 
-/* ---- HERO SECTION ---- */
-.hero {
-  background: transparent;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 1;
-}
-
-/* ---- MAIN CONTAINER ---- */
-.container {
+/* ---- MAIN CONTENT ---- */
+main {
   flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: calc(100vh - 80px);
+  padding: 2rem;
 }
 
-/* ---- TITLE ---- */
 h1 {
   color: #fff;
   font-family: 'Fredoka', sans-serif;
@@ -346,47 +268,101 @@ h1 {
   letter-spacing: 1px;
 }
 
-.animate-codiplay-title {
-  animation: titlePulse 1.5s ease-in-out infinite;
-}
-
-@keyframes titlePulse {
-  0% {
-    text-shadow: 0 0 20px rgba(0, 212, 255, 0.4), 
-                 0 0 40px rgba(161, 0, 255, 0.3);
-  }
-  50% {
-    text-shadow: 0 0 30px rgba(0, 212, 255, 0.6), 
-                 0 0 60px rgba(161, 0, 255, 0.5);
-  }
-  100% {
-    text-shadow: 0 0 20px rgba(0, 212, 255, 0.4), 
-                 0 0 40px rgba(161, 0, 255, 0.3);
-  }
-}
-
-/* ---- DESCRIPTION ---- */
 p {
   color: rgba(255, 255, 255, 0.8);
   font-family: 'Quicksand', sans-serif;
 }
 
-/* ---- ASTRONAUT IMAGE ---- */
-.astronaut-float-3d-big {
-  max-width: 100%;
-  height: auto;
-  animation: floatAstronaut 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.3));
+.faq-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
 }
 
-@keyframes floatAstronaut {
-  0% {
-    transform: translateY(0) rotate(0deg);
+.slider {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.card {
+  background: rgba(24, 24, 65, 0.8);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  border-radius: 0.7rem;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    border-color: #00d4ff;
+    transform: translateY(-5px);
   }
-  50% {
-    transform: translateY(-30px) rotate(2deg);
+
+  .head {
+    height: 150px;
+    background: linear-gradient(135deg, #a100ff 0%, #00d4ff 100%);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
   }
-  100% {
-    transform: translateY(0) rotate(0deg);
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .content-title {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .dificultad {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+
+      .estrellas {
+        color: #ffd700;
+        font-size: 1.2rem;
+      }
+    }
+
+    .botones {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+
+      .btn {
+        flex: 1;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #a100ff 0%, #00d4ff 100%);
+        color: white;
+        text-decoration: none;
+        border: 1px solid #00d4ff;
+        border-radius: 0.5rem;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+          box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+          transform: scale(1.02);
+        }
+      }
+    }
   }
+}
+
+footer {
+  background: rgba(20, 20, 30, 0.8);
+  border-top: 2px solid rgba(0, 212, 255, 0.3);
+  padding: 2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
 }

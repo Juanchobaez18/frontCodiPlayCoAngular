@@ -1,0 +1,91 @@
+<body class="text-white">
+	<header id="main-header" class="glass-navbar animate-navbar-slideIn">
+		<div class="header-container">
+			<a routerLink="/" class="logo-wrapper">
+				<img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
+			</a>
+
+			<nav id="main-nav" class="nav-wrapper">
+				<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
+				<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
+				<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
+			</nav>
+
+			<div class="actions-wrapper">
+				<div id="nav-toggle" class="hamburger">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+				<a class="btn-launch" href="/auth">
+					<span>Iniciar Sesión</span>
+				</a>
+			</div>
+		</div>
+	</header>
+
+	<div id="mobile-menu" class="mobile-menu">
+		<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
+		<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
+		<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
+	</div>
+
+	<main class="container mx-auto px-4 py-10">
+		<section class="hero-futuristic mb-16">
+			<div class="hero-content">
+				<h1 class="hero-title">¿Quiénes Somos?</h1>
+				<p class="hero-subtitle">Transformando el futuro digital de la próxima generación</p>
+			</div>
+		</section>
+
+		<section class="mission-vision-section mb-16">
+			<div class="section-header">
+				<h2 class="section-title">Nuestra Esencia Digital</h2>
+				<p class="section-subtitle">Los pilares que fundamentan nuestra revolución educativa</p>
+			</div>
+			<div class="mission-grid">
+				<div class="mission-card">
+					<h3 class="card-title">Sobre CodiPlay</h3>
+					<p class="card-description">Somos una plataforma de vanguardia que transforma la programación en una aventura épica para niños y niñas entre 7 y 12 años.</p>
+				</div>
+
+				<div class="mission-card">
+					<h3 class="card-title">Nuestra Misión</h3>
+					<p class="card-description">Democratizar el acceso a la educación digital de calidad, creando ecosistemas de aprendizaje donde cada niño pueda descubrir su potencial.</p>
+				</div>
+
+				<div class="mission-card">
+					<h3 class="card-title">Nuestra Visión</h3>
+					<p class="card-description">Convertirnos en el referente latinoamericano de educación tecnológica infantil, formando la primera generación de nativos digitales creativos.</p>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer>
+		<p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+	</footer>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const navToggle = document.getElementById('nav-toggle');
+			const mobileMenu = document.getElementById('mobile-menu');
+
+			if (navToggle && mobileMenu) {
+				navToggle.addEventListener('click', () => {
+					navToggle.classList.toggle('active');
+					mobileMenu.classList.toggle('active');
+					document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
+				});
+
+				mobileMenu.addEventListener('click', (e) => {
+					if (e.target.closest('.nav-link-glass')) {
+						navToggle.classList.remove('active');
+						mobileMenu.classList.remove('active');
+						document.body.style.overflow = 'auto';
+					}
+				});
+			}
+		});
+	</script>
+</body>

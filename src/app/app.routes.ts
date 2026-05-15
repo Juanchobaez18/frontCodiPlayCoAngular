@@ -4,22 +4,34 @@ import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {
+        path: '',
+        loadComponent: () => import('./features/landing-page/landing-page').then(m => m.LandingPage)
+    },
+    {
+        path: 'cursos',
+        loadComponent: () => import('./features/cursos/cursos').then(m => m.CursosComponent)
+    },
+    {
+        path: 'quienes-somos',
+        loadComponent: () => import('./features/quienes-somos/quienes-somos').then(m => m.QuienesSomosComponent)
+    },
+    {
+        path: 'preguntas-frecuentes',
+        loadComponent: () => import('./features/preguntas-frecuentes/preguntas-frecuentes').then(m => m.PreguntasFrecuentesComponent)
+    },
+    {
+        path: 'contacto',
+        loadComponent: () => import('./features/contacto/contacto').then(m => m.ContactoComponent)
+    },
+    {
         path: 'auth',
         loadChildren: () => import('./auth/auth.routes').then(m => m.AUTH_ROUTES)
     },
     {
-        path: 'landing-page',
-        loadChildren: () => import('./features/landing-page/landing-page.routes').then(m => m.LANDING_PAGE_ROUTES)
-    },
-    {
-        path: '',
-        component: AdminLayoutComponent, // El cascarón de Material
+        path: 'dashboard',
+        component: AdminLayoutComponent,
         canActivate: [authGuard],
         children: [
-            // {
-            //     path: 'dashboard',
-            //     loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
-            // },
             {
                 path: 'users',
                 loadComponent: () => import('./features/users/users').then(m => m.Users)
@@ -38,10 +50,5 @@ export const routes: Routes = [
             },
             { path: '', redirectTo: 'users', pathMatch: 'full' }
         ]
-    },
-    {
-        path: '',
-        redirectTo: 'landing-page',
-        pathMatch: 'full'
     }
 ];
