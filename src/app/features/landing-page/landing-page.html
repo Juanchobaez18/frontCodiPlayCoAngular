@@ -1,91 +1,70 @@
-<body class="bg-gray-900 text-white">
-	<div class="hero min-h-screen flex flex-col">
-		<header id="main-header"
-			class="glass-navbar animate-navbar-slideIn flex justify-between items-center px-8 py-1">
-			<a routerLink="/">
-    <img
-       src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate"
-      alt="CodiPlayCo Logo"
-      class="logo-animate"
-    />
-  </a>
+<div class="hero">
+	<header id="main-header" class="glass-navbar animate-navbar-slideIn">
+		<div class="header-container">
+			<a routerLink="/" class="logo-wrapper">
+				<img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
+			</a>
 
-			<!-- Hamburger mejorado -->
-			<div id="nav-toggle" class="hamburger md:hidden">
-				<span></span>
-				<span></span>
-				<span></span>
-			</div>
-
-			<nav id="main-nav" class="hidden md:flex items-center space-x-2 text-sm font-medium">
-				<a class="nav-link-glass" href="/cursos">
-					<span>Cursos</span>
-				</a>
-				<a class="nav-link-glass" href="/quienessomos">
-					<span>Quienes Somos</span>
-				</a>
-				<a class="nav-link-glass" href="/preguntasfrecuentes">
-					<span>Preguntas Frecuentes</span>
-				</a>
-
+			<nav id="main-nav" class="nav-wrapper">
+				<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
+				<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
+				<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
 			</nav>
 
-			<div class="flex gap-3 items-center">
-				<a class="btn-launch" href="/iniciosesion">
+			<div class="actions-wrapper">
+				<div id="nav-toggle" class="hamburger">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+				<a class="btn-launch" href="/auth">
 					<span>Iniciar Sesión</span>
 				</a>
 			</div>
-		</header>
-
-		<!-- Mobile menu -->
-		<div id="mobile-menu" class="mobile-menu">
-			<a class="nav-link-glass" href="/cursos">
-				<span>Cursos</span>
-			</a>
-			<a class="nav-link-glass" href="/quienessomos">
-				<span>Quienes Somos</span>
-			</a>
-			<a class="nav-link-glass" href="/preguntasfrecuentes">
-				<span>Preguntas Frecuentes</span>
-			</a>
-
 		</div>
+	</header>
 
-		<main class="container mx-auto px-6 flex-grow flex items-center">
-			<div class="w-full flex flex-col md:flex-row items-center justify-between gap-8">
-				<div class="flex-1 flex flex-col items-start md:pl-24 space-y-6">
-					<h1 class="text-6xl md:text-7xl font-bold leading-tight animate-codiplay-title">
-						Empieza tu<br /> aventura<br /> con CodiPlay
-					</h1>
-					<p class="text-lg text-gray-300 max-w-md">
-						¡Diviértete programando desde cero!
-					</p>
-					<a class="btn-trade inline-block" href="/registroclasegratis">
-						<span>Mas Informacion</span>
-					</a>
-				</div>
-				<div class="flex-1 flex items-center justify-end w-full md:w-auto">
-					<img src="assets/images/astronauta-flotando.png"
-						alt="Astronauta flotando" class="astronaut-float-3d-big" />
-				</div>
-			</div>
-		</main>
+	<div id="mobile-menu" class="mobile-menu">
+		<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
+		<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
+		<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
 	</div>
 
-	<script>
-		// Inicializar menú hamburguesa directamente en esta página
-		document.addEventListener('DOMContentLoaded', function () {
-			const navToggle = document.getElementById('nav-toggle');
-			const mobileMenu = document.getElementById('mobile-menu');
+	<main class="container">
+		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; width: 100%; padding: 0 2rem;">
+			<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+				<h1 class="animate-codiplay-title">
+					Empieza tu<br /> aventura<br /> con CodiPlay
+				</h1>
+				<p style="font-size: 1.125rem; max-width: 500px;">
+					¡Diviértete programando desde cero!
+				</p>
+				<a class="btn-trade" routerLink="/contacto">
+					<span>Mas Informacion</span>
+				</a>
+			</div>
+			<div style="display: flex; justify-content: center;">
+				<img src="img/astronautaFlotando.png"
+					alt="Astronauta flotando" class="astronaut-float-3d-big" 
+					style="max-width: 400px; height: auto;" />
+			</div>
+		</div>
+	</main>
+</div>
 
-			if (!navToggle || !mobileMenu) {
-				return;
-			}
+<footer>
+	<p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+</footer>
 
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const navToggle = document.getElementById('nav-toggle');
+		const mobileMenu = document.getElementById('mobile-menu');
+
+		if (navToggle && mobileMenu) {
 			navToggle.addEventListener('click', () => {
 				navToggle.classList.toggle('active');
 				mobileMenu.classList.toggle('active');
-				// Bloquear scroll cuando el menú está abierto
 				document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
 			});
 
@@ -96,8 +75,7 @@
 					document.body.style.overflow = 'auto';
 				}
 			});
-		});
-	</script>
-
-</body>
+		}
+	});
+</script>
 

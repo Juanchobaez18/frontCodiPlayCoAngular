@@ -1,0 +1,55 @@
+<div class="logo-corner">
+	<a routerLink="/">
+		<img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
+	</a>
+</div>
+
+<main class="main-form-bg main-center-absolute">
+	<div class="form">
+			<div class="bg-stars">
+				<div class="star" *ngFor="let s of stars"></div>
+			</div>
+			<div class="form-title"><span></span> Contáctanos</div>
+			<div class="title-2"><span>CodiPlayCo</span></div>
+
+			<form (ngSubmit)="onSubmit(contactForm)" #contactForm="ngForm" autocomplete="off" id="registerForm" novalidate>
+			<div class="input-container">
+				<label for="nombre">Nombre</label>
+				<input type="text" id="nombre" name="nombre" placeholder="Nombre" required ngModel #nombre="ngModel" />
+				<span class="error-text" *ngIf="submitted && nombre.invalid">El nombre es obligatorio.</span>
+			</div>
+
+			<div class="input-container">
+				<label for="email">Correo electrónico</label>
+				<input type="email" id="email" name="email" placeholder="Correo electrónico" required ngModel #email="ngModel" />
+				<span class="error-text" *ngIf="submitted && email.invalid">El correo electrónico es obligatorio.</span>
+			</div>
+
+			<div class="input-container">
+				<label for="documento">Documento</label>
+				<input type="text" id="documento" name="documento" placeholder="Documento" ngModel />
+			</div>
+
+			<div class="input-container">
+				<label for="celular">Número de teléfono</label>
+				<input type="tel" id="celular" name="celular" placeholder="Número de teléfono" required ngModel #celular="ngModel" />
+				<span class="error-text" *ngIf="submitted && celular.invalid">El teléfono es obligatorio.</span>
+			</div>
+
+			<div class="form-message" *ngIf="submitted && errorMessage">{{ errorMessage }}</div>
+			<div class="success-box" *ngIf="successMessage">
+				<span class="success-icon">✔</span>
+				<div>
+					<p class="success-title">Enviado con éxito</p>
+					<p class="success-text">{{ successMessage }}</p>
+				</div>
+			</div>
+			<button type="submit" class="submit" id="submitBtn">Pedir Información</button>
+			<p class="signup-link">¿Ya tienes cuenta? <a routerLink="/auth" class="up">Inicia sesión aquí</a></p>
+		</form>
+	</div>
+</main>
+
+<footer>
+	<p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+</footer>

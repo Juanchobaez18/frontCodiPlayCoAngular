@@ -1,1 +1,138 @@
-<p>curso works!</p>
+<body class="text-white">
+	<header id="main-header" class="glass-navbar animate-navbar-slideIn">
+		<div class="header-container">
+			<a routerLink="/" class="logo-wrapper">
+				<img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
+			</a>
+
+			<nav id="main-nav" class="nav-wrapper">
+				<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
+				<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
+				<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
+			</nav>
+
+			<div class="actions-wrapper">
+				<div id="nav-toggle" class="hamburger">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+				<a class="btn-launch" href="/auth">
+					<span>Iniciar Sesión</span>
+				</a>
+			</div>
+		</div>
+	</header>
+
+	<div id="mobile-menu" class="mobile-menu">
+		<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
+		<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
+		<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
+	</div>
+
+	<main class="container mx-auto px-4 py-10">
+		<section class="hero-section mb-16">
+			<h1 class="text-5xl font-bold text-center mb-4">Nuestros Cursos</h1>
+			<p class="text-xl text-center text-gray-300 mb-12">Descubre programas diseñados para inspirar a la próxima generación</p>
+		</section>
+
+		<section class="slider-section mb-20">
+			<div class="slider">
+				<div class="card">
+					<div class="head">
+						<h3>Programación Básica</h3>
+					</div>
+					<div class="content">
+						<p>Aprende los fundamentos de la programación con nuestro curso introductorio.</p>
+						<div class="estrellas">
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-empty">★</span>
+						</div>
+						<div class="btn">Más Info</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="head">
+						<h3>JavaScript Avanzado</h3>
+					</div>
+					<div class="content">
+						<p>Domina JavaScript y crea aplicaciones interactivas increíbles.</p>
+						<div class="estrellas">
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+						</div>
+						<div class="btn">Más Info</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="head">
+						<h3>Desarrollo Web</h3>
+					</div>
+					<div class="content">
+						<p>Construye sitios web modernos y responsivos desde cero.</p>
+						<div class="estrellas">
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-empty">★</span>
+						</div>
+						<div class="btn">Más Info</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="head">
+						<h3>Python para Principiantes</h3>
+					</div>
+					<div class="content">
+						<p>Comienza tu viaje en programación con el lenguaje más amigable.</p>
+						<div class="estrellas">
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+							<span class="estrella-filled">★</span>
+						</div>
+						<div class="btn">Más Info</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer>
+		<p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+	</footer>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const navToggle = document.getElementById('nav-toggle');
+			const mobileMenu = document.getElementById('mobile-menu');
+
+			if (navToggle && mobileMenu) {
+				navToggle.addEventListener('click', () => {
+					navToggle.classList.toggle('active');
+					mobileMenu.classList.toggle('active');
+					document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
+				});
+
+				mobileMenu.addEventListener('click', (e) => {
+					if (e.target.closest('.nav-link-glass')) {
+						navToggle.classList.remove('active');
+						mobileMenu.classList.remove('active');
+						document.body.style.overflow = 'auto';
+					}
+				});
+			}
+		});
+	</script>
+</body>

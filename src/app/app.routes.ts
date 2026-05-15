@@ -6,45 +6,52 @@ import { DOCENTE_ROUTES } from './core/routing/docente.routes';
 import { ESTUDIANTE_ROUTES } from './core/routing/estudiante.routes';
 
 export const routes: Routes = [
-  {
-    path: 'auth',
-    loadChildren: () => import('./auth/auth.routes').then((m) => m.AUTH_ROUTES),
-  },
-  {
-    path: 'landing-page',
-    loadChildren: () =>
-      import('./features/landing-page/landing-page.routes').then((m) => m.LANDING_PAGE_ROUTES),
-  },
-  ...ADMIN_ROUTES,
-  ...DOCENTE_ROUTES,
-  ...ESTUDIANTE_ROUTES,
-  {
-    path: '',
-    component: AdminLayoutComponent,
-    canActivate: [authGuard],
-    children: [
-      {
-        path: 'users',
-        loadComponent: () => import('./features/users/users').then((m) => m.Users),
-      },
-      {
-        path: 'roles',
-        loadComponent: () => import('./features/roles/roles').then((m) => m.Roles),
-      },
-      {
-        path: 'modules',
-        loadComponent: () => import('./features/modules/modules').then((m) => m.Modules),
-      },
-      {
-        path: 'curso',
-        loadComponent: () => import('./features/curso/curso').then((m) => m.Curso),
-      },
-      { path: '', redirectTo: 'users', pathMatch: 'full' },
-    ],
-  },
-  {
-    path: '',
-    redirectTo: 'landing-page',
-    pathMatch: 'full',
-  },
+    {
+        path: '',
+        loadComponent: () => import('./features/landing-page/landing-page').then(m => m.LandingPage)
+    },
+    {
+        path: 'cursos',
+        loadComponent: () => import('./features/cursos/cursos').then(m => m.CursosComponent)
+    },
+    {
+        path: 'quienes-somos',
+        loadComponent: () => import('./features/quienes-somos/quienes-somos').then(m => m.QuienesSomosComponent)
+    },
+    {
+        path: 'preguntas-frecuentes',
+        loadComponent: () => import('./features/preguntas-frecuentes/preguntas-frecuentes').then(m => m.PreguntasFrecuentesComponent)
+    },
+    {
+        path: 'contacto',
+        loadComponent: () => import('./features/contacto/contacto').then(m => m.ContactoComponent)
+    },
+    {
+        path: 'auth',
+        loadChildren: () => import('./auth/auth.routes').then(m => m.AUTH_ROUTES)
+    },
+    {
+        path: 'dashboard',
+        component: AdminLayoutComponent,
+        canActivate: [authGuard],
+        children: [
+            {
+                path: 'users',
+                loadComponent: () => import('./features/users/users').then(m => m.Users)
+            },
+            {
+                path: 'roles',
+                loadComponent: () => import('./features/roles/roles').then(m => m.Roles)
+            },
+            {
+                path: 'modules',
+                loadComponent: () => import('./features/modules/modules').then(m => m.Modules)
+            },
+            {
+                path: 'curso',
+                loadComponent: () => import('./features/curso/curso').then(m => m.Curso)
+            },
+            { path: '', redirectTo: 'users', pathMatch: 'full' }
+        ]
+    }
 ];
