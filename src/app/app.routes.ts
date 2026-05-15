@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './core/components/admin-layout/admin-layout.component';
 import { authGuard } from './core/guards/auth.guard';
+import { ADMIN_ROUTES } from './core/routing/admin.routes';
+import { DOCENTE_ROUTES } from './core/routing/docente.routes';
+import { ESTUDIANTE_ROUTES } from './core/routing/estudiante.routes';
 
 export const routes: Routes = [
     {

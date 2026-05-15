@@ -13,6 +13,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
  
 import { LoginInterface } from '../interfaces/login';
 import { Auth } from '../../core/services/auth';
+import { userHasAdminPanelAccess } from '../../core/config/admin-panel-access.config';
  
 @Component({
   selector: 'app-log-in',
@@ -59,7 +60,11 @@ export class LogIn {
       next: (res) => {
         console.log('Usuario autenticado:', res);
         this.loading = false;
-        this.router.navigate(['/users']);
+        if (userHasAdminPanelAccess(res.user)) {
+          this.router.navigate(['/admin/dashboard']);
+        } else {
+          this.router.navigate(['/users']);
+        }
       },
       error: (err) => {
         this.loading      = false;
