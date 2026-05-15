@@ -1,0 +1,159 @@
+<header>
+  <div class="header-logo-title">
+    <h1 class="titulo-blanco"><span class="panel-icon"><i class="fa-solid fa-comments"></i></span>Foros</h1>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Success/Error Messages -->
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i> {{ successMessage() }}
+    </div>
+  }
+  @if (errorMessage()) {
+    <div class="alert alert-danger">
+      <i class="fas fa-exclamation-triangle"></i> {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Crear Foro -->
+  <div class="panel">
+    <h2><span class="panel-icon"><i class="fa-solid fa-comment-dots"></i></span> Crear Foro</h2>
+    <div class="form-foro">
+      <label for="titulo-foro">Tema:</label>
+      <input
+        id="titulo-foro"
+        type="text"
+        placeholder="Ej: Ideas para nuevos juegos"
+        [ngModel]="nuevoTitulo()"
+        (ngModelChange)="nuevoTitulo.set($event)"
+        required
+      />
+
+      <label for="curso-foro">Curso:</label>
+      <select
+        id="curso-foro"
+        [ngModel]="nuevoCursoId()"
+        (ngModelChange)="nuevoCursoId.set($event)"
+        required
+      >
+        <option [ngValue]="null" disabled>Selecciona un curso</option>
+        @for (c of cursos(); track c.id) {
+          <option [ngValue]="c.id">{{ c.nombre }}</option>
+        }
+      </select>
+
+      <label for="desc-foro">Descripción:</label>
+      <textarea
+        id="desc-foro"
+        rows="3"
+        [ngModel]="nuevaDescripcion()"
+        (ngModelChange)="nuevaDescripcion.set($event)"
+        required
+      ></textarea>
+
+      <button type="button" [disabled]="creando()" (click)="crearForo()">
+        @if (creando()) {
+          <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+        } @else {
+          Crear Foro
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Foros Creados -->
+  <div class="panel">
+    <h2><span class="panel-icon"><i class="fa-solid fa-list"></i></span> Foros creados</h2>
+
+    @if (forosLoading()) {
+      <p>Cargando foros…</p>
+    } @else if (forosData().length === 0) {
+      <p>No hay foros registrados.</p>
+    } @else {
+      @for (grupo of getForosPorCurso(); track grupo.cursoNombre) {
+        <div class="foro-curso-bloque">
+          <h3>{{ grupo.cursoNombre }}</h3>
+          <ul class="lista-foros">
+            @for (foro of grupo.foros; track foro.id) {
+              <li class="foro-item">
+                <div class="foro-header">
+                  <strong>{{ foro.titulo }}</strong>
+                  <div class="foro-actions">
+                    <button
+                      class="btn-editar"
+                      title="Editar foro"
+                      (click)="abrirEditar(foro)"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                      class="btn-ver-respuestas"
+                      title="Ver respuestas"
+                      (click)="verRespuestas(foro.id)"
+                    >
+                      <i class="fa-solid fa-comments"></i>
+                      <span class="respuesta-count">{{ foro.cantidadRespuestas || 0 }}</span>
+                    </button>
+                    <button
+                      class="btn-eliminar"
+                      title="Eliminar foro"
+                      (click)="eliminarForo(foro)"
+                    >
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+                <p>{{ foro.descripcion }}</p>
+                <small>{{ foro.fechaCreacion }}</small>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Modal para editar foro -->
+  @if (modalOpen()) {
+    <div class="modal" [style.display]="'block'" (click)="cerrarModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <span class="close-modal" (click)="cerrarModal()">&times;</span>
+        <h3>Editar Foro</h3>
+        <div class="form-group">
+          <label for="editarTitulo">Tema:</label>
+          <input
+            type="text"
+            id="editarTitulo"
+            [ngModel]="editarTitulo()"
+            (ngModelChange)="editarTitulo.set($event)"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="editarDescripcion">Descripción:</label>
+          <textarea
+            id="editarDescripcion"
+            rows="3"
+            [ngModel]="editarDescripcion()"
+            (ngModelChange)="editarDescripcion.set($event)"
+            required
+          ></textarea>
+        </div>
+        <button
+          type="button"
+          class="btn-guardar"
+          [disabled]="editando()"
+          (click)="guardarEdicion()"
+        >
+          @if (editando()) {
+            <i class="fas fa-spinner fa-spin"></i> Guardando...
+          } @else {
+            <i class="fas fa-save"></i> Guardar Cambios
+          }
+        </button>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,169 @@
+<header>
+  <div class="header-logo-title">
+    <h1 class="titulo-blanco"><span class="panel-icon"><i class="fa-solid fa-envelope"></i></span>Mensajes</h1>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Success/Error Messages -->
+  @if (successMessage()) {
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i> {{ successMessage() }}
+    </div>
+  }
+  @if (errorMessage()) {
+    <div class="alert alert-danger">
+      <i class="fas fa-exclamation-triangle"></i> {{ errorMessage() }}
+    </div>
+  }
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2><span class="panel-icon"><i class="fa-solid fa-envelope"></i></span> Centro de mensajes</h2>
+      <div class="tabs-mensajes">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="mensajesTab() === 'enviar'"
+          (click)="setMensajesTab('enviar', $event)"
+        >
+          <i class="fas fa-paper-plane"></i> Enviar mensaje
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="mensajesTab() === 'enviados'"
+          (click)="setMensajesTab('enviados', $event)"
+        >
+          <i class="fas fa-share-square"></i> Enviados
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="mensajesTab() === 'recibidos'"
+          (click)="setMensajesTab('recibidos', $event)"
+        >
+          <i class="fas fa-inbox"></i> Recibidos
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab: Enviar -->
+    <div
+      id="tab-enviar"
+      class="tab-content"
+      [class.active]="mensajesTab() === 'enviar'"
+      [style.display]="mensajesTab() === 'enviar' ? 'block' : 'none'"
+    >
+      <div class="form-container">
+        <div class="message-form">
+          <div class="form-group">
+            <label for="destinatarioId">Para:</label>
+            <select
+              id="destinatarioId"
+              class="form-control"
+              [ngModel]="mensajeDestinatarioId()"
+              (ngModelChange)="mensajeDestinatarioId.set($event)"
+              required
+            >
+              <option [ngValue]="null" disabled>Seleccione un estudiante</option>
+              @for (est of estudiantes(); track est.id) {
+                <option [ngValue]="est.id">{{ est.nombre }} {{ est.apellido }} ({{ est.email }})</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="contenido">Mensaje:</label>
+            <textarea
+              id="contenido"
+              rows="5"
+              class="form-control"
+              [ngModel]="mensajeBody()"
+              (ngModelChange)="mensajeBody.set($event)"
+              placeholder="Escribe tu mensaje..."
+              required
+            ></textarea>
+          </div>
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="mensajeSending()"
+              (click)="enviarMensaje()"
+            >
+              @if (mensajeSending()) {
+                <i class="fas fa-spinner fa-spin"></i> Enviando...
+              } @else {
+                <i class="fas fa-paper-plane"></i> Enviar Mensaje
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Enviados -->
+    <div
+      id="tab-enviados"
+      class="tab-content"
+      [class.active]="mensajesTab() === 'enviados'"
+      [style.display]="mensajesTab() === 'enviados' ? 'block' : 'none'"
+    >
+      <div class="messages-header">
+        <h3><i class="fas fa-share-square"></i> Mensajes Enviados</h3>
+      </div>
+      @if (!mensajesLoading() && mensajesEnviados().length === 0) {
+        <div class="no-messages">
+          <i class="far fa-paper-plane fa-3x"></i>
+          <p>No has enviado mensajes todavía.</p>
+        </div>
+      }
+      @if (!mensajesLoading() && mensajesEnviados().length > 0) {
+        <ul class="lista-mensajes">
+          @for (m of mensajesEnviados(); track m.id) {
+            <li>
+              <strong>{{ m.destinatario || m.remitente }}</strong>
+              <span>{{ m.fecha }}</span>
+              <p>{{ m.contenido || m.asunto }}</p>
+            </li>
+          }
+        </ul>
+      }
+      @if (mensajesLoading()) {
+        <p>Cargando…</p>
+      }
+    </div>
+
+    <!-- Tab: Recibidos -->
+    <div
+      id="tab-recibidos"
+      class="tab-content"
+      [class.active]="mensajesTab() === 'recibidos'"
+      [style.display]="mensajesTab() === 'recibidos' ? 'block' : 'none'"
+    >
+      <div class="messages-header">
+        <h3><i class="fas fa-inbox"></i> Mensajes Recibidos</h3>
+      </div>
+      @if (!mensajesLoading() && mensajesRecibidos().length === 0) {
+        <div class="no-messages">
+          <i class="far fa-envelope fa-3x"></i>
+          <p>No tienes mensajes recibidos.</p>
+        </div>
+      }
+      @if (!mensajesLoading() && mensajesRecibidos().length > 0) {
+        <ul class="lista-mensajes">
+          @for (m of mensajesRecibidos(); track m.id) {
+            <li>
+              <strong>{{ m.remitente }}</strong>
+              <span>{{ m.fecha }}</span>
+              <p>{{ m.contenido || m.asunto }}</p>
+            </li>
+          }
+        </ul>
+      }
+      @if (mensajesLoading()) {
+        <p>Cargando…</p>
+      }
+    </div>
+  </div>
+</div>

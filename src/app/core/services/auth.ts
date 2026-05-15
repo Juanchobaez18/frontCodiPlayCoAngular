@@ -36,6 +36,9 @@ export interface User {
   email: string;
   isActive: boolean;
   roles: Role[]; // Nota que es un array según tu JSON
+  /** Perfil docente (Nest/TypeORM); define acceso real al panel y a `/docente/*`. */
+  docente?: { id: number } | null;
+  estudiante?: { id: number } | null;
 }
 
 export interface AuthResponse {

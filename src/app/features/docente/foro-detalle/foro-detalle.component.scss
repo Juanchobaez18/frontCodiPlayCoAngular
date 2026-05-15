@@ -1,0 +1,39 @@
+/* ForoDetalle inherits styles from the external CSS files loaded by the layout.
+   Additional component-specific overrides: */
+
+:host {
+  display: block;
+}
+
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #d8b4fe;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-volver:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateX(-4px);
+}
+
+:host-context(body:not(.dark-mode)) .btn-volver {
+  background: rgba(138, 43, 226, 0.1);
+  border-color: rgba(138, 43, 226, 0.2);
+  color: #8A2BE2;
+}
+
+:host-context(body:not(.dark-mode)) .btn-volver:hover {
+  background: rgba(138, 43, 226, 0.15);
+  color: #6B21A8;
+}
