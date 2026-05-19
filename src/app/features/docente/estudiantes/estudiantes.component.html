@@ -1,0 +1,49 @@
+<header>
+  <div class="header-logo-title">
+    <h1 class="titulo-blanco">
+      <span class="panel-icon"><i class="fa-solid fa-user-graduate"></i></span>Estudiantes
+    </h1>
+  </div>
+</header>
+
+@if (!estudiantesLoading()) {
+  @if (estudiantes().length === 0) {
+    <div class="panel">
+      <h2><span class="panel-icon"><i class="fa-solid fa-users"></i></span>Sin estudiantes</h2>
+      <p>No hay estudiantes asociados a tus cursos todavía.</p>
+    </div>
+  } @else {
+    <div class="panel">
+      <h2><span class="panel-icon"><i class="fa-solid fa-users"></i></span>Lista de estudiantes</h2>
+      <table class="tabla-progreso">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Cursos</th>
+            <th>Progreso</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of estudiantes(); track e.id) {
+            <tr>
+              <td>{{ e.nombre }} {{ e.apellido }}</td>
+              <td>{{ e.email }}</td>
+              <td>{{ e.cursos.length }}</td>
+              <td>
+                <div class="progreso-container">
+                  <span class="progreso-percentage">{{ e.progreso }}%</span>
+                  <div class="barra-progreso">
+                    <div class="progreso" [style.width.%]="e.progreso"></div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+} @else {
+  <div class="panel"><p>Cargando estudiantes…</p></div>
+}

@@ -1,0 +1,82 @@
+<header>
+  <div class="header-logo-title">
+    <h1 class="titulo-blanco">
+      <span class="panel-icon"><i class="fa-solid fa-clipboard-list"></i></span>Tareas
+    </h1>
+  </div>
+</header>
+
+<div class="container">
+  @if (!tareasLoading()) {
+    @if (tareas().length === 0) {
+      <div class="panel">
+        <h2><span class="panel-icon"><i class="fa-solid fa-folder-open"></i></span> Tareas / Actividades</h2>
+        <p>No tienes cursos asignados, por lo tanto no hay tareas para mostrar.</p>
+      </div>
+    }
+    @for (tarea of tareas(); track tarea.id) {
+      <div class="panel">
+        <h2>
+          <span class="panel-icon"><i class="fa-solid fa-folder-open"></i></span>
+          <span>{{ tarea.titulo }}</span>
+        </h2>
+
+        <div class="sub-panel">
+          <p>
+            <strong>Módulo:</strong>
+            <span>{{ tarea.modulo || 'N/A' }}</span>
+            &nbsp;|&nbsp;
+            <strong>Lección:</strong>
+            <span>{{ tarea.leccion || 'N/A' }}</span>
+          </p>
+          <p>
+            <strong>Fecha:</strong> <span>{{ tarea.fechaCreacion || 'N/A' }}</span>
+            &nbsp;|&nbsp;
+            <strong>Fecha entrega:</strong> <span>{{ tarea.fechaVencimiento }}</span>
+          </p>
+
+          @if (tarea.entregas && tarea.entregas.length > 0) {
+            <table class="tabla-progreso">
+              <thead>
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Estado</th>
+                  <th>Calificación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entrega of tarea.entregas; track entrega.id) {
+                  <tr>
+                    <td>{{ entrega.estudianteNombre }} {{ entrega.estudianteApellido || '' }}</td>
+                    <td>{{ entrega.estado }}</td>
+                    <td>{{ entrega.calificacion }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        value="APROBADO"
+                        [disabled]="isCalificando(entrega.id)"
+                        (click)="calificar(entrega.id, 'APROBADO')"
+                      >Aprobar</button>
+                      <button
+                        type="button"
+                        value="NO_APROBADO"
+                        style="margin-left: 0.5rem;"
+                        [disabled]="isCalificando(entrega.id)"
+                        (click)="calificar(entrega.id, 'NO_APROBADO')"
+                      >No aprobar</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <p>No hay entregas registradas para esta tarea.</p>
+          }
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="panel"><p>Cargando tareas…</p></div>
+  }
+</div>

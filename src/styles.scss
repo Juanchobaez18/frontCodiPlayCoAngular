@@ -40,4 +40,21 @@ body {
   margin: 0;
   height: 100%;
 }
+
+/**
+ * Panel docente (`DocenteLayoutComponent`): Angular Material deja `body` en superficie clara
+ * mientras `stylespanel.css` usa texto claro → todo parece “pantalla vacía”.
+ * La clase `docente-panel-active` se añade/retira desde el componente.
+ */
+body.docente-panel-active {
+  background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+  color: #e6eef8;
+  min-height: 100%;
+}
+
+body.docente-panel-active:not(.dark-mode),
+body.docente-panel-active.light-theme {
+  background: linear-gradient(135deg, #f8fafc 0%, #ede9fe 45%, #e0f2fe 100%);
+  color: #1e1b4b;
+}
 /* You can add global styles to this file, and also import other style files */

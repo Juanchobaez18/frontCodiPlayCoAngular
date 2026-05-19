@@ -1,0 +1,22 @@
+@import '../shared-styles.scss';
+
+.sub-panel {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 4px;
+  border-left: 3px solid #667eea;
+  margin-bottom: 1rem;
+
+  p {
+    margin: 0.5rem 0;
+    color: #555;
+
+    strong {
+      color: #333;
+    }
+
+    span {
+      color: #666;
+    }
+  }
+}
