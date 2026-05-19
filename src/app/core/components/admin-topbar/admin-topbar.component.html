@@ -1,0 +1,39 @@
+<header class="admin-topbar sticky top-0 z-30 border-b border-muted/10 bg-card px-4 py-3 lg:px-8">
+  <div class="flex flex-wrap items-center justify-end gap-3">
+    <label
+      class="admin-theme-switch"
+      [attr.aria-checked]="isDark ? 'true' : 'false'"
+      role="switch"
+    >
+      <input
+        type="checkbox"
+        class="sr-only"
+        [checked]="isDark"
+        (change)="darkModeToggle.emit()"
+        aria-label="Alternar tema claro u oscuro"
+      />
+      <span class="admin-theme-switch__track">
+        @if (isDark) {
+          <lucide-icon [img]="iSun" [size]="14" />
+        } @else {
+          <lucide-icon [img]="iMoon" [size]="14" />
+        }
+      </span>
+    </label>
+
+    <a routerLink="/users" class="admin-topbar-btn">Módulos</a>
+
+    <div class="admin-user-chip">
+      <div class="admin-user-chip__avatar" aria-hidden="true">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <p class="truncate font-dmsans text-sm font-semibold text-foreground">{{ userName }}</p>
+        <p class="truncate font-dmsans text-xs text-muted">{{ userRole }}</p>
+      </div>
+    </div>
+  </div>
+</header>

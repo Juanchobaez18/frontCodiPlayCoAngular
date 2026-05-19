@@ -52,10 +52,6 @@ mat-sidenav-content {
   margin-right: 0.5rem;
 }
 
-body.light-theme .nav-tab--inline {
-  border-color: rgba(0, 0, 0, 0.15);
-}
-
 .checkbox-inline {
   display: flex;
   align-items: center;
@@ -205,7 +201,7 @@ body.light-theme .nav-tab--inline {
   margin-top: 0.5rem;
 }
 
-body.light-theme .user-edit-dialog {
+body:not(.dark) .user-edit-dialog {
   background: #fff;
   color: #1a1a1a;
 
@@ -215,4 +211,9 @@ body.light-theme .user-edit-dialog {
     color: #1a1a1a;
     border-color: rgba(0, 0, 0, 0.15);
   }
+}
+
+:host .app-admin-root .form-wrapper,
+:host .app-admin-root .form-container {
+  background: transparent;
 }

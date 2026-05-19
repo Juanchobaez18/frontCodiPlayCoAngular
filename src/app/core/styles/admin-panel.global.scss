@@ -1,0 +1,702 @@
+/* Estilos globales del panel admin — deben ser globales para aplicar en componentes hijos */
+
+.app-admin-root {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+
+.app-admin-root .admin-sidebar {
+  background: linear-gradient(180deg, #ede9f6 0%, #e0d8f0 50%, #d5cce8 100%);
+  border-color: rgb(139 92 246 / 0.12);
+  color: #3b1f7a;
+}
+
+@media (min-width: 1024px) {
+  .app-admin-root .admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    width: 5rem;
+    min-height: 100vh;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-right: 1px solid rgb(139 92 246 / 0.08);
+    border-radius: 0 1.75rem 1.75rem 0;
+    transition:
+      width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.32s ease,
+      border-radius 0.32s ease;
+  }
+
+  .app-admin-root .admin-sidebar:hover {
+    width: 270px;
+    border-radius: 0 2rem 2rem 0;
+    box-shadow:
+      6px 0 40px rgb(139 92 246 / 0.12),
+      0 0 60px rgb(139 92 246 / 0.05);
+  }
+
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar__label {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+  }
+
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar-brand__name,
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar-user__greeting,
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar-user__name,
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar-user__email {
+    display: none;
+  }
+
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar-user {
+    display: none;
+  }
+
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar-desktop-head {
+    padding: 0 0.65rem 1.25rem;
+  }
+
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar-brand {
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 1.25rem;
+  }
+
+  .app-admin-root .admin-sidebar:not(:hover) .admin-nav-link {
+    justify-content: center;
+    gap: 0;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar-desktop-head + nav {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+
+  .app-admin-root .admin-sidebar:hover .admin-sidebar__label {
+    max-width: 12rem;
+    opacity: 1;
+    transition: opacity 0.2s ease 0.06s;
+  }
+
+  .app-admin-root .admin-sidebar:hover .admin-sidebar-brand__name,
+  .app-admin-root .admin-sidebar:hover .admin-sidebar-user__greeting,
+  .app-admin-root .admin-sidebar:hover .admin-sidebar-user__name,
+  .app-admin-root .admin-sidebar:hover .admin-sidebar-user__email {
+    display: block;
+  }
+
+  .app-admin-root .admin-sidebar:hover .admin-sidebar-user {
+    display: flex;
+  }
+
+  .app-admin-root .admin-main-column {
+    padding-left: 5rem;
+  }
+
+  .app-admin-root .admin-sidebar:not(:hover) .admin-sidebar-footer {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+}
+
+/* Pantallas táctiles sin hover: sidebar siempre expandido */
+@media (min-width: 1024px) and (hover: none) {
+  .app-admin-root .admin-sidebar {
+    width: 260px;
+  }
+
+  .app-admin-root .admin-main-column {
+    padding-left: 260px;
+  }
+}
+
+.app-admin-root .admin-sidebar-desktop-head {
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0 1.5rem 1.75rem;
+  text-align: center;
+}
+
+.app-admin-root .admin-sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.app-admin-root .admin-sidebar-brand__icon {
+  display: flex;
+  flex-shrink: 0;
+  height: 2.75rem;
+  width: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%);
+  font-family: Outfit, 'DM Sans', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  box-shadow: 0 4px 16px rgb(124 58 237 / 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-admin-root .admin-sidebar-brand__icon:hover {
+  transform: scale(1.08) rotate(-3deg);
+  box-shadow: 0 6px 24px rgb(139 92 246 / 0.4);
+}
+
+.app-admin-root .admin-sidebar-brand__name {
+  font-family: Outfit, 'DM Sans', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #3b1f7a;
+  letter-spacing: -0.02em;
+}
+
+.app-admin-root .admin-sidebar-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+}
+
+.app-admin-root .admin-sidebar-user__avatar {
+  display: flex;
+  flex-shrink: 0;
+  height: 5rem;
+  width: 5rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  border-radius: 1.25rem;
+  border: 2px solid rgb(139 92 246 / 0.25);
+  background: linear-gradient(145deg, #7c3aed, #8b5cf6);
+  font-family: Outfit, 'DM Sans', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 8px 24px rgb(124 58 237 / 0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.app-admin-root .admin-sidebar-user__avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 32px rgb(139 92 246 / 0.35);
+}
+
+.app-admin-root .admin-sidebar-user__greeting {
+  margin: 0 0 0.2rem;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #7c6a9a;
+  line-height: 1.4;
+}
+
+.app-admin-root .admin-sidebar-user__name {
+  margin: 0 0 0.35rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: Outfit, 'DM Sans', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2e1065;
+  line-height: 1.3;
+}
+
+.app-admin-root .admin-sidebar-user__email {
+  margin: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: #7c6a9a;
+  line-height: 1.4;
+}
+
+.app-admin-root.dark .admin-sidebar-user__avatar {
+  border-color: rgb(129 140 248 / 0.3);
+  background: linear-gradient(145deg, #1e1b4b, #312e81);
+  color: #c7d2fe;
+}
+
+.app-admin-root.dark .admin-sidebar-user__greeting {
+  color: rgb(199 210 254 / 0.5);
+}
+
+.app-admin-root.dark .admin-sidebar-user__email {
+  color: rgb(199 210 254 / 0.45);
+}
+
+.app-admin-root .admin-main-content {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.app-admin-root .admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.app-admin-root .admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b5b8a;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+  position: relative;
+}
+
+.app-admin-root .admin-nav-link:hover {
+  background: rgb(139 92 246 / 0.1);
+  color: #3b1f7a;
+  transform: translateX(4px);
+}
+
+.app-admin-root .admin-nav-link--active {
+  background: rgb(139 92 246 / 0.15) !important;
+  color: #7c3aed !important;
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgb(139 92 246 / 0.1);
+}
+
+.app-admin-root .admin-nav-link--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, #7c3aed, #8b5cf6);
+  box-shadow: 0 0 8px rgb(124 58 237 / 0.4);
+}
+
+.app-admin-root .admin-topbar {
+  background: var(--card);
+  border-bottom: 1px solid rgb(100 116 139 / 0.1);
+}
+
+.app-admin-root .admin-topbar-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(100 116 139 / 0.2);
+  background: var(--card);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.app-admin-root .admin-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(100 116 139 / 0.15);
+  background: var(--card);
+}
+
+.app-admin-root .admin-user-chip__avatar {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: rgb(91 124 250 / 0.15);
+  color: var(--secondary);
+}
+
+.app-admin-root .admin-user-chip__avatar svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.app-admin-root .admin-theme-switch__track {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgb(100 116 139 / 0.15);
+  background: var(--card);
+  cursor: pointer;
+}
+
+/* Hero banner */
+.app-admin-root .admin-hero-card {
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 40%, #7c3aed 70%, #8b5cf6 100%);
+  padding: 2rem;
+  box-shadow: 0 12px 40px rgb(124 58 237 / 0.25);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-admin-root .admin-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(196 181 253 / 0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.app-admin-root .admin-hero-card__title {
+  margin: 0;
+  font-family: Outfit, 'DM Sans', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: #e0e7ff;
+}
+
+.app-admin-root .admin-hero-card__subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+  color: rgb(199 210 254 / 0.75);
+}
+
+.app-admin-root .admin-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.app-admin-root .admin-hero-stat {
+  min-width: 10rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.18);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.2);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.app-admin-root .admin-hero-stat:hover {
+  background: rgb(255 255 255 / 0.28);
+  transform: translateY(-2px);
+}
+
+.app-admin-root .admin-hero-stat__label {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgb(255 255 255 / 0.8);
+}
+
+.app-admin-root .admin-hero-stat__value {
+  margin: 0.25rem 0 0;
+  font-family: Outfit, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Métricas */
+.app-admin-root .admin-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .app-admin-root .admin-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .app-admin-root .admin-metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.app-admin-root .admin-metric-card {
+  display: block;
+  padding: 1.25rem;
+  border-radius: 1.15rem;
+  background: #ffffff;
+  border: 1px solid rgb(139 92 246 / 0.08);
+  box-shadow: 0 2px 12px rgb(124 58 237 / 0.06);
+  text-decoration: none;
+  color: var(--foreground);
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-admin-root .admin-metric-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 0 1.15rem 0 50%;
+  background: rgb(139 92 246 / 0.04);
+  pointer-events: none;
+}
+
+.app-admin-root a.admin-metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgb(124 58 237 / 0.12);
+}
+
+.app-admin-root .admin-metric-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.app-admin-root .admin-metric-card__icon {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.85rem;
+}
+
+.app-admin-root .admin-metric-card__icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke: currentColor;
+  fill: none;
+}
+
+.app-admin-root .admin-metric-card__icon--blue {
+  background: rgb(124 58 237 / 0.1);
+  color: #7c3aed;
+}
+
+.app-admin-root .admin-metric-card__icon--purple {
+  background: rgb(139 92 246 / 0.1);
+  color: #8b5cf6;
+}
+
+.app-admin-root .admin-metric-card__icon--green {
+  background: rgb(16 185 129 / 0.1);
+  color: #10b981;
+}
+
+.app-admin-root .admin-metric-card__icon--orange {
+  background: rgb(249 115 22 / 0.1);
+  color: #f97316;
+}
+
+.app-admin-root .admin-metric-card__value {
+  margin: 1rem 0 0.25rem;
+  font-family: Outfit, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.app-admin-root .admin-metric-card__label {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.app-admin-root .admin-mini-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 3rem;
+  margin-top: 1rem;
+}
+
+.app-admin-root .admin-mini-chart__bar {
+  flex: 1;
+  border-radius: 5px 5px 0 0;
+  background: #7c3aed;
+  min-height: 4px;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.app-admin-root .admin-metric-card:hover .admin-mini-chart__bar {
+  opacity: 1;
+}
+
+.app-admin-root .admin-mini-chart--purple .admin-mini-chart__bar {
+  background: #8b5cf6;
+}
+
+.app-admin-root .admin-mini-chart--green .admin-mini-chart__bar {
+  background: #10b981;
+}
+
+.app-admin-root .admin-mini-chart--orange .admin-mini-chart__bar {
+  background: #f97316;
+}
+
+/* Acciones rápidas */
+.app-admin-root .admin-quick-actions__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  font-family: Outfit, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.app-admin-root .admin-quick-actions__title i {
+  color: #7c3aed;
+}
+
+.app-admin-root .admin-quick-actions__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .app-admin-root .admin-quick-actions__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.app-admin-root .admin-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.75rem 1rem;
+  border-radius: 1.15rem;
+  background: #ffffff;
+  border: 1px solid rgb(139 92 246 / 0.08);
+  box-shadow: 0 2px 12px rgb(124 58 237 / 0.06);
+  text-decoration: none;
+  color: var(--foreground);
+  font-weight: 500;
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.app-admin-root .admin-action-card::before {
+  display: none;
+}
+
+.app-admin-root .admin-action-card i {
+  font-size: 1.75rem;
+  color: #7c3aed;
+  transition: transform 0.2s ease;
+}
+
+.app-admin-root .admin-action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgb(124 58 237 / 0.12);
+}
+
+.app-admin-root .admin-action-card:hover i {
+  transform: scale(1.1);
+}
+
+/* Formularios / listados internos */
+.app-admin-root .page-main-title {
+  font-family: Outfit, 'DM Sans', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0 0 0.35rem;
+}
+
+.app-admin-root .page-subtitle {
+  color: var(--muted);
+  margin: 0;
+}
+
+.app-admin-root .glass-card,
+.app-admin-root .course-card {
+  background-color: var(--card);
+  color: var(--foreground);
+  border-radius: var(--radius-card);
+  border: 1px solid rgb(107 114 128 / 0.14);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem;
+}
+
+.app-admin-root .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: var(--secondary);
+  color: #fff;
+  text-decoration: none;
+}
+
+.app-admin-root .search-input,
+.app-admin-root .registration-form input,
+.app-admin-root .registration-form select,
+.app-admin-root .registration-form textarea,
+.app-admin-root .course-form input,
+.app-admin-root .course-form select,
+.app-admin-root .course-form textarea {
+  background: var(--card);
+  color: var(--foreground);
+  border: 1px solid rgb(107 114 128 / 0.25);
+  border-radius: 0.65rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.app-admin-root .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

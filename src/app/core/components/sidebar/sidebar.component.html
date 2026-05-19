@@ -1,0 +1,97 @@
+<aside
+  sidebar
+  class="admin-sidebar fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center border-t border-muted/15 bg-card px-2 shadow-sm lg:left-0 lg:right-auto lg:top-0 lg:h-screen lg:flex-col lg:items-stretch lg:border-r lg:border-t-0 lg:px-0 lg:py-6 lg:shadow-none"
+  aria-label="Menú principal"
+>
+  <!-- Móvil: logo compacto en barra inferior -->
+  <div class="flex shrink-0 items-center gap-3 px-3 lg:hidden">
+    <div class="admin-sidebar-brand__icon flex h-10 w-10 shrink-0 items-center justify-center" aria-hidden="true">
+      $
+    </div>
+    <div class="min-w-0">
+      <p class="truncate font-outfit text-base font-bold text-foreground">{{ brandTitle }}</p>
+    </div>
+  </div>
+
+  <!-- Escritorio: logo + perfil centrado (como imagen de referencia) -->
+  <div class="admin-sidebar-desktop-head hidden shrink-0 lg:flex">
+    <div class="admin-sidebar-brand">
+      <div class="admin-sidebar-brand__icon" aria-hidden="true">$</div>
+      <span class="admin-sidebar-brand__name">{{ brandTitle }}</span>
+    </div>
+
+    @if (userName) {
+      <div class="admin-sidebar-user" aria-label="Usuario conectado">
+        <div class="admin-sidebar-user__avatar" aria-hidden="true">{{ userInitial }}</div>
+        <p class="admin-sidebar-user__greeting">Hola,</p>
+        <p class="admin-sidebar-user__name">{{ userName }}</p>
+        @if (userEmail) {
+          <p class="admin-sidebar-user__email" [title]="userEmail">{{ userEmail }}</p>
+        }
+      </div>
+    }
+  </div>
+
+  <nav
+    class="flex flex-1 items-center justify-around gap-0.5 lg:flex-col lg:items-stretch lg:justify-start lg:gap-1 lg:px-3"
+    aria-label="Navegación del panel"
+  >
+    <a
+      routerLink="/admin/dashboard"
+      routerLinkActive="admin-nav-link--active"
+      [routerLinkActiveOptions]="{ exact: false }"
+      class="admin-nav-link"
+      title="Dashboard"
+    >
+      <lucide-icon [img]="iDash" [size]="18" class="shrink-0 stroke-[2]" />
+      <span class="admin-sidebar__label hidden lg:inline">Dashboard</span>
+    </a>
+    <a
+      routerLink="/admin/usuarios"
+      routerLinkActive="admin-nav-link--active"
+      class="admin-nav-link"
+      title="Usuarios"
+    >
+      <lucide-icon [img]="iUsers" [size]="18" class="shrink-0 stroke-[2]" />
+      <span class="admin-sidebar__label hidden lg:inline">Usuarios</span>
+    </a>
+    <a
+      routerLink="/admin/docentes"
+      routerLinkActive="admin-nav-link--active"
+      class="admin-nav-link"
+      title="Registrar Docentes"
+    >
+      <lucide-icon [img]="iTeach" [size]="18" class="shrink-0 stroke-[2]" />
+      <span class="admin-sidebar__label hidden lg:inline">Registrar Docentes</span>
+    </a>
+    <a
+      routerLink="/admin/cursos"
+      routerLinkActive="admin-nav-link--active"
+      class="admin-nav-link"
+      title="Cursos"
+    >
+      <lucide-icon [img]="iCourses" [size]="18" class="shrink-0 stroke-[2]" />
+      <span class="admin-sidebar__label hidden lg:inline">Cursos</span>
+    </a>
+    <a
+      routerLink="/admin/mensajes"
+      routerLinkActive="admin-nav-link--active"
+      class="admin-nav-link"
+      title="Mensajes"
+    >
+      <lucide-icon [img]="iMsg" [size]="18" class="shrink-0 stroke-[2]" />
+      <span class="admin-sidebar__label hidden lg:inline">Mensajes</span>
+    </a>
+  </nav>
+
+  <div class="admin-sidebar-footer hidden shrink-0 px-3 pb-2 lg:block lg:mt-auto">
+    <button
+      type="button"
+      class="admin-nav-link w-full border-0 bg-transparent"
+      (click)="logout.emit()"
+    >
+      <lucide-icon [img]="iLogOut" [size]="18" class="shrink-0 stroke-[2]" />
+      <span class="admin-sidebar__label">Cerrar sesión</span>
+    </button>
+  </div>
+</aside>
