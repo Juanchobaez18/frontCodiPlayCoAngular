@@ -1,0 +1,27 @@
+<article
+  class="animate-card-enter flex h-full flex-col border border-muted/10 bg-card p-6 shadow-sm rounded-card"
+  style="animation-delay: 200ms"
+>
+  <div class="flex items-center justify-between">
+    <h2 class="font-outfit text-lg font-bold text-foreground">Últimas actividades</h2>
+  </div>
+
+  <ul class="mt-5 space-y-4">
+    @for (it of items; track it.id) {
+      <li class="flex gap-3">
+        <div
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary/15 font-dmsans text-sm font-semibold text-secondary"
+        >
+          {{ it.initial }}
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="truncate font-dmsans text-sm text-foreground">
+            <span class="font-semibold">{{ it.name }}</span>
+            {{ it.action }}
+          </p>
+          <p class="mt-0.5 font-dmsans text-xs text-muted">{{ it.timeLabel }}</p>
+        </div>
+      </li>
+    }
+  </ul>
+</article>

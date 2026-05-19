@@ -1,0 +1,151 @@
+<div class="admin-dashboard space-y-6">
+  <section class="admin-hero-card">
+    <div class="admin-hero-card__content">
+      <h1 class="admin-hero-card__title">¡Bienvenido de nuevo! 👋</h1>
+      <p class="admin-hero-card__subtitle">Aquí está lo que está sucediendo en CodiPlayCo hoy</p>
+      <div class="admin-hero-stats">
+        <div class="admin-hero-stat">
+          <p class="admin-hero-stat__label">Estudiantes Activos</p>
+          <h3 class="admin-hero-stat__value">
+            <span>{{ loading ? '…' : estudiantesActivos() }}</span>
+          </h3>
+        </div>
+        <div class="admin-hero-stat">
+          <p class="admin-hero-stat__label">Tasa de Completación</p>
+          <h3 class="admin-hero-stat__value">87%</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-metrics-grid">
+    <a routerLink="/admin/usuarios" class="admin-metric-card admin-metric-card--blue">
+      <div class="admin-metric-card__head">
+        <div class="admin-metric-card__icon admin-metric-card__icon--blue">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          </svg>
+        </div>
+        <span class="admin-metric-card__trend" aria-hidden="true">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <polyline points="7 7 17 7 17 17"></polyline>
+          </svg>
+        </span>
+      </div>
+      <h3 class="admin-metric-card__value">
+        <span>{{ loading ? '…' : estudiantesActivos() }}</span>
+      </h3>
+      <p class="admin-metric-card__label">Estudiantes Activos</p>
+      <div class="admin-mini-chart" aria-hidden="true">
+        <div class="admin-mini-chart__bar" style="height: 40%"></div>
+        <div class="admin-mini-chart__bar" style="height: 60%"></div>
+        <div class="admin-mini-chart__bar" style="height: 45%"></div>
+        <div class="admin-mini-chart__bar" style="height: 80%"></div>
+        <div class="admin-mini-chart__bar" style="height: 55%"></div>
+        <div class="admin-mini-chart__bar" style="height: 90%"></div>
+        <div class="admin-mini-chart__bar" style="height: 70%"></div>
+      </div>
+    </a>
+
+    <a routerLink="/admin/cursos" class="admin-metric-card admin-metric-card--purple">
+      <div class="admin-metric-card__head">
+        <div class="admin-metric-card__icon admin-metric-card__icon--purple">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+        </div>
+        <span class="admin-metric-card__trend" aria-hidden="true"></span>
+      </div>
+      <h3 class="admin-metric-card__value">
+        <span>{{ loading ? '…' : cursosActivos() }}</span>
+      </h3>
+      <p class="admin-metric-card__label">Cursos Activos</p>
+      <div class="admin-mini-chart admin-mini-chart--purple" aria-hidden="true">
+        <div class="admin-mini-chart__bar" style="height: 50%"></div>
+        <div class="admin-mini-chart__bar" style="height: 65%"></div>
+        <div class="admin-mini-chart__bar" style="height: 55%"></div>
+        <div class="admin-mini-chart__bar" style="height: 75%"></div>
+        <div class="admin-mini-chart__bar" style="height: 60%"></div>
+        <div class="admin-mini-chart__bar" style="height: 85%"></div>
+        <div class="admin-mini-chart__bar" style="height: 72%"></div>
+      </div>
+    </a>
+
+    <a routerLink="/admin/docentes" class="admin-metric-card admin-metric-card--green">
+      <div class="admin-metric-card__head">
+        <div class="admin-metric-card__icon admin-metric-card__icon--green">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+          </svg>
+        </div>
+        <span class="admin-metric-card__trend" aria-hidden="true"></span>
+      </div>
+      <h3 class="admin-metric-card__value">
+        <span>{{ loading ? '…' : docentesActivos() }}</span>
+      </h3>
+      <p class="admin-metric-card__label">Docentes Activos</p>
+      <div class="admin-mini-chart admin-mini-chart--green" aria-hidden="true">
+        <div class="admin-mini-chart__bar" style="height: 45%"></div>
+        <div class="admin-mini-chart__bar" style="height: 58%"></div>
+        <div class="admin-mini-chart__bar" style="height: 50%"></div>
+        <div class="admin-mini-chart__bar" style="height: 70%"></div>
+        <div class="admin-mini-chart__bar" style="height: 62%"></div>
+        <div class="admin-mini-chart__bar" style="height: 88%"></div>
+        <div class="admin-mini-chart__bar" style="height: 75%"></div>
+      </div>
+    </a>
+
+    <div class="admin-metric-card admin-metric-card--orange">
+      <div class="admin-metric-card__head">
+        <div class="admin-metric-card__icon admin-metric-card__icon--orange">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+        </div>
+        <span class="admin-metric-card__trend" aria-hidden="true"></span>
+      </div>
+      <h3 class="admin-metric-card__value">87%</h3>
+      <p class="admin-metric-card__label">Tasa de Éxito</p>
+      <div class="admin-mini-chart admin-mini-chart--orange" aria-hidden="true">
+        <div class="admin-mini-chart__bar" style="height: 48%"></div>
+        <div class="admin-mini-chart__bar" style="height: 62%"></div>
+        <div class="admin-mini-chart__bar" style="height: 55%"></div>
+        <div class="admin-mini-chart__bar" style="height: 78%"></div>
+        <div class="admin-mini-chart__bar" style="height: 65%"></div>
+        <div class="admin-mini-chart__bar" style="height: 92%"></div>
+        <div class="admin-mini-chart__bar" style="height: 80%"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-quick-actions">
+    <h3 class="admin-quick-actions__title">
+      <i class="fas fa-bolt" aria-hidden="true"></i>
+      Acciones Rápidas
+    </h3>
+    <div class="admin-quick-actions__grid">
+      <a routerLink="/admin/usuarios" class="admin-action-card">
+        <i class="fas fa-user-edit" aria-hidden="true"></i>
+        <span>Editar Usuarios</span>
+      </a>
+      <a routerLink="/admin/docentes" class="admin-action-card">
+        <i class="fas fa-user-plus" aria-hidden="true"></i>
+        <span>Registrar Docente</span>
+      </a>
+      <a routerLink="/admin/cursos" class="admin-action-card">
+        <i class="fas fa-list-alt" aria-hidden="true"></i>
+        <span>Ver Cursos</span>
+      </a>
+    </div>
+  </section>
+
+  @if (error) {
+    <p class="font-dmsans text-sm text-secondary">{{ error }}</p>
+  }
+</div>

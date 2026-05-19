@@ -1,0 +1,42 @@
+<article
+  class="animate-card-enter flex h-full flex-col border border-muted/10 bg-card p-6 shadow-sm rounded-card"
+  style="animation-delay: 160ms"
+>
+  <div class="flex items-center justify-between">
+    <h2 class="font-outfit text-lg font-bold text-foreground">Tasa de éxito</h2>
+  </div>
+
+  <div class="relative mx-auto mt-2 flex w-full max-w-[240px] flex-1 items-center justify-center py-4">
+    <div class="relative h-44 w-44">
+      <canvas
+        baseChart
+        [type]="doughnutType"
+        [data]="doughnutData"
+        [options]="doughnutOptions"
+      ></canvas>
+      <div
+        class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center"
+      >
+        <span class="font-outfit text-4xl font-extrabold text-foreground">{{ percentage }}%</span>
+        <span class="font-dmsans text-xs font-semibold uppercase tracking-wider text-muted"
+          >Done</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <ul class="mt-2 space-y-2 font-dmsans text-xs text-muted">
+    <li class="flex items-center gap-2">
+      <span class="h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden="true"></span>
+      Completado
+    </li>
+    <li class="flex items-center gap-2">
+      <span class="h-2 w-2 shrink-0 rounded-full bg-secondary" aria-hidden="true"></span>
+      En progreso
+    </li>
+    <li class="flex items-center gap-2">
+      <span class="h-2 w-2 shrink-0 rounded-full bg-muted" aria-hidden="true"></span>
+      Pendiente
+    </li>
+  </ul>
+</article>

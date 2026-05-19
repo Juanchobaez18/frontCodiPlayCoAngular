@@ -1,9 +1,8 @@
-import { Component, Injectable, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AsyncPipe, CommonModule, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -17,74 +16,20 @@ import {
   userHasAdminPanelAccess,
   userIsProtectedSystemAdmin,
 } from '../../config/admin-panel-access.config';
-
-const API_BASE = 'http://localhost:3000';
-
-export interface DashboardStats {
-  totalEstudiantes: number;
-  totalCursosActivos: number;
-  totalDocentesActivos: number;
-}
-
-export interface ManagedUser {
-  id: number;
-  name: string;
-  lastName: string;
-  email: string;
-  isActive: boolean;
-  docType?: string;
-  docNumber?: string;
-  roles: { id: number; name: string }[];
-}
-
-export interface AdminRoleOption {
-  id: number;
-  name: string;
-}
-
-export interface StudentEmailRow {
-  id: number;
-  email: string;
-  name: string;
-  lastName: string;
-}
-
-export interface CursoRow {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  dificultad: string;
-  precio: number;
-  estado: boolean;
-  docente?: { id: number; user?: { name: string; lastName: string } };
-}
-
-export interface DocenteRow {
-  id: number;
-  ultimoAcceso: string;
-  pagos: number;
-  user: { id: number; name: string; lastName: string; email: string };
-}
-
-export interface RegisterDocentePayload {
-  name: string;
-  lastName: string;
-  email: string;
-  password: string;
-  docType: string;
-  docNumber: string;
-  avatar?: string;
-}
-
-export interface CursoPayload {
-  nombre: string;
-  descripcion: string;
-  dificultad: string;
-  precio: number;
-  estado?: boolean;
-  docenteId: number;
-  estudiantesIds?: number[];
-}
+import {
+  AdminApiService,
+  type AdminRoleOption,
+  type CursoPayload,
+  type CursoRow,
+  type DashboardStats,
+  type DocenteRow,
+  type ManagedUser,
+  type StudentEmailRow,
+} from '../../services/admin-api.service';
+import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
+import { AdminTopbarComponent } from '../admin-topbar/admin-topbar.component';
+import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
 
 export type AdminPanelView =
   | 'dashboard'
@@ -96,84 +41,7 @@ export type AdminPanelView =
   | 'mensajes'
   | null;
 
-@Injectable({ providedIn: 'root' })
-export class AdminApiService {
-  private readonly http = inject(HttpClient);
-  private readonly adminUrl = `${API_BASE}/admin`;
-
-  getDashboardStats() {
-    return this.http.get<DashboardStats>(`${this.adminUrl}/dashboard/stats`);
-  }
-
-  getManagedUsers() {
-    return this.http.get<ManagedUser[]>(`${this.adminUrl}/users/managed`);
-  }
-
-  deleteUser(id: number) {
-    return this.http.delete<{ ok: boolean }>(`${this.adminUrl}/users/${id}`);
-  }
-
-  updateManagedUser(id: number, body: Record<string, unknown>) {
-    return this.http.put<ManagedUser>(`${this.adminUrl}/users/${id}`, body);
-  }
-
-  toggleUserActive(id: number) {
-    return this.http.patch<ManagedUser>(`${this.adminUrl}/users/${id}/toggle-active`, {});
-  }
-
-  getRolesForForms() {
-    return this.http.get<AdminRoleOption[]>(`${this.adminUrl}/form/roles`);
-  }
-
-  getStudentEmails() {
-    return this.http.get<StudentEmailRow[]>(`${this.adminUrl}/students/emails`);
-  }
-
-  sendBulkMail(emails: string[], message: string, subject?: string) {
-    return this.http.post<{ ok: boolean; sent: number }>(`${this.adminUrl}/messages/bulk`, {
-      emails,
-      message,
-      subject,
-    });
-  }
-
-  registerDocente(payload: RegisterDocentePayload) {
-    return this.http.post<{ ok: boolean }>(`${this.adminUrl}/docentes`, payload);
-  }
-
-  getDocentes() {
-    return this.http.get<DocenteRow[]>(`${this.adminUrl}/docentes`);
-  }
-
-  getCursos() {
-    return this.http.get<CursoRow[]>(`${this.adminUrl}/cursos`);
-  }
-
-  getCurso(id: number) {
-    return this.http.get<
-      CursoRow & { docente?: { id: number }; estudiantes?: { id: number }[] }
-    >(`${this.adminUrl}/cursos/${id}`);
-  }
-
-  createCurso(payload: CursoPayload) {
-    return this.http.post<CursoRow>(`${this.adminUrl}/cursos`, {
-      ...payload,
-      estudiantesIds: payload.estudiantesIds ?? [],
-    });
-  }
-
-  updateCurso(id: number, payload: Partial<CursoPayload>) {
-    return this.http.put<CursoRow>(`${this.adminUrl}/cursos/${id}`, payload);
-  }
-
-  deleteCurso(id: number) {
-    return this.http.delete(`${this.adminUrl}/cursos/${id}`);
-  }
-
-  toggleCurso(id: number) {
-    return this.http.patch<CursoRow>(`${this.adminUrl}/cursos/${id}/toggle-active`, {});
-  }
-}
+const THEME_STORAGE_KEY = 'codipayco-admin-theme';
 
 @Component({
   selector: 'app-admin-layout',
@@ -192,6 +60,10 @@ export class AdminApiService {
     CommonModule,
     FormsModule,
     NgTemplateOutlet,
+    DashboardLayoutComponent,
+    SidebarComponent,
+    AdminTopbarComponent,
+    AdminDashboardComponent,
   ],
 })
 export class AdminLayoutComponent implements OnInit {
@@ -210,11 +82,28 @@ export class AdminLayoutComponent implements OnInit {
     shareReplay(),
   );
 
-  /** Shell CodiPlayCo (ex admin-codiplay-shell) */
-  isMenuOpen = false;
-  isLightTheme = false;
+  readonly isDarkMode = signal(false);
 
   private lastAdminDataKey = '';
+
+  readonly userDisplayName = computed(() => {
+    const u = this.authService.currentUser();
+    const full = [u?.name, u?.lastName]
+      .map((s) => s?.trim())
+      .filter((s): s is string => !!s && s.length > 0)
+      .join(' ');
+    return full.length > 0 ? full : 'Admin';
+  });
+
+  readonly userRoleLabel = computed(() => {
+    const role = this.authService.currentUser()?.roles?.[0]?.name;
+    return role?.trim() || 'Administrador';
+  });
+
+  readonly userEmail = computed(() => {
+    const email = this.authService.currentUser()?.email?.trim();
+    return email && email.length > 0 ? email : '';
+  });
 
   /** Dashboard */
   dashboardStats: DashboardStats | null = null;
@@ -300,17 +189,23 @@ export class AdminLayoutComponent implements OnInit {
         this.isAdminShell.set(path.startsWith('/admin'));
         this.applyAdminRoute(e.urlAfterRedirects);
         if (path.startsWith('/admin')) {
-          this.isMenuOpen = false;
+          /* noop */
         }
       });
   }
 
   ngOnInit(): void {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      this.isLightTheme = true;
-      document.body.classList.add('light-theme');
-    }
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    const prefersDark = saved === 'dark';
+    this.isDarkMode.set(prefersDark);
+    document.body.classList.toggle('dark', prefersDark);
+  }
+
+  toggleDarkMode(): void {
+    const next = !this.isDarkMode();
+    this.isDarkMode.set(next);
+    document.body.classList.toggle('dark', next);
+    localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light');
   }
 
   logout(): void {
@@ -319,45 +214,6 @@ export class AdminLayoutComponent implements OnInit {
 
   isAppAdmin(): boolean {
     return userHasAdminPanelAccess(this.authService.currentUser());
-  }
-
-  navActive(tab: 'dash' | 'users' | 'teach' | 'courses' | 'msg'): boolean {
-    const url = this.router.url.split('?')[0];
-    switch (tab) {
-      case 'dash':
-        return url === '/admin' || url === '/admin/' || url.endsWith('/admin/dashboard');
-      case 'users':
-        return url.includes('/admin/usuarios');
-      case 'teach':
-        return url.includes('/admin/docentes');
-      case 'courses':
-        return url.includes('/admin/cursos');
-      case 'msg':
-        return url.includes('/admin/mensajes');
-      default:
-        return false;
-    }
-  }
-
-  toggleMenu(event: MouseEvent): void {
-    event.stopPropagation();
-    this.isMenuOpen = !this.isMenuOpen;
-  }
-
-  closeMenu(): void {
-    this.isMenuOpen = false;
-  }
-
-  toggleTheme(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.isLightTheme = input.checked;
-    if (this.isLightTheme) {
-      document.body.classList.add('light-theme');
-      localStorage.setItem('theme', 'light');
-    } else {
-      document.body.classList.remove('light-theme');
-      localStorage.setItem('theme', 'dark');
-    }
   }
 
   private parseAdminPath(path: string): AdminPanelView {
