@@ -1,0 +1,181 @@
+// Dashboard component styles
+.panel-bienvenida-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.panel-bienvenida-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-bienvenida-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.panel-bienvenida-foto {
+  font-size: 4rem;
+  color: white;
+}
+
+.panel-bienvenida-texto {
+  color: white;
+
+  .panel-bienvenida-saludo {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  .panel-bienvenida-titulo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+  }
+
+  .panel-bienvenida-nombre {
+    margin: 0.25rem 0;
+    font-size: 1.1rem;
+  }
+}
+
+.panel-bienvenida-botimg {
+  img {
+    max-height: 200px;
+    opacity: 0.9;
+  }
+}
+
+.bot-animado {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.panel-bienvenida-datos {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .datos-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    color: #333;
+
+    i {
+      color: #667eea;
+    }
+  }
+
+  .datos-docente-wrapper {
+    margin-bottom: 1.5rem;
+
+    .datos-docente-linea {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+
+      .dato-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .dato-label {
+          font-weight: 600;
+          color: #667eea;
+          font-size: 0.85rem;
+        }
+
+        .dato-valor {
+          color: #333;
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  .subir-imagen {
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+
+    .subir-imagen-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #333;
+
+      i {
+        color: #667eea;
+      }
+    }
+
+    .subir-imagen-form {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+
+      .input-file-label {
+        position: relative;
+        cursor: pointer;
+
+        input[type="file"] {
+          display: none;
+        }
+
+        .input-file-text {
+          padding: 0.5rem 1rem;
+          background: #f5f5f5;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #efefef;
+            border-color: #667eea;
+          }
+        }
+      }
+
+      .btn-subir {
+        padding: 0.5rem 1.5rem;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover:not(:disabled) {
+          background: #764ba2;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

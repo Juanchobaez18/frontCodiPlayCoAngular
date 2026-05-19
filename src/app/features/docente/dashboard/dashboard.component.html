@@ -1,0 +1,91 @@
+<div class="panel-bienvenida-bg">
+  <div class="panel-bienvenida-content">
+    <div class="panel-bienvenida-left">
+      <div class="panel-bienvenida-foto">
+        @if (filePreview()) {
+          <img [src]="filePreview()" alt="Foto docente" class="avatar-preview" />
+        } @else {
+          <i class="fa-solid fa-user-circle"></i>
+        }
+      </div>
+      <div class="panel-bienvenida-texto">
+        <p class="panel-bienvenida-saludo">¡Hola de nuevo!</p>
+        <div class="panel-bienvenida-titulo">Bienvenido a CodiPlayCo</div>
+        <div class="panel-bienvenida-nombre">
+          {{ authService.currentUser()?.name }} {{ authService.currentUser()?.lastName }}
+        </div>
+        <div class="panel-bienvenida-nombre">{{ authService.currentUser()?.roles?.[0]?.name || "Usuario" }}</div>
+      </div>
+    </div>
+    <div class="panel-bienvenida-botimg bot-animado">
+      <img src="/assetsDocente/img/02baebb1-f087-4bee-bbdf-0af4f44d7563-removebg-preview.png" alt="Docente Bot" />
+    </div>
+  </div>
+</div>
+
+<div class="panel-bienvenida-datos">
+  <h3 class="datos-titulo">
+    <i class="fa-solid fa-user"></i>
+    <span>Datos del Usuario</span>
+  </h3>
+
+  @if (uploadError()) {
+    <div class="error-message">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>{{ uploadError() }}</span>
+    </div>
+  }
+
+  @if (uploadMessage()) {
+    <div class="no-data-message" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); margin-bottom: 16px;">
+      <i class="fa-solid fa-check-circle"></i> <span>{{ uploadMessage() }}</span>
+    </div>
+  }
+
+  @if (authService.currentUser()) {
+    <div class="datos-docente-wrapper">
+      <div class="datos-docente-linea">
+        <div class="dato-item">
+          <span class="dato-label">NOMBRE:</span>
+          <span class="dato-valor">
+            {{ authService.currentUser()?.name }} {{ authService.currentUser()?.lastName }}
+          </span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">EMAIL:</span>
+          <span class="dato-valor">{{ authService.currentUser()?.email }}</span>
+        </div>
+        <div class="dato-item">
+          <span class="dato-label">DOCUMENTO:</span>
+          <span class="dato-valor">{{ authService.currentUser()?.docType }} {{ authService.currentUser()?.docNumber }}</span>
+        </div>
+      </div>
+
+      <!-- SUBIR IMAGEN -->
+      <div class="subir-imagen">
+        <label class="subir-imagen-label">
+          <i class="fa-solid fa-upload"></i>
+          <span>Subir imagen de perfil:</span>
+        </label>
+        <div class="subir-imagen-form">
+          <label class="input-file-label">
+            <input type="file" name="foto" accept="image/*" class="input-file" (change)="onFileSelected($event)" />
+            <span class="input-file-text">{{ selectedFileName() }}</span>
+          </label>
+          <button type="button" class="btn-subir" [disabled]="!selectedFile() || uploading()" (click)="uploadPhoto()">
+            @if (uploading()) {
+              <i class="fa-solid fa-spinner fa-spin"></i> Subiendo...
+            } @else {
+              Subir
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Mensaje si no hay datos del usuario -->
+    <div class="no-data-message">
+      <i class="fa-solid fa-info-circle"></i> <span>Para ver los datos, inicie sesión con un email válido</span>
+    </div>
+  }
+</div>

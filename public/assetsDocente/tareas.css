@@ -1,0 +1,426 @@
+/* ================================================
+   ESTILOS PARA LA PÁGINA TAREAS
+   Estilos modernos con glassmorphism y gradientes
+   ================================================ */
+
+/* Variables CSS */
+:root {
+  --docente-azul: #22d3ee;
+  --docente-morado: #a855f7;
+  --docente-verde: #10b981;
+  --docente-amarillo: #f59e0b;
+  --docente-rojo: #ef4444;
+  --bg-dark: #0f172a;
+  --bg-light: #f8fafc;
+  --text-dark: #e6eef8;
+  --text-light: #1e293b;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+/* Reset y Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+  color: var(--text-dark);
+  position: relative;
+}
+
+/* Animated Background Elements */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+body::before {
+  top: 80px;
+  left: -80px;
+  width: 400px;
+  height: 400px;
+  background: rgba(168, 85, 247, 0.2);
+  animation-delay: 0s;
+}
+
+body::after {
+  bottom: 80px;
+  right: -80px;
+  width: 400px;
+  height: 400px;
+  background: rgba(34, 211, 238, 0.2);
+  animation-delay: 2s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.1);
+  }
+}
+
+/* Main Layout */
+.main-layout {
+  margin-left: 0;
+  min-height: 100vh;
+  padding: 2rem;
+  position: relative;
+  z-index: 10;
+  padding-top: 100px;
+}
+
+/* Header */
+header {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.titulo-blanco {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--docente-azul), var(--docente-morado));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.panel-icon {
+  font-size: 1.5rem;
+  color: var(--docente-morado);
+}
+
+/* Container */
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Panel de Cursos */
+.panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.panel:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(138, 43, 226, 0.2);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.panel h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-dark);
+}
+
+.panel h2 .panel-icon {
+  font-size: 1.5rem;
+  color: var(--docente-morado);
+}
+
+.panel p {
+  color: rgba(230, 238, 248, 0.8);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Sub Panel (Actividades) */
+.sub-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.sub-panel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(168, 85, 247, 0.2);
+  transform: translateX(4px);
+}
+
+.sub-panel p {
+  margin-bottom: 0.75rem;
+  color: rgba(230, 238, 248, 0.9);
+  font-size: 0.95rem;
+}
+
+.sub-panel strong {
+  color: var(--docente-azul);
+  font-weight: 600;
+}
+
+/* Tablas de Progreso */
+.tabla-progreso {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tabla-progreso thead {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(168, 85, 247, 0.2));
+}
+
+.tabla-progreso th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tabla-progreso td {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dark);
+}
+
+.tabla-progreso tbody tr {
+  transition: all 0.2s ease;
+}
+
+.tabla-progreso tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Botones de Acción */
+.tabla-progreso form {
+  display: inline-block;
+  margin: 0;
+}
+
+.tabla-progreso button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tabla-progreso button[value="APROBADO"] {
+  background: linear-gradient(135deg, var(--docente-verde), #34d399);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.tabla-progreso button[value="APROBADO"]:hover {
+  background: linear-gradient(135deg, #34d399, var(--docente-verde));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.tabla-progreso button[value="NO_APROBADO"] {
+  background: linear-gradient(135deg, var(--docente-rojo), #f87171);
+  color: white;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.tabla-progreso button[value="NO_APROBADO"]:hover {
+  background: linear-gradient(135deg, #f87171, var(--docente-rojo));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.tabla-progreso button:active {
+  transform: translateY(0);
+}
+
+/* Estados de Entrega */
+.tabla-progreso td:nth-child(2) {
+  font-weight: 500;
+}
+
+/* Modo Claro */
+body:not(.dark-mode) {
+  background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 20%, #e9d5ff 40%, #fce7f3 60%, #fef3c7 80%, #dbeafe 100%);
+  color: var(--text-light);
+}
+
+body:not(.dark-mode) header {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(138, 43, 226, 0.1);
+}
+
+body:not(.dark-mode) .titulo-blanco {
+  background: linear-gradient(135deg, #8A2BE2 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body:not(.dark-mode) .panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(138, 43, 226, 0.1);
+  color: var(--text-light);
+}
+
+body:not(.dark-mode) .panel h2 {
+  color: #2d3748;
+}
+
+body:not(.dark-mode) .panel p {
+  color: #4a5568;
+}
+
+body:not(.dark-mode) .sub-panel {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(138, 43, 226, 0.1);
+}
+
+body:not(.dark-mode) .sub-panel p {
+  color: #4a5568;
+}
+
+body:not(.dark-mode) .sub-panel strong {
+  color: #8A2BE2;
+}
+
+body:not(.dark-mode) .sub-panel:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(138, 43, 226, 0.2);
+}
+
+body:not(.dark-mode) .tabla-progreso {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+body:not(.dark-mode) .tabla-progreso thead {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(118, 75, 162, 0.1));
+}
+
+body:not(.dark-mode) .tabla-progreso th {
+  color: #2d3748;
+}
+
+body:not(.dark-mode) .tabla-progreso td {
+  color: #4a5568;
+  border-top-color: rgba(138, 43, 226, 0.1);
+}
+
+body:not(.dark-mode) .tabla-progreso tbody tr:hover {
+  background: rgba(138, 43, 226, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-layout {
+    padding: 1rem;
+    padding-top: 90px;
+  }
+
+  header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 1.5rem;
+  }
+
+  .panel {
+    padding: 1.5rem;
+  }
+
+  .sub-panel {
+    padding: 1rem;
+  }
+
+  .tabla-progreso {
+    font-size: 0.875rem;
+  }
+
+  .tabla-progreso th,
+  .tabla-progreso td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .tabla-progreso button {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-layout {
+    padding: 1rem;
+    padding-top: 80px;
+  }
+
+  .panel {
+    padding: 1.5rem;
+  }
+
+  .sub-panel {
+    padding: 1rem;
+  }
+
+  .tabla-progreso {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .tabla-progreso form {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .tabla-progreso button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+

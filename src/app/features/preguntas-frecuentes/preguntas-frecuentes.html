@@ -1,0 +1,94 @@
+<body class="bg-gray-900 text-white">
+	<header id="main-header" class="glass-navbar animate-navbar-slideIn">
+		<div class="header-container">
+			<a routerLink="/" class="logo-wrapper">
+				<img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
+			</a>
+
+			<nav id="main-nav" class="nav-wrapper">
+				<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
+				<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
+				<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
+			</nav>
+
+			<div class="actions-wrapper">
+				<div id="nav-toggle" class="hamburger">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+				<a class="btn-launch" href="/auth">
+					<span>Iniciar Sesión</span>
+				</a>
+			</div>
+		</div>
+	</header>
+
+	<div id="mobile-menu" class="mobile-menu">
+		<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
+		<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
+		<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
+	</div>
+
+	<main class="container mx-auto px-4 py-10">
+		<h1 class="faq-title">Preguntas Frecuentes</h1>
+		<div class="faq-grid">
+			<div class="faq-card">
+				<h3 class="faq-card-title">¿Qué es CodiPlay?</h3>
+				<p class="faq-card-preview">CodiPlay es una plataforma interactiva diseñada para que niños y niñas entre 7 y 12 años aprendan a programar de manera divertida.</p>
+			</div>
+
+			<div class="faq-card">
+				<h3 class="faq-card-title">¿Qué cursos ofrecen?</h3>
+				<p class="faq-card-preview">HTML, CSS, JavaScript, Scratch y más cursos interactivos diseñados para cada nivel.</p>
+			</div>
+
+			<div class="faq-card">
+				<h3 class="faq-card-title">¿Cómo funciona la plataforma?</h3>
+				<p class="faq-card-preview">Los niños acceden a su cuenta desde cualquier dispositivo con internet y pueden avanzar a su ritmo.</p>
+			</div>
+
+			<div class="faq-card">
+				<h3 class="faq-card-title">¿Necesito conocimientos previos?</h3>
+				<p class="faq-card-preview">No. Nuestros cursos están pensados para niños sin experiencia previa en programación.</p>
+			</div>
+
+			<div class="faq-card">
+				<h3 class="faq-card-title">¿Cuánto cuesta CodiPlay?</h3>
+				<p class="faq-card-preview">Ofrecemos una clase gratuita y un plan premium desde $39.900 COP mensual.</p>
+			</div>
+
+			<div class="faq-card">
+				<h3 class="faq-card-title">¿Es seguro para los niños?</h3>
+				<p class="faq-card-preview">Sí. Contamos con medidas de seguridad y supervisión de contenido para proteger a los niños.</p>
+			</div>
+		</div>
+	</main>
+
+	<footer>
+		<p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+	</footer>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const navToggle = document.getElementById('nav-toggle');
+			const mobileMenu = document.getElementById('mobile-menu');
+
+			if (navToggle && mobileMenu) {
+				navToggle.addEventListener('click', () => {
+					navToggle.classList.toggle('active');
+					mobileMenu.classList.toggle('active');
+					document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
+				});
+
+				mobileMenu.addEventListener('click', (e) => {
+					if (e.target.closest('.nav-link-glass')) {
+						navToggle.classList.remove('active');
+						mobileMenu.classList.remove('active');
+						document.body.style.overflow = 'auto';
+					}
+				});
+			}
+		});
+	</script>
+</body>

@@ -14,6 +14,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { LoginInterface } from '../interfaces/login';
 import { Auth } from '../../core/services/auth';
 import { userHasAdminPanelAccess } from '../../core/config/admin-panel-access.config';
+import { userHasDocentePanelAccess } from '../../core/config/docente-panel-access.config';
  
 @Component({
   selector: 'app-log-in',
@@ -60,8 +61,12 @@ export class LogIn {
       next: (res) => {
         console.log('Usuario autenticado:', res);
         this.loading = false;
+        
+        // Redireccionar según el rol del usuario
         if (userHasAdminPanelAccess(res.user)) {
           this.router.navigate(['/admin/dashboard']);
+        } else if (userHasDocentePanelAccess(res.user)) {
+          this.router.navigate(['/docente/dashboard']);
         } else {
           this.router.navigate(['/users']);
         }

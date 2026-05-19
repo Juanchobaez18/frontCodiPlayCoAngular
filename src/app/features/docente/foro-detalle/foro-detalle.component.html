@@ -1,0 +1,51 @@
+<header>
+  <div class="header-logo-title">
+    <h1 class="titulo-blanco"><span class="panel-icon"><i class="fa-solid fa-comments"></i></span>Detalle del foro</h1>
+  </div>
+</header>
+
+<div class="container">
+  @if (loading()) {
+    <div class="panel"><p>Cargando foro…</p></div>
+  } @else if (error()) {
+    <div class="panel">
+      <div class="error-message">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        <span>{{ error() }}</span>
+      </div>
+    </div>
+  } @else if (foro(); as foroData) {
+    <div class="panel">
+      <a class="btn-volver" style="margin-bottom:1rem; display:inline-block; cursor:pointer;" (click)="volverAForos()">
+        <i class="fa-solid fa-arrow-left"></i> Volver a foros
+      </a>
+
+      <h2>
+        <span class="panel-icon"><i class="fa-solid fa-comment-dots"></i></span>
+        <span>{{ foroData.titulo }}</span>
+      </h2>
+      <p>{{ foroData.descripcion }}</p>
+      <small>{{ foroData.fechaCreacion }}</small>
+    </div>
+
+    <div class="panel">
+      <h3><span class="panel-icon"><i class="fa-solid fa-comments"></i></span> Respuestas de estudiantes</h3>
+
+      @if (respuestas().length === 0) {
+        <p>No hay respuestas todavía en este foro.</p>
+      } @else {
+        <ul class="lista-foros">
+          @for (resp of respuestas(); track resp.id) {
+            <li class="foro-item">
+              <div class="foro-header">
+                <strong>{{ resp.estudianteNombre }} {{ resp.estudianteApellido || '' }}</strong>
+                <small>{{ resp.fechaCreacion }}</small>
+              </div>
+              <p>{{ resp.mensaje }}</p>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+</div>
