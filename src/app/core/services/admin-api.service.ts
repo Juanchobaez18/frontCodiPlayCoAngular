@@ -7,6 +7,7 @@ export interface DashboardStats {
   totalEstudiantes: number;
   totalCursosActivos: number;
   totalDocentesActivos: number;
+  totalEstudiantesActivos?: number;
 }
 
 export interface ManagedUser {

@@ -1,0 +1,1184 @@
+/* ═══════════════════════════════════════════════
+   DOCENTE LAYOUT — estilos propios
+   Hereda variables y base de admin-panel.global
+   ═══════════════════════════════════════════════ */
+
+/* ── 0. BOTONES ──────────────────────────────── */
+
+/* Primario */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.62rem 1.35rem; border-radius: 9999px;
+  border: none; cursor: pointer; font-weight: 700; font-size: 0.88rem;
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  color: #fff; text-decoration: none;
+  box-shadow: 0 4px 16px rgb(124 58 237 / 0.38);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+    box-shadow: 0 8px 24px rgb(124 58 237 / 0.48);
+  }
+  &:active  { transform: translateY(0); filter: brightness(0.97); }
+  &:disabled { opacity: 0.52; cursor: not-allowed; transform: none; box-shadow: none; }
+}
+
+/* Base */
+.action-btn {
+  display: inline-flex; align-items: center; gap: 0.38rem;
+  padding: 0.44rem 1rem; border-radius: 9999px;
+  border: 1.5px solid transparent; cursor: pointer;
+  font-size: 0.81rem; font-weight: 700; letter-spacing: 0.02em;
+  text-decoration: none; white-space: nowrap;
+  transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.18s ease, border-color 0.18s ease;
+
+  &:hover  { transform: translateY(-2px); }
+  &:active { transform: translateY(0); box-shadow: none !important; }
+  &:disabled { opacity: 0.48; cursor: not-allowed; transform: none !important; }
+}
+
+/* Editar / aprobar — índigo */
+.edit-btn {
+  background: rgb(99 102 241 / 0.12);
+  border-color: rgb(99 102 241 / 0.32);
+  color: #4f46e5;
+
+  &:hover {
+    background: rgb(99 102 241 / 0.2);
+    border-color: #6366f1;
+    box-shadow: 0 4px 14px rgb(99 102 241 / 0.28);
+    color: #4338ca;
+  }
+}
+
+/* Eliminar / no aprobar — rojo */
+.delete-btn {
+  background: rgb(239 68 68 / 0.09);
+  border-color: rgb(239 68 68 / 0.28);
+  color: #dc2626;
+
+  &:hover {
+    background: rgb(239 68 68 / 0.18);
+    border-color: #f87171;
+    box-shadow: 0 4px 14px rgb(239 68 68 / 0.25);
+    color: #b91c1c;
+  }
+}
+
+/* Toggle / cancelar — pizarra */
+.toggle-btn {
+  background: rgb(100 116 139 / 0.1);
+  border-color: rgb(100 116 139 / 0.26);
+  color: #475569;
+
+  &:hover {
+    background: rgb(100 116 139 / 0.18);
+    border-color: #94a3b8;
+    box-shadow: 0 4px 14px rgb(100 116 139 / 0.18);
+    color: #1e293b;
+  }
+}
+
+/* ── 1. STATS DEL DASHBOARD ─────────────────── */
+.docente-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
+}
+
+.docente-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.4rem;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1px solid rgb(124 58 237 / 0.1);
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 0.05),
+    0 8px 24px rgb(124 58 237 / 0.07);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+
+  /* barra acento inferior */
+  &::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #7c3aed, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 6px 20px rgb(0 0 0 / 0.08),
+      0 16px 36px rgb(124 58 237 / 0.13);
+    border-color: rgb(124 58 237 / 0.22);
+
+    &::after { opacity: 1; }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover &__icon { transform: scale(1.1) rotate(-5deg); }
+
+  &__icon--purple {
+    background: linear-gradient(135deg, rgb(124 58 237 / 0.15), rgb(139 92 246 / 0.08));
+    color: #7c3aed;
+    box-shadow: 0 4px 12px rgb(124 58 237 / 0.15);
+  }
+
+  &__icon--green {
+    background: linear-gradient(135deg, rgb(16 185 129 / 0.15), rgb(52 211 153 / 0.08));
+    color: #10b981;
+    box-shadow: 0 4px 12px rgb(16 185 129 / 0.15);
+  }
+
+  &__icon--blue {
+    background: linear-gradient(135deg, rgb(59 130 246 / 0.15), rgb(96 165 250 / 0.08));
+    color: #3b82f6;
+    box-shadow: 0 4px 12px rgb(59 130 246 / 0.15);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__value {
+    font-family: Outfit, 'DM Sans', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--foreground);
+    margin: 0;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin: 0;
+  }
+}
+
+/* ── 2. ACCESOS RÁPIDOS DEL DASHBOARD ────────── */
+.docente-quick-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+
+  @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 480px) { grid-template-columns: 1fr 1fr; }
+}
+
+.docente-quick-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1px solid rgb(124 58 237 / 0.1);
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 0.05),
+    0 8px 24px rgb(124 58 237 / 0.07);
+  text-decoration: none;
+  color: var(--foreground);
+  font-size: 0.88rem;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+
+  /* Acento inferior */
+  &::before {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #7c3aed, #db2777);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow:
+      0 8px 24px rgb(0 0 0 / 0.08),
+      0 20px 44px rgb(124 58 237 / 0.15);
+    border-color: rgb(124 58 237 / 0.22);
+
+    &::before { opacity: 1; }
+    .docente-quick-card__icon {
+      background: linear-gradient(135deg, rgb(124 58 237 / 0.2), rgb(139 92 246 / 0.13));
+      transform: scale(1.12) rotate(-6deg);
+      box-shadow: 0 6px 18px rgb(124 58 237 / 0.22);
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgb(124 58 237 / 0.12), rgb(139 92 246 / 0.07));
+    color: #7c3aed;
+    font-size: 1.3rem;
+    transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+  }
+}
+
+/* ── 3. BANNER DE BIENVENIDA ─────────────────── */
+.docente-welcome-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  position: relative;
+  min-height: 148px;
+  box-shadow:
+    0 8px 32px rgb(124 58 237 / 0.28),
+    0 2px 8px rgb(0 0 0 / 0.08);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+  /* Orbe decorativo */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: 120px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(255 255 255 / 0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 14px 44px rgb(124 58 237 / 0.34),
+      0 4px 12px rgb(0 0 0 / 0.1);
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    z-index: 1;
+  }
+
+  &__avatar {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.22);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.15);
+    transition: transform 0.25s ease;
+
+    &:hover { transform: scale(1.05) rotate(-2deg); }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  &__greeting {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.72);
+    margin: 0;
+    letter-spacing: 0.04em;
+  }
+
+  &__title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: white;
+    margin: 0;
+    line-height: 1.2;
+    font-family: Outfit, 'DM Sans', sans-serif;
+  }
+
+  &__name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0.1rem 0 0;
+  }
+
+  &__role {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+  }
+
+  &__mascot {
+    width: 116px;
+    height: 116px;
+    flex-shrink: 0;
+    z-index: 1;
+    filter: drop-shadow(0 6px 18px rgb(0 0 0 / 0.25));
+    transition: transform 0.3s ease;
+
+    &:hover { transform: scale(1.06) rotate(3deg); }
+  }
+}
+
+.docente-mascot-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── 2. CARD "DATOS DEL DOCENTE" ─────────────── */
+.docente-datos-card {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgb(124 58 237 / 0.14);
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 0.05),
+    0 8px 28px rgb(124 58 237 / 0.08);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 4px 16px rgb(0 0 0 / 0.08),
+      0 16px 40px rgb(124 58 237 / 0.13);
+  }
+
+  &__header {
+    background: linear-gradient(135deg, rgb(124 58 237 / 0.07) 0%, rgb(219 39 119 / 0.04) 100%);
+    border-bottom: 1px solid rgb(124 58 237 / 0.1);
+    padding: 1.1rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  &__title {
+    font-size: 0.97rem;
+    font-weight: 700;
+    color: var(--foreground, #1e293b);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 1.1rem 1.75rem 0;
+
+    i { color: #7c3aed; font-size: 1.1rem; }
+  }
+
+  &__body {
+    padding: 1.25rem 1.75rem 1.5rem;
+  }
+}
+
+.docente-datos-alert { margin-bottom: 1rem; }
+
+.docente-datos-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 1rem 1.75rem 1.25rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.docente-datos-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+  cursor: default;
+
+  &:hover {
+    background: rgb(124 58 237 / 0.05);
+  }
+
+  &__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7c3aed;
+    opacity: 0.75;
+  }
+
+  &__value {
+    font-size: 0.97rem;
+    font-weight: 600;
+    color: var(--foreground, #1e293b);
+    margin: 0;
+    word-break: break-all;
+  }
+}
+
+.docente-datos-upload {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.9rem 1.75rem;
+  background: rgb(124 58 237 / 0.03);
+  border-top: 1px solid rgb(124 58 237 / 0.08);
+
+  &__link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.85rem;
+    color: #7c3aed;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 500;
+    transition: color 0.15s ease, opacity 0.15s ease;
+
+    &:hover { color: #6d28d9; opacity: 0.85; }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+}
+
+/* ── 3. ENCABEZADO DE SECCIÓN ────────────────── */
+.docente-section-header {
+  margin-bottom: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  .page-main-title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+
+    i { color: #7c3aed; }
+  }
+}
+
+/* ── 4. CARD GENÉRICA DE PANEL (tareas / foros) ─ */
+.docente-panel-bloque {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgb(124 58 237 / 0.12);
+  margin-bottom: 1.5rem;
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 0.05),
+    0 8px 28px rgb(124 58 237 / 0.07);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 6px 20px rgb(0 0 0 / 0.08),
+      0 16px 40px rgb(124 58 237 / 0.12);
+    border-color: rgb(124 58 237 / 0.22);
+  }
+
+  &__titulo {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--foreground, #1e293b);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, rgb(124 58 237 / 0.06) 0%, transparent 100%);
+    border-bottom: 1px solid rgb(124 58 237 / 0.09);
+
+    .panel-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgb(124 58 237 / 0.14), rgb(139 92 246 / 0.08));
+      color: #7c3aed;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+  }
+
+  &:hover &__titulo .panel-icon {
+    background: linear-gradient(135deg, rgb(124 58 237 / 0.22), rgb(139 92 246 / 0.14));
+    transform: scale(1.08);
+  }
+
+  /* Contenido interno con padding */
+  > *:not(&__titulo) {
+    padding: 1.25rem 1.5rem;
+  }
+
+  /* Ajuste cuando viene .docente-foro-form directo */
+  .docente-foro-form {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+/* ── 5. SUB-PANEL (wrapper de tabla en tareas) ── */
+.docente-bloque-body {
+  padding: 1rem 1.5rem 1.25rem;
+}
+
+.docente-bloque-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 0.65rem 1rem;
+  background: rgb(124 58 237 / 0.04);
+  border-radius: 10px;
+  border: 1px solid rgb(124 58 237 / 0.07);
+  font-size: 0.83rem;
+  color: var(--muted);
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    i { color: #7c3aed; opacity: 0.7; }
+    strong { color: var(--foreground); font-weight: 600; }
+  }
+}
+
+.docente-tabla-badge {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.18rem 0.6rem;
+  border-radius: 9999px;
+  background: rgb(124 58 237 / 0.1);
+  color: #7c3aed;
+  border: 1px solid rgb(124 58 237 / 0.18);
+  letter-spacing: 0.02em;
+}
+
+.docente-sub-panel {
+  background: rgb(124 58 237 / 0.03);
+  border: 1px solid rgb(124 58 237 / 0.08);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ── 6. TABLA DE PROGRESO / TAREAS ──────────── */
+.docente-tabla-progreso {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.87rem;
+  margin-top: 0.75rem;
+
+  thead tr {
+    background: linear-gradient(90deg, rgb(124 58 237 / 0.1), rgb(139 92 246 / 0.06));
+  }
+
+  th {
+    text-align: left;
+    padding: 0.65rem 0.9rem;
+    color: #7c3aed;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 2px solid rgb(124 58 237 / 0.18);
+
+    &:first-child { border-radius: 8px 0 0 0; }
+    &:last-child  { border-radius: 0 8px 0 0; }
+  }
+
+  td {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid rgb(124 58 237 / 0.06);
+    vertical-align: middle;
+    transition: background 0.15s ease;
+  }
+
+  tbody tr {
+    transition: background 0.15s ease;
+
+    &:hover td { background: rgb(124 58 237 / 0.04); }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.docente-tabla-empty {
+  text-align: center;
+  color: var(--muted, #64748b);
+  padding: 1.25rem !important;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.docente-tabla-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+/* ── 7. FORMULARIO FOROS ─────────────────────── */
+.docente-foro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #7c3aed;
+      opacity: 0.8;
+    }
+  }
+}
+
+.docente-foro-input {
+  width: 100%;
+  padding: 0.6rem 0.95rem;
+  border: 1.5px solid rgb(124 58 237 / 0.18);
+  border-radius: 10px;
+  background: rgb(124 58 237 / 0.03);
+  color: var(--foreground, #1e293b);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+  &:focus {
+    border-color: #7c3aed;
+    background: rgb(124 58 237 / 0.05);
+    box-shadow: 0 0 0 3px rgb(124 58 237 / 0.12);
+  }
+
+  &:hover:not(:focus) {
+    border-color: rgb(124 58 237 / 0.35);
+  }
+}
+
+textarea.docente-foro-input { resize: vertical; min-height: 80px; }
+
+.docente-foro-curso-bloque {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: rgb(124 58 237 / 0.03);
+  border: 1px solid rgb(124 58 237 / 0.07);
+  margin-bottom: 0.65rem;
+  transition: background 0.2s ease, border-color 0.2s ease;
+
+  &:last-child { margin-bottom: 0; }
+
+  &:hover {
+    background: rgb(124 58 237 / 0.06);
+    border-color: rgb(124 58 237 / 0.14);
+  }
+
+  h3 {
+    font-size: 0.93rem;
+    font-weight: 600;
+    color: var(--foreground, #1e293b);
+    margin: 0;
+  }
+}
+
+/* ── 8. MENSAJES — TABS ──────────────────────── */
+.docente-mensajes-panel-header {
+  /* El padding viene del bloque padre */
+}
+
+.docente-tabs-mensajes {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+  background: rgb(124 58 237 / 0.05);
+  padding: 0.35rem;
+  border-radius: 12px;
+  border: 1px solid rgb(124 58 237 / 0.08);
+}
+
+.docente-tab-btn {
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted, #64748b);
+  font-size: 0.84rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+
+  i { font-size: 0.82rem; }
+
+  &:hover:not(.active) {
+    background: rgb(124 58 237 / 0.07);
+    color: #7c3aed;
+    border-color: rgb(124 58 237 / 0.12);
+  }
+
+  &.active {
+    background: var(--card, #fff);
+    border-color: rgb(124 58 237 / 0.18);
+    color: #7c3aed;
+    font-weight: 700;
+    box-shadow:
+      0 2px 8px rgb(124 58 237 / 0.12),
+      0 1px 3px rgb(0 0 0 / 0.06);
+  }
+}
+
+.docente-tab-content {
+  padding-top: 1.1rem;
+}
+
+/* ── 9. FORMULARIO DE MENSAJES ───────────────── */
+.docente-msg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #7c3aed;
+      opacity: 0.8;
+    }
+  }
+
+  .form-actions { display: flex; justify-content: flex-end; margin-top: 0.25rem; }
+}
+
+/* ── 10. ESTADO VACÍO EN MENSAJES ────────────── */
+.docente-no-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 3rem 1rem;
+  color: var(--muted, #64748b);
+  font-size: 0.9rem;
+  text-align: center;
+
+  i {
+    opacity: 0.22;
+    color: #7c3aed;
+  }
+
+  p { margin: 0; }
+}
+
+/* ── 11. WARNING DE DATOS ────────────────────── */
+.docente-datos-warning {
+  margin: 0 1.75rem 1.25rem;
+  padding: 0.65rem 1rem;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i { color: #f59e0b; flex-shrink: 0; }
+}
+
+/* ── 12. TARJETAS "MIS CURSOS" ───────────────── */
+.courses-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+
+  @media (min-width: 768px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1280px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.course-card {
+  border-radius: 18px;
+  border: 1px solid rgb(124 58 237 / 0.12);
+  overflow: hidden;
+  background: var(--card);
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 0.05),
+    0 8px 28px rgb(124 58 237 / 0.07);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 6px 20px rgb(0 0 0 / 0.09),
+      0 18px 44px rgb(124 58 237 / 0.14);
+    border-color: rgb(124 58 237 / 0.24);
+  }
+
+  /* Barra de acento superior */
+  &::before {
+    content: '';
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, #7c3aed, #db2777);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  &:hover::before { opacity: 1; }
+
+  .course-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1.25rem 1.25rem 0.75rem;
+  }
+
+  .course-icon {
+    flex-shrink: 0;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgb(124 58 237 / 0.13), rgb(139 92 246 / 0.07));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7c3aed;
+    font-size: 1rem;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  &:hover .course-icon {
+    background: linear-gradient(135deg, rgb(124 58 237 / 0.22), rgb(139 92 246 / 0.14));
+    transform: scale(1.08) rotate(-4deg);
+  }
+
+  .course-info {
+    flex: 1;
+    min-width: 0;
+
+    h4 {
+      margin: 0 0 0.25rem;
+      font-weight: 700;
+      font-size: 0.97rem;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+  }
+
+  .course-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .course-description {
+    padding: 0 1.25rem 0.75rem;
+
+    p {
+      margin: 0;
+      font-size: 0.84rem;
+      color: var(--muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  .course-details {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid rgb(124 58 237 / 0.07);
+    background: rgb(124 58 237 / 0.025);
+  }
+
+  .instructor-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  .instructor-info {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .instructor-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0 0 0.15rem;
+  }
+
+  .rating-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    i.star-filled { color: #f59e0b; font-size: 0.72rem; }
+    i.star-empty  { color: rgb(100 116 139 / 0.3); font-size: 0.72rem; }
+
+    .rating-text {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+  }
+
+  .course-meta {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+}
+
+/* ── 13. BADGES DE ESTADO (cursos) ───────────── */
+.course-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+
+  &.status-active {
+    background: rgb(16 185 129 / 0.12);
+    color: #059669;
+    border: 1px solid rgb(16 185 129 / 0.22);
+  }
+
+  &.status-inactive {
+    background: rgb(100 116 139 / 0.1);
+    color: var(--muted);
+    border: 1px solid rgb(100 116 139 / 0.18);
+  }
+}
+
+.price {
+  font-family: Outfit, 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #7c3aed;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — PANEL DOCENTE
+   ═══════════════════════════════════════════════ */
+
+/* ── Mobile (< 640px) ──────────────────────────── */
+@media (max-width: 639px) {
+
+  /* Welcome banner — stack vertical */
+  .docente-welcome-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem 1.25rem;
+    min-height: unset;
+    gap: 1rem;
+
+    &__mascot { display: none; }
+
+    &__left {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.9rem;
+    }
+
+    &__title { font-size: 1.25rem; }
+    &__avatar { width: 52px; height: 52px; font-size: 1.4rem; }
+  }
+
+  /* Stats — 1 columna */
+  .docente-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Datos card — paddings reducidos */
+  .docente-datos-row {
+    padding: 0.75rem 1rem 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  .docente-datos-card__title {
+    padding: 0.85rem 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  .docente-datos-upload {
+    padding: 0.85rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+
+    &__actions { width: 100%; justify-content: flex-end; }
+  }
+
+  /* Panel bloque — padding reducido */
+  .docente-panel-bloque {
+    > *:not(.docente-panel-bloque__titulo) {
+      padding: 1rem;
+    }
+
+    &__titulo { padding: 0.85rem 1rem; font-size: 0.88rem; }
+  }
+
+  .docente-bloque-body { padding: 0.85rem 1rem; }
+
+  .docente-bloque-meta {
+    gap: 0.75rem;
+    font-size: 0.78rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Tabla — scroll horizontal */
+  .docente-sub-panel {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .docente-tabla-progreso {
+    min-width: 520px;
+
+    th, td { padding: 0.5rem 0.65rem; font-size: 0.8rem; }
+  }
+
+  .docente-tabla-actions {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  /* Tabs de mensajes */
+  .docente-tabs-mensajes {
+    gap: 0.25rem;
+  }
+  .docente-tab-btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.78rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Foros form */
+  .docente-foro-form { gap: 0.85rem; }
+
+  /* Títulos */
+  .page-main-title { font-size: 1.35rem !important; }
+  .docente-section-header { margin-bottom: 1.25rem; }
+}
+
+/* ── Tablet (640px – 767px) ────────────────────── */
+@media (min-width: 640px) and (max-width: 767px) {
+  .docente-welcome-banner {
+    padding: 1.75rem;
+    &__mascot { width: 88px; height: 88px; }
+    &__title { font-size: 1.35rem; }
+  }
+
+  .docente-datos-row { padding: 0.9rem 1.25rem 1.1rem; }
+
+  .docente-bloque-body { padding: 0.9rem 1.1rem; }
+
+  .docente-sub-panel { overflow-x: auto; }
+  .docente-tabla-progreso { min-width: 480px; }
+}
+
+/* ── Sin sidebar (< 1024px): quitar indent ─────── */
+@media (max-width: 1023px) {
+  .app-admin-root .admin-main-content {
+    padding-bottom: 5rem;
+  }
+}

@@ -11,15 +11,17 @@
           </h3>
         </div>
         <div class="admin-hero-stat">
-          <p class="admin-hero-stat__label">Tasa de Completación</p>
-          <h3 class="admin-hero-stat__value">87%</h3>
+          <p class="admin-hero-stat__label">Tasa de Éxito</p>
+          <h3 class="admin-hero-stat__value">
+            <span>{{ loading ? '…' : tasaExito() + '%' }}</span>
+          </h3>
         </div>
       </div>
     </div>
   </section>
 
   <section class="admin-metrics-grid">
-    <a routerLink="/admin/usuarios" class="admin-metric-card admin-metric-card--blue">
+    <div class="admin-metric-card admin-metric-card--blue">
       <div class="admin-metric-card__head">
         <div class="admin-metric-card__icon admin-metric-card__icon--blue">
           <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
@@ -48,9 +50,9 @@
         <div class="admin-mini-chart__bar" style="height: 90%"></div>
         <div class="admin-mini-chart__bar" style="height: 70%"></div>
       </div>
-    </a>
+    </div>
 
-    <a routerLink="/admin/cursos" class="admin-metric-card admin-metric-card--purple">
+    <div class="admin-metric-card admin-metric-card--purple">
       <div class="admin-metric-card__head">
         <div class="admin-metric-card__icon admin-metric-card__icon--purple">
           <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
@@ -73,9 +75,9 @@
         <div class="admin-mini-chart__bar" style="height: 85%"></div>
         <div class="admin-mini-chart__bar" style="height: 72%"></div>
       </div>
-    </a>
+    </div>
 
-    <a routerLink="/admin/docentes" class="admin-metric-card admin-metric-card--green">
+    <div class="admin-metric-card admin-metric-card--green">
       <div class="admin-metric-card__head">
         <div class="admin-metric-card__icon admin-metric-card__icon--green">
           <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
@@ -98,7 +100,7 @@
         <div class="admin-mini-chart__bar" style="height: 88%"></div>
         <div class="admin-mini-chart__bar" style="height: 75%"></div>
       </div>
-    </a>
+    </div>
 
     <div class="admin-metric-card admin-metric-card--orange">
       <div class="admin-metric-card__head">
@@ -110,16 +112,15 @@
         </div>
         <span class="admin-metric-card__trend" aria-hidden="true"></span>
       </div>
-      <h3 class="admin-metric-card__value">87%</h3>
+      <h3 class="admin-metric-card__value">
+        <span>{{ loading ? '…' : tasaExito() + '%' }}</span>
+      </h3>
       <p class="admin-metric-card__label">Tasa de Éxito</p>
-      <div class="admin-mini-chart admin-mini-chart--orange" aria-hidden="true">
-        <div class="admin-mini-chart__bar" style="height: 48%"></div>
-        <div class="admin-mini-chart__bar" style="height: 62%"></div>
-        <div class="admin-mini-chart__bar" style="height: 55%"></div>
-        <div class="admin-mini-chart__bar" style="height: 78%"></div>
-        <div class="admin-mini-chart__bar" style="height: 65%"></div>
-        <div class="admin-mini-chart__bar" style="height: 92%"></div>
-        <div class="admin-mini-chart__bar" style="height: 80%"></div>
+      <p class="admin-metric-card__sublabel">
+        {{ loading ? '' : (stats?.totalEstudiantesActivos ?? 0) + ' activos de ' + (stats?.totalEstudiantes ?? 0) + ' registrados' }}
+      </p>
+      <div class="admin-tasa-bar" aria-hidden="true">
+        <div class="admin-tasa-bar__fill" [style.width]="tasaExitoBarWidth()"></div>
       </div>
     </div>
   </section>

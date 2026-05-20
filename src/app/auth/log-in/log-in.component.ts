@@ -59,10 +59,17 @@ export class LogIn {
  
     this.authService.login(rawForm).subscribe({
       next: (res) => {
-        console.log('Usuario autenticado:', res);
         this.loading = false;
-        
-        // Redireccionar según el rol del usuario
+
+        // Si el backend permite el login pero el usuario está inactivo,
+        // cerramos sesión y mostramos el mensaje en la pantalla de login.
+        if (!res.user.isActive) {
+          this.authService.logout();
+          this.errorMessage =
+            'Tu cuenta está desactivada. Comunícate con el administrador para que reactive tu acceso.';
+          return;
+        }
+
         if (userHasAdminPanelAccess(res.user)) {
           this.router.navigate(['/admin/dashboard']);
         } else if (userHasDocentePanelAccess(res.user)) {
@@ -72,9 +79,11 @@ export class LogIn {
         }
       },
       error: (err) => {
-        this.loading      = false;
-        this.errorMessage = err?.error?.message ?? 'Correo o contraseña incorrectos.';
-        console.error('Error en login:', err);
+        this.loading = false;
+        const msg = err?.error?.message;
+        this.errorMessage = Array.isArray(msg)
+          ? msg.join(', ')
+          : (msg ?? 'Correo o contraseña incorrectos.');
       },
     });
   }

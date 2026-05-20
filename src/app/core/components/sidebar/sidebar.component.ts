@@ -7,6 +7,8 @@ import {
   BookOpen,
   Mail,
   LogOut,
+  Sun,
+  Moon,
 } from 'lucide-angular';
 import { AdminLucideIconsModule } from '../admin-lucide-icons.module';
 
@@ -21,7 +23,9 @@ export class SidebarComponent {
   @Input() brandSubtitle = 'Admin Dashboard';
   @Input() userName = '';
   @Input() userEmail = '';
+  @Input() isDark = false;
   @Output() logout = new EventEmitter<void>();
+  @Output() darkModeToggle = new EventEmitter<void>();
 
   get userInitial(): string {
     const trimmed = this.userName.trim();
@@ -35,4 +39,6 @@ export class SidebarComponent {
   protected readonly iCourses = BookOpen;
   protected readonly iMsg = Mail;
   protected readonly iLogOut = LogOut;
+  protected readonly iSun = Sun;
+  protected readonly iMoon = Moon;
 }

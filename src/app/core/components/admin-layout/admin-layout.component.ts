@@ -9,7 +9,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { filter, map, shareReplay } from 'rxjs/operators';
 import { Auth } from '../../services/auth';
 import {
@@ -28,7 +28,6 @@ import {
 } from '../../services/admin-api.service';
 import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
-import { AdminTopbarComponent } from '../admin-topbar/admin-topbar.component';
 import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
 
 export type AdminPanelView =
@@ -62,7 +61,6 @@ const THEME_STORAGE_KEY = 'codipayco-admin-theme';
     NgTemplateOutlet,
     DashboardLayoutComponent,
     SidebarComponent,
-    AdminTopbarComponent,
     AdminDashboardComponent,
   ],
 })
@@ -273,12 +271,31 @@ export class AdminLayoutComponent implements OnInit {
     }
   }
 
+  private isEstudianteUser(u: ManagedUser): boolean {
+    return (
+      u.roles?.some(
+        (r) =>
+          String(r.name).toUpperCase() === 'USUARIO' ||
+          String(r.name).toUpperCase() === 'ESTUDIANTE' ||
+          r.id === 3,
+      ) ?? false
+    );
+  }
+
   private loadDashboard(): void {
     this.dashboardLoading = true;
     this.dashboardError = null;
-    this.adminApi.getDashboardStats().subscribe({
-      next: (s) => {
-        this.dashboardStats = s;
+    forkJoin([this.adminApi.getDashboardStats(), this.adminApi.getManagedUsers()]).subscribe({
+      next: ([stats, users]) => {
+        const totalEstudiantes = users.filter((u) => this.isEstudianteUser(u)).length;
+        const totalEstudiantesActivos = users.filter(
+          (u) => this.isEstudianteUser(u) && u.isActive,
+        ).length;
+        this.dashboardStats = {
+          ...stats,
+          totalEstudiantes,
+          totalEstudiantesActivos,
+        };
         this.dashboardLoading = false;
       },
       error: () => {
