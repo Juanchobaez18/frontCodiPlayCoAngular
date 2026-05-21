@@ -1,0 +1,534 @@
+<div class="app-admin-root" [class.dark]="isDarkMode()">
+  <app-dashboard-layout>
+
+    <!-- Sidebar idéntico al admin, con rutas de docente -->
+    <aside
+      sidebar
+      class="admin-sidebar fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center border-t border-muted/15 bg-card px-2 shadow-sm lg:bottom-auto lg:right-auto lg:flex-col lg:items-stretch lg:border-0 lg:px-0 lg:py-5"
+      aria-label="Menú docente"
+    >
+      <!-- Móvil: logo compacto -->
+      <div class="flex shrink-0 items-center gap-3 px-3 lg:hidden">
+        <div class="admin-sidebar-brand__icon flex h-10 w-10 shrink-0 items-center justify-center" aria-hidden="true">
+          <img src="img/logo.png" alt="CodiPlayCo" class="admin-sidebar-logo" />
+        </div>
+        <p class="truncate font-outfit text-base font-bold text-foreground">CodiPlayCo</p>
+      </div>
+
+      <!-- Escritorio: logo + perfil -->
+      <div class="admin-sidebar-desktop-head hidden shrink-0 lg:flex">
+        <div class="admin-sidebar-brand">
+          <div class="admin-sidebar-brand__icon" aria-hidden="true">
+            <img src="img/logo.png" alt="CodiPlayCo" class="admin-sidebar-logo" />
+          </div>
+          <span class="admin-sidebar-brand__name">CodiPlayCo</span>
+        </div>
+        <div class="admin-sidebar-user" aria-label="Usuario conectado">
+          <div class="admin-sidebar-user__avatar" aria-hidden="true">{{ userInitial() }}</div>
+          <p class="admin-sidebar-user__greeting">Hola,</p>
+          <p class="admin-sidebar-user__name">{{ userDisplayName() }}</p>
+          @if (userEmail()) {
+            <p class="admin-sidebar-user__email" [title]="userEmail()">{{ userEmail() }}</p>
+          }
+        </div>
+      </div>
+
+      <nav
+        class="flex flex-1 items-center justify-around gap-0.5 lg:flex-col lg:items-stretch lg:justify-start lg:gap-1 lg:px-3"
+        aria-label="Navegación panel docente"
+      >
+        <a
+          routerLink="/docente/dashboard"
+          routerLinkActive="admin-nav-link--active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="admin-nav-link"
+          title="Dashboard"
+        >
+          <lucide-icon [img]="iDash" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Dashboard</span>
+        </a>
+        <a
+          routerLink="/docente/mis-cursos"
+          routerLinkActive="admin-nav-link--active"
+          class="admin-nav-link"
+          title="Mis Cursos"
+        >
+          <lucide-icon [img]="iCourses" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Mis Cursos</span>
+        </a>
+        <a
+          routerLink="/docente/tareas"
+          routerLinkActive="admin-nav-link--active"
+          class="admin-nav-link"
+          title="Tareas"
+        >
+          <lucide-icon [img]="iTareas" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Tareas</span>
+        </a>
+        <a
+          routerLink="/docente/foros"
+          routerLinkActive="admin-nav-link--active"
+          class="admin-nav-link"
+          title="Foros"
+        >
+          <lucide-icon [img]="iForos" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Foros</span>
+        </a>
+        <a
+          routerLink="/docente/mensajes"
+          routerLinkActive="admin-nav-link--active"
+          class="admin-nav-link"
+          title="Mensajes"
+        >
+          <lucide-icon [img]="iMensajes" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Mensajes</span>
+        </a>
+      </nav>
+
+      <div class="admin-sidebar-footer hidden shrink-0 px-3 pb-2 lg:block lg:mt-auto">
+        <button
+          type="button"
+          class="admin-nav-link w-full border-0 bg-transparent"
+          (click)="toggleDarkMode()"
+          [title]="isDarkMode() ? 'Modo claro' : 'Modo oscuro'"
+        >
+          <lucide-icon [img]="isDarkMode() ? iSun : iMoon" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label">{{ isDarkMode() ? 'Modo claro' : 'Modo oscuro' }}</span>
+        </button>
+        <button
+          type="button"
+          class="admin-nav-link w-full border-0 bg-transparent"
+          (click)="logout()"
+        >
+          <lucide-icon [img]="iLogOut" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label">Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="admin-main-content flex-1 px-4 pt-8 pb-6 lg:px-8 lg:pt-10">
+        @switch (docentePanelView()) {
+
+          @case ('dashboard') {
+            <div class="dashboard-content">
+
+              <!-- Banner de bienvenida -->
+              <div class="docente-welcome-banner">
+                <div class="docente-welcome-banner__left">
+                  <div class="docente-welcome-banner__avatar">{{ userInitial() }}</div>
+                  <div class="docente-welcome-banner__text">
+                    <p class="docente-welcome-banner__greeting">¡Hola de nuevo!</p>
+                    <h1 class="docente-welcome-banner__title">Bienvenido a CodiPlayCo</h1>
+                    <p class="docente-welcome-banner__name">{{ userDisplayName() }}</p>
+                    <p class="docente-welcome-banner__role">{{ userRoleLabel() }}</p>
+                  </div>
+                </div>
+                <div class="docente-welcome-banner__mascot" aria-hidden="true">
+                  <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" class="docente-mascot-svg">
+                    <rect x="25" y="40" width="70" height="60" rx="12" fill="#4ade80"/>
+                    <rect x="35" y="50" width="20" height="14" rx="4" fill="white"/>
+                    <rect x="65" y="50" width="20" height="14" rx="4" fill="white"/>
+                    <rect x="40" y="54" width="10" height="6" rx="2" fill="#1e3a5f"/>
+                    <rect x="70" y="54" width="10" height="6" rx="2" fill="#1e3a5f"/>
+                    <rect x="42" y="74" width="36" height="8" rx="4" fill="#16a34a"/>
+                    <rect x="10" y="55" width="14" height="30" rx="6" fill="#4ade80"/>
+                    <rect x="96" y="55" width="14" height="30" rx="6" fill="#4ade80"/>
+                    <rect x="38" y="100" width="16" height="28" rx="6" fill="#4ade80"/>
+                    <rect x="66" y="100" width="16" height="28" rx="6" fill="#4ade80"/>
+                    <rect x="20" y="20" width="80" height="24" rx="6" fill="#7c3aed"/>
+                    <polygon points="60,4 72,20 48,20" fill="#7c3aed"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Stats rápidas -->
+              <div class="docente-stats-grid">
+                <div class="docente-stat-card">
+                  <div class="docente-stat-card__icon docente-stat-card__icon--purple">
+                    <i class="fas fa-book-open"></i>
+                  </div>
+                  <div class="docente-stat-card__body">
+                    <p class="docente-stat-card__value">{{ misStats().totalCursos }}</p>
+                    <p class="docente-stat-card__label">Total de cursos</p>
+                  </div>
+                </div>
+                <div class="docente-stat-card">
+                  <div class="docente-stat-card__icon docente-stat-card__icon--green">
+                    <i class="fas fa-check-circle"></i>
+                  </div>
+                  <div class="docente-stat-card__body">
+                    <p class="docente-stat-card__value">{{ misStats().cursosActivos }}</p>
+                    <p class="docente-stat-card__label">Cursos activos</p>
+                  </div>
+                </div>
+                <div class="docente-stat-card">
+                  <div class="docente-stat-card__icon docente-stat-card__icon--blue">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div class="docente-stat-card__body">
+                    <p class="docente-stat-card__value">{{ misStats().totalEstudiantes }}</p>
+                    <p class="docente-stat-card__label">Estudiantes en total</p>
+                  </div>
+                </div>
+              </div>
+
+<!-- Datos del Docente -->
+              <div class="glass-card docente-datos-card">
+                <h2 class="docente-datos-card__title">
+                  <i class="fas fa-user-circle"></i>
+                  Datos del Docente
+                </h2>
+
+                @if (perfilError) {
+                  <div class="alert alert-error docente-datos-alert" style="margin:0 1.75rem 0.5rem">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ perfilError }}</span>
+                  </div>
+                }
+
+                <div class="docente-datos-row">
+                  <div class="docente-datos-field">
+                    <label class="docente-datos-field__label">Docente</label>
+                    <p class="docente-datos-field__value">{{ userDisplayName() }}</p>
+                  </div>
+                  <div class="docente-datos-field">
+                    <label class="docente-datos-field__label">Email</label>
+                    <p class="docente-datos-field__value">{{ userEmail() || 'Sin email' }}</p>
+                  </div>
+                  <div class="docente-datos-field">
+                    <label class="docente-datos-field__label">Cédula</label>
+                    <p class="docente-datos-field__value">{{ userDocNumber() || '—' }}</p>
+                  </div>
+                </div>
+
+                <div class="docente-datos-upload">
+                  <button type="button" class="docente-datos-upload__link" (click)="fileInput.click()">
+                    <i class="fas fa-camera"></i>
+                    Subir imagen de perfil
+                  </button>
+                  <div class="docente-datos-upload__actions">
+                    <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none" />
+                    <button type="button" class="action-btn edit-btn" (click)="fileInput.click()">Seleccionar archivo</button>
+                    <button type="button" class="btn-primary" [disabled]="!selectedFile" (click)="uploadProfileImage()">Subir</button>
+                  </div>
+                </div>
+
+                @if (!userEmail()) {
+                  <div class="docente-datos-warning">
+                    <i class="fas fa-info-circle"></i>
+                    Para ver los datos del docente, inicia sesión con un email válido
+                  </div>
+                }
+              </div>
+
+            </div>
+          }
+
+          @case ('mis-cursos') {
+            <div class="dashboard-content">
+              <div class="page-header-section">
+                <div>
+                  <div class="page-header-title-group">
+                    <h1 class="page-main-title">Mis Cursos</h1>
+                    <p class="page-subtitle">Cursos que tienes asignados como docente</p>
+                  </div>
+                </div>
+              </div>
+
+              @if (cursosLoading) {
+                <p class="page-subtitle">Cargando…</p>
+              } @else if (cursosError) {
+                <p class="page-subtitle" style="color:#f87171">{{ cursosError }}</p>
+              } @else if (!misCursosFiltered.length) {
+                <div class="empty-state">
+                  <div class="empty-icon"><i class="fas fa-book-open"></i></div>
+                  <h3>Sin cursos asignados</h3>
+                  <p>El administrador aún no te ha asignado ningún curso.</p>
+                </div>
+              } @else {
+                <div class="courses-container" id="coursesContainer">
+                  @for (curso of misCursosFiltered; track curso.id) {
+                    <div class="course-card" [class.course-inactive]="!curso.estado">
+                      <div class="course-header">
+                        <div class="course-icon"><i class="fas fa-book-open"></i></div>
+                        <div class="course-info">
+                          <h4>{{ curso.nombre }}</h4>
+                          <p><span>{{ shortText(curso.descripcion, 80) }}</span></p>
+                        </div>
+                        <div class="course-price">
+                          <span class="course-status" [class.status-active]="curso.estado" [class.status-inactive]="!curso.estado">
+                            {{ estadoLabel(curso) }}
+                          </span>
+                          <span class="price">${{ curso.precio }}</span>
+                        </div>
+                      </div>
+
+                      <div class="course-description">
+                        <p>{{ shortText(curso.descripcion, 100) }}</p>
+                      </div>
+
+                      <div class="course-details">
+                        <div class="instructor-rating">
+                          <div class="instructor-info">
+                            <div class="instructor-avatar">
+                              <span>{{ userInitial() }}</span>
+                            </div>
+                            <div class="instructor-info-text">
+                              <p class="instructor-name">{{ userDisplayName() }}</p>
+                              <div class="rating-stars">
+                                @for (i of [1,2,3,4,5]; track i) {
+                                  <i class="fas fa-star" [class.star-filled]="i <= dificultadNivel(curso)" [class.star-empty]="i > dificultadNivel(curso)"></i>
+                                }
+                                <span class="rating-text">{{ dificultadNivel(curso) }}/5</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="course-meta" style="margin-top:0.5rem;font-size:0.8rem;color:var(--muted)">
+                            <i class="fas fa-users"></i>
+                            {{ curso.estudiantes?.length ?? 0 }} estudiante(s)
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @case ('tareas') {
+            <div class="dashboard-content">
+              <div class="docente-section-header">
+                <h1 class="page-main-title">
+                  <i class="fas fa-clipboard-list"></i>
+                  Tareas
+                </h1>
+                <p class="page-subtitle">Actividades de tus cursos asignados</p>
+              </div>
+
+              @if (cursosLoading) {
+                <p class="page-subtitle">Cargando…</p>
+              } @else if (!misCursosFiltered.length) {
+                <div class="glass-card docente-panel-bloque">
+                  <h2 class="docente-panel-bloque__titulo">
+                    <span class="panel-icon"><i class="fas fa-folder-open"></i></span>
+                    Tareas / Actividades
+                  </h2>
+                  <p class="page-subtitle">No tienes cursos asignados, por lo tanto no hay tareas para mostrar.</p>
+                </div>
+              } @else {
+                @for (curso of misCursosFiltered; track curso.id) {
+                  <div class="glass-card docente-panel-bloque">
+                    <h2 class="docente-panel-bloque__titulo">
+                      <span class="panel-icon"><i class="fas fa-folder-open"></i></span>
+                      {{ curso.nombre }}
+                      <span class="docente-tabla-badge">{{ curso.estudiantes?.length ?? 0 }} estudiante(s)</span>
+                    </h2>
+                    <div class="docente-bloque-body">
+                      <div class="docente-bloque-meta">
+                        <span><i class="fas fa-layer-group"></i> <strong>Módulo:</strong> N/A</span>
+                        <span><i class="fas fa-book"></i> <strong>Lección:</strong> N/A</span>
+                        <span><i class="fas fa-calendar"></i> <strong>Fecha entrega:</strong> —</span>
+                      </div>
+                      <div class="docente-sub-panel">
+                        <table class="docente-tabla-progreso">
+                          <thead>
+                            <tr>
+                              <th>Estudiante</th>
+                              <th>Estado</th>
+                              <th>Calificación</th>
+                              <th>Acciones</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @if (!curso.estudiantes?.length) {
+                              <tr>
+                                <td colspan="4" class="docente-tabla-empty">
+                                  <i class="fas fa-user-slash" style="opacity:.35;margin-right:.4rem"></i>
+                                  Sin estudiantes inscritos
+                                </td>
+                              </tr>
+                            } @else {
+                              @for (est of curso.estudiantes ?? []; track est.id) {
+                                <tr>
+                                  <td>Estudiante #{{ est.id }}</td>
+                                  <td><span class="course-status status-active">Pendiente</span></td>
+                                  <td>—</td>
+                                  <td class="docente-tabla-actions">
+                                    <button type="button" class="action-btn edit-btn">Aprobar</button>
+                                    <button type="button" class="action-btn delete-btn">No aprobar</button>
+                                  </td>
+                                </tr>
+                              }
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          }
+
+          @case ('foros') {
+            <div class="dashboard-content">
+              <div class="docente-section-header">
+                <h1 class="page-main-title">
+                  <i class="fas fa-comments"></i>
+                  Foros
+                </h1>
+                <p class="page-subtitle">Crea y gestiona los foros de tus cursos</p>
+              </div>
+
+              @if (foroInfo) {
+                <div class="alert alert-success"><i class="fas fa-check-circle"></i> <span>{{ foroInfo }}</span></div>
+              }
+              @if (foroError) {
+                <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <span>{{ foroError }}</span></div>
+              }
+
+              <!-- Crear foro -->
+              <div class="glass-card docente-panel-bloque">
+                <h2 class="docente-panel-bloque__titulo">
+                  <span class="panel-icon"><i class="fas fa-comment-dots"></i></span>
+                  Crear Foro
+                </h2>
+                <form class="docente-foro-form" (ngSubmit)="crearForo()">
+                  <div class="form-group">
+                    <label for="foroTema">Tema:</label>
+                    <input id="foroTema" type="text" class="docente-foro-input" placeholder="Ej: Ideas para nuevos proyectos" [(ngModel)]="foroTitulo" [ngModelOptions]="{standalone: true}" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="foroCurso">Curso:</label>
+                    <select id="foroCurso" class="docente-foro-input" [(ngModel)]="foroCursoId" [ngModelOptions]="{standalone: true}" required>
+                      <option [ngValue]="0" disabled>Selecciona un curso</option>
+                      @for (curso of misCursosFiltered; track curso.id) {
+                        <option [ngValue]="curso.id">{{ curso.nombre }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="foroDesc">Descripción:</label>
+                    <textarea id="foroDesc" class="docente-foro-input" rows="3" [(ngModel)]="foroDescripcion" [ngModelOptions]="{standalone: true}" required></textarea>
+                  </div>
+                  <button type="submit" class="btn-primary" [disabled]="foroSending || !foroTitulo || !foroCursoId || !foroDescripcion">
+                    {{ foroSending ? 'Creando…' : 'Crear Foro' }}
+                  </button>
+                </form>
+              </div>
+
+              <!-- Foros creados -->
+              <div class="glass-card docente-panel-bloque">
+                <h2 class="docente-panel-bloque__titulo">
+                  <span class="panel-icon"><i class="fas fa-list"></i></span>
+                  Foros creados
+                </h2>
+                @if (!misCursosFiltered.length) {
+                  <p class="page-subtitle">No hay foros para mostrar.</p>
+                } @else {
+                  @for (curso of misCursosFiltered; track curso.id) {
+                    <div class="docente-foro-curso-bloque">
+                      <h3>{{ curso.nombre }}</h3>
+                      <p class="page-subtitle" style="margin-top:.25rem">No hay foros creados para este curso.</p>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+          }
+
+          @case ('mensajes') {
+            <div class="dashboard-content">
+              <div class="docente-section-header">
+                <h1 class="page-main-title">
+                  <i class="fas fa-envelope"></i>
+                  Mensajes
+                </h1>
+                <p class="page-subtitle">Centro de mensajes con tus estudiantes</p>
+              </div>
+
+              <div class="glass-card docente-panel-bloque">
+                <div class="docente-mensajes-panel-header">
+                  <h2 class="docente-panel-bloque__titulo">
+                    <span class="panel-icon"><i class="fas fa-envelope"></i></span>
+                    Centro de mensajes
+                  </h2>
+                  <div class="docente-tabs-mensajes">
+                    <button type="button" class="docente-tab-btn" [class.active]="activeTabMensajes === 'enviar'" (click)="activeTabMensajes = 'enviar'">
+                      <i class="fas fa-paper-plane"></i> Enviar mensaje
+                    </button>
+                    <button type="button" class="docente-tab-btn" [class.active]="activeTabMensajes === 'enviados'" (click)="activeTabMensajes = 'enviados'">
+                      <i class="fas fa-share-square"></i> Enviados
+                    </button>
+                    <button type="button" class="docente-tab-btn" [class.active]="activeTabMensajes === 'recibidos'" (click)="activeTabMensajes = 'recibidos'">
+                      <i class="fas fa-inbox"></i> Recibidos
+                    </button>
+                  </div>
+                </div>
+
+                @if (activeTabMensajes === 'enviar') {
+                  <div class="docente-tab-content">
+                    @if (msgInfoDocente) {
+                      <div class="alert alert-success"><i class="fas fa-check-circle"></i> <span>{{ msgInfoDocente }}</span></div>
+                    }
+                    @if (msgErrorDocente) {
+                      <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <span>{{ msgErrorDocente }}</span></div>
+                    }
+                    <form class="docente-msg-form" (ngSubmit)="enviarMensajeDocente()">
+                      <div class="form-group">
+                        <label for="msgDest">Para:</label>
+                        <select id="msgDest" class="docente-foro-input" [(ngModel)]="msgDestinatarioId" [ngModelOptions]="{standalone: true}" required>
+                          <option [ngValue]="0" disabled>Seleccione un estudiante</option>
+                          @for (curso of misCursosFiltered; track curso.id) {
+                            @for (est of curso.estudiantes ?? []; track est.id) {
+                              <option [ngValue]="est.id">Estudiante #{{ est.id }} — {{ curso.nombre }}</option>
+                            }
+                          }
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="msgBody">Mensaje:</label>
+                        <textarea id="msgBody" class="docente-foro-input" rows="5" placeholder="Escribe tu mensaje..." [(ngModel)]="msgContenido" [ngModelOptions]="{standalone: true}" required></textarea>
+                      </div>
+                      <div class="form-actions">
+                        <button type="submit" class="btn-primary" [disabled]="msgSendingDocente || !msgDestinatarioId || !msgContenido">
+                          <i class="fas fa-paper-plane"></i>
+                          {{ msgSendingDocente ? 'Enviando…' : 'Enviar Mensaje' }}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                }
+
+                @if (activeTabMensajes === 'enviados') {
+                  <div class="docente-tab-content">
+                    <div class="docente-no-messages">
+                      <i class="far fa-paper-plane fa-3x"></i>
+                      <p>No has enviado mensajes todavía.</p>
+                    </div>
+                  </div>
+                }
+
+                @if (activeTabMensajes === 'recibidos') {
+                  <div class="docente-tab-content">
+                    <div class="docente-no-messages">
+                      <i class="far fa-envelope fa-3x"></i>
+                      <p>No tienes mensajes recibidos.</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @default {
+            <div class="dashboard-content">
+              <p class="page-subtitle">Cargando vista…</p>
+            </div>
+          }
+        }
+      </main>
+
+  </app-dashboard-layout>
+</div>

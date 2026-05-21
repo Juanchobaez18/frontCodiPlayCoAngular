@@ -5,18 +5,12 @@
         sidebar
         [userName]="userDisplayName()"
         [userEmail]="userEmail()"
+        [isDark]="isDarkMode()"
+        (darkModeToggle)="toggleDarkMode()"
         (logout)="logout()"
       />
 
-      <div class="flex min-h-0 flex-1 flex-col">
-        <app-admin-topbar
-          [userName]="userDisplayName()"
-          [userRole]="userRoleLabel()"
-          [isDark]="isDarkMode()"
-          (darkModeToggle)="toggleDarkMode()"
-        />
-
-        <main class="admin-main-content flex-1 px-4 py-6 lg:px-8">
+      <main class="admin-main-content flex-1 px-4 pt-8 pb-6 lg:px-8 lg:pt-10">
           @switch (adminPanelView()) {
             @case ('dashboard') {
               <app-admin-dashboard
@@ -59,9 +53,9 @@
               </div>
             } @else {
               <div class="view-container">
-                <div class="grid grid-cols-12" id="usersContainer">
+                <div class="grid grid-cols-12 gap-4" id="usersContainer">
                   @for (u of users; track u.id) {
-                    <div class="col-span-3">
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-3">
                       <div class="glass-card stat-card user-card-item">
                         <div class="stat-header">
                           <div
@@ -653,7 +647,6 @@
       }
     </div>
     </ng-template>
-      </div>
     </app-dashboard-layout>
   </div>
 } @else {

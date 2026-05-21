@@ -25,43 +25,67 @@ export const DOCENTE_ROUTES: Routes = [
   ...DOCENTE_LEGACY_REDIRECTS,
   {
     path: 'docente/mis-cursos/:id/editar',
-    loadComponent: () => import('../../features/docente/docente-layout/docente-layout.component').then(m => m.DocenteLayoutComponent),
+    loadComponent: () =>
+      import('../components/docente-layout/docente-layout.component').then(
+        (m) => m.DocenteLayoutComponent,
+      ),
     canActivate: [docenteGuard],
     data: { mode: 'edit' },
   },
   {
     path: 'docente/mis-cursos',
-    loadComponent: () => import('../../features/docente/docente-layout/docente-layout.component').then(m => m.DocenteLayoutComponent),
+    loadComponent: () =>
+      import('../components/docente-layout/docente-layout.component').then(
+        (m) => m.DocenteLayoutComponent,
+      ),
     canActivate: [docenteGuard],
   },
   {
     path: 'docente/estudiantes',
-    loadComponent: () => import('../../features/docente/docente-layout/docente-layout.component').then(m => m.DocenteLayoutComponent),
+    loadComponent: () =>
+      import('../components/docente-layout/docente-layout.component').then(
+        (m) => m.DocenteLayoutComponent,
+      ),
     canActivate: [docenteGuard],
   },
   {
     path: 'docente/tareas',
-    loadComponent: () => import('../../features/docente/docente-layout/docente-layout.component').then(m => m.DocenteLayoutComponent),
+    loadComponent: () =>
+      import('../components/docente-layout/docente-layout.component').then(
+        (m) => m.DocenteLayoutComponent,
+      ),
     canActivate: [docenteGuard],
   },
   {
     path: 'docente/mensajes',
-    loadComponent: () => import('../../features/docente/docente-layout/docente-layout.component').then(m => m.DocenteLayoutComponent),
+    loadComponent: () =>
+      import('../components/docente-layout/docente-layout.component').then(
+        (m) => m.DocenteLayoutComponent,
+      ),
     canActivate: [docenteGuard],
   },
   {
     path: 'docente/foros/:id',
-    loadComponent: () => import('../../features/docente/docente-layout/docente-layout.component').then(m => m.DocenteLayoutComponent),
+    loadComponent: () =>
+      import('../components/docente-layout/docente-layout.component').then(
+        (m) => m.DocenteLayoutComponent,
+      ),
     canActivate: [docenteGuard],
   },
   {
     path: 'docente/foros',
-    loadComponent: () => import('../../features/docente/docente-layout/docente-layout.component').then(m => m.DocenteLayoutComponent),
+    loadComponent: () =>
+      import('../components/docente-layout/docente-layout.component').then(
+        (m) => m.DocenteLayoutComponent,
+      ),
     canActivate: [docenteGuard],
   },
   {
     path: 'docente/dashboard',
-    loadComponent: () => import('../../features/docente/docente-layout/docente-layout.component').then(m => m.DocenteLayoutComponent),
+    loadComponent: () =>
+      import('../components/docente-layout/docente-layout.component').then(
+        (m) => m.DocenteLayoutComponent,
+      ),
     canActivate: [docenteGuard],
   },
   {
