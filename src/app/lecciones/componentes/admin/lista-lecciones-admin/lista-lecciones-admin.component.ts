@@ -1,6 +1,7 @@
 // src/app/lecciones/componentes/admin/lista-lecciones-admin/lista-lecciones-admin.component.ts
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { Leccion } from '../../../modelos/leccion.model';
@@ -9,7 +10,9 @@ import { LeccionesService } from '../../../servicios/lecciones.service';
 @Component({
   selector: 'app-lista-lecciones-admin',
   templateUrl: './lista-lecciones-admin.component.html',
-  styleUrls: ['./lista-lecciones-admin.component.scss']
+  styleUrls: ['./lista-lecciones-admin.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class ListaLeccionesAdminComponent implements OnInit, OnDestroy {
   lecciones: Leccion[] = [];

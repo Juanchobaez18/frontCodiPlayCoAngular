@@ -30,6 +30,9 @@ export const routes: Routes = [
         path: 'auth',
         loadChildren: () => import('./auth/auth.routes').then(m => m.AUTH_ROUTES)
     },
+    ...ADMIN_ROUTES,
+    ...DOCENTE_ROUTES,
+    ...ESTUDIANTE_ROUTES,
     {
         path: 'dashboard',
         component: AdminLayoutComponent,

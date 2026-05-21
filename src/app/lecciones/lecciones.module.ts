@@ -13,7 +13,10 @@ import { ListaLeccionesEstudianteComponent } from './componentes/estudiante/list
 import { DetalleLeccionComponent } from './componentes/estudiante/detalle-leccion/detalle-leccion.component';
 
 @NgModule({
-  declarations: [
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    LeccionesRoutingModule,
     // Componentes de administrador
     ListaLeccionesAdminComponent,
     FormularioLeccionComponent,
@@ -22,11 +25,6 @@ import { DetalleLeccionComponent } from './componentes/estudiante/detalle-leccio
     // Componentes de estudiante
     ListaLeccionesEstudianteComponent,
     DetalleLeccionComponent
-  ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    LeccionesRoutingModule
   ]
 })
 export class LeccionesModule {}
