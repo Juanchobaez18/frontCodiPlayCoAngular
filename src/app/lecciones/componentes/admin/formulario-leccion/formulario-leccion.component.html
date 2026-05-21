@@ -1,0 +1,103 @@
+<div class="formulario-leccion">
+  <div class="header">
+    <h1>{{ modoEdicion ? 'Editar Lección' : 'Nueva Lección' }}</h1>
+    <button class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <p>Cargando...</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!cargando">
+    <div class="error" *ngIf="error">
+      <p>{{ error }}</p>
+    </div>
+
+    <div class="form-group">
+      <label for="titulo">Título *</label>
+      <input 
+        id="titulo" 
+        type="text" 
+        formControlName="titulo" 
+        placeholder="Título de la lección"
+      >
+      <div class="error-msg" *ngIf="form.get('titulo')?.touched && form.get('titulo')?.invalid">
+        <small *ngIf="form.get('titulo')?.errors?.['required']">El título es requerido</small>
+        <small *ngIf="form.get('titulo')?.errors?.['minlength']">Mínimo 3 caracteres</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción *</label>
+      <textarea 
+        id="descripcion" 
+        formControlName="descripcion" 
+        placeholder="Descripción breve de la lección"
+        rows="3"
+      ></textarea>
+      <div class="error-msg" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.invalid">
+        <small *ngIf="form.get('descripcion')?.errors?.['required']">La descripción es requerida</small>
+        <small *ngIf="form.get('descripcion')?.errors?.['minlength']">Mínimo 10 caracteres</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="contenido">Contenido *</label>
+      <textarea 
+        id="contenido" 
+        formControlName="contenido" 
+        placeholder="Contenido completo de la lección (puede incluir HTML)"
+        rows="10"
+      ></textarea>
+      <div class="error-msg" *ngIf="form.get('contenido')?.touched && form.get('contenido')?.invalid">
+        <small *ngIf="form.get('contenido')?.errors?.['required']">El contenido es requerido</small>
+        <small *ngIf="form.get('contenido')?.errors?.['minlength']">Mínimo 20 caracteres</small>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="orden">Orden *</label>
+        <input
+          id="orden"
+          type="text"
+          formControlName="orden"
+          placeholder="1"
+        >
+        <div class="error-msg" *ngIf="form.get('orden')?.touched && form.get('orden')?.invalid">
+          <small *ngIf="form.get('orden')?.errors?.['required']">El orden es requerido</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="estado">Estado *</label>
+        <select id="estado" formControlName="estado">
+          <option value="borrador">Borrador</option>
+          <option value="publicado">Publicado</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="moduloId">ID del Módulo *</label>
+      <input
+        id="moduloId"
+        type="number"
+        formControlName="moduloId"
+        placeholder="1"
+        min="1"
+      >
+      <div class="error-msg" *ngIf="form.get('moduloId')?.touched && form.get('moduloId')?.invalid">
+        <small *ngIf="form.get('moduloId')?.errors?.['required']">El ID del módulo es requerido</small>
+        <small *ngIf="form.get('moduloId')?.errors?.['min']">Mínimo 1</small>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+        {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+      </button>
+    </div>
+  </form>
+</div>

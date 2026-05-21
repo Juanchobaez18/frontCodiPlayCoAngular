@@ -51,6 +51,10 @@ export const routes: Routes = [
                 path: 'curso',
                 loadComponent: () => import('./features/curso/curso').then(m => m.Curso)
             },
+            {
+                path: 'lecciones',
+                loadChildren: () => import('./lecciones/lecciones.module').then(m => m.LeccionesModule)
+            },
             { path: '', redirectTo: 'users', pathMatch: 'full' }
         ]
     }

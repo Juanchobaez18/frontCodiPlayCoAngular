@@ -1,0 +1,83 @@
+<!-- src/app/lecciones/componentes/admin/lista-lecciones-admin/lista-lecciones-admin.component.html -->
+
+<div class="lista-lecciones-admin">
+  <div class="header">
+    <h1>Gestión de Lecciones</h1>
+    <button class="btn btn-primary" (click)="irACrear()">
+      + Nueva Lección
+    </button>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <p>Cargando lecciones...</p>
+  </div>
+
+  <div class="error" *ngIf="error">
+    <p>{{ error }}</p>
+    <button class="btn btn-secondary" (click)="cargarLecciones()">Reintentar</button>
+  </div>
+
+  <div class="tabla-container" *ngIf="!cargando && !error">
+    <table class="tabla-lecciones" *ngIf="lecciones.length > 0">
+      <thead>
+        <tr>
+          <th>Orden</th>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+          <th>Creado</th>
+          <th>Actualizado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let leccion of lecciones">
+          <td>{{ leccion.orden }}</td>
+          <td>{{ leccion.titulo }}</td>
+          <td>{{ leccion.descripcion | slice:0:50 }}{{ leccion.descripcion.length > 50 ? '...' : '' }}</td>
+          <td>
+            <span class="badge" [ngClass]="getEstadoBadge(leccion.estado)">
+              {{ leccion.estado }}
+            </span>
+          </td>
+          <td>{{ leccion.creadoEn | date:'shortDate' }}</td>
+          <td>{{ leccion.actualizadoEn | date:'shortDate' }}</td>
+          <td class="acciones">
+            <button class="btn btn-sm btn-edit" (click)="irAEditar(leccion.id)" title="Editar">
+              ✏️
+            </button>
+            <button class="btn btn-sm btn-delete" (click)="irAEliminar(leccion.id)" title="Eliminar">
+              🗑️
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="sin-datos" *ngIf="lecciones.length === 0">
+      <p>No hay lecciones creadas aún.</p>
+      <button class="btn btn-primary" (click)="irACrear()">
+        Crear primera lección
+      </button>
+    </div>
+  </div>
+
+  <!-- Diálogo de eliminación -->
+  <div class="dialogo-overlay" *ngIf="mostrandoDialogo" (click)="cancelarEliminacion()">
+    <div class="dialogo-contenido" (click)="$event.stopPropagation()">
+      <div class="dialogo-header">
+        <h2>Confirmar Eliminación</h2>
+      </div>
+      
+      <div class="dialogo-body">
+        <p>¿Estás seguro de que deseas eliminar la lección <strong>{{ leccionAEliminar?.titulo }}</strong>?</p>
+        <p class="advertencia">Esta acción no se puede deshacer.</p>
+      </div>
+      
+      <div class="dialogo-footer">
+        <button class="btn btn-secondary" (click)="cancelarEliminacion()">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmarEliminacion()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
