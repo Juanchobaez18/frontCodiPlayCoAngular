@@ -1,9 +1,48 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Outfit:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #f0f0ed;
+    --foreground: #1a1a2e;
+    --card: #ffffff;
+    --primary: #00e5a0;
+    --secondary: #00b4ff;
+    --tertiary: #7b4fe0;
+    --muted: #6b7280;
+    --accent-yellow: #fcd34d;
+    --radius-card: 1.25rem;
+    --shadow-card: 0 1px 2px rgb(26 26 46 / 0.04);
+  }
+
+  .dark {
+    --background: #0d0d1a;
+    --foreground: #f9fafb;
+    --card: #161625;
+  }
+}
+
+@layer components {
+  @keyframes card-enter {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-card-enter {
+    animation: card-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
 
 html {
   height: 100%;
@@ -20,20 +59,42 @@ html {
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
   margin: 0;
   height: 100%;
 }
-/* You can add global styles to this file, and also import other style files */
+
+body.dark {
+  color-scheme: dark;
+}
+
+.app-admin-root {
+  --background: #f0ecf7;
+  --foreground: #1e293b;
+  --card: #ffffff;
+  --card-elevated: #f8f6fc;
+  --primary: #7c3aed;
+  --secondary: #8b5cf6;
+  --tertiary: #a78bfa;
+  --muted: #64748b;
+  --border: rgb(107 114 128 / 0.14);
+  --radius-card: 1rem;
+  --shadow-card: 0 4px 24px rgb(124 58 237 / 0.06);
+  --transition-theme: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.app-admin-root.dark,
+.dark .app-admin-root {
+  --background: #0e0e1f;
+  --foreground: #dde1f0;
+  --card: #16162e;
+  --card-elevated: #1e1e3a;
+  --muted: #8b90b8;
+  --border: rgb(139 92 246 / 0.14);
+  --shadow-card: 0 4px 24px rgb(0 0 0 / 0.3);
+}
+
+@import './app/core/styles/admin-panel.global.scss';

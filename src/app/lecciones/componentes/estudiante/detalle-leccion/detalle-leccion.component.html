@@ -1,0 +1,35 @@
+<div class="detalle-leccion">
+  <div class="loading" *ngIf="cargando">
+    <p>Cargando lección...</p>
+  </div>
+
+  <div class="error" *ngIf="error">
+    <p>{{ error }}</p>
+    <button class="btn btn-secondary" (click)="volver()">Volver</button>
+  </div>
+
+  <div class="contenido" *ngIf="!cargando && !error && leccion">
+    <div class="header">
+      <button class="btn btn-secondary" (click)="volver()">← Volver</button>
+      <div class="header-info">
+        <span class="orden">Lección {{ leccion.orden }}</span>
+        <span class="badge-completado" *ngIf="estaCompletada()">✓ Completada</span>
+      </div>
+    </div>
+
+    <h1>{{ leccion.titulo }}</h1>
+    <p class="descripcion">{{ leccion.descripcion }}</p>
+
+    <div class="contenido-texto" [innerHTML]="leccion.contenido"></div>
+
+    <div class="acciones">
+      <button 
+        class="btn btn-success" 
+        (click)="marcarComoCompletada()"
+        [disabled]="estaCompletada() || marcandoCompletada"
+      >
+        {{ marcandoCompletada ? 'Marcando...' : (estaCompletada() ? '✓ Completada' : 'Marcar como Completada') }}
+      </button>
+    </div>
+  </div>
+</div>

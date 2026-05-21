@@ -1,0 +1,35 @@
+<article
+  class="animate-card-enter border border-muted/10 bg-card p-6 shadow-sm rounded-card"
+  [style.animation-delay.ms]="enterDelayMs"
+>
+  <div class="flex items-start justify-between gap-3">
+    <div>
+      <p class="font-dmsans text-sm font-medium text-muted">{{ label }}</p>
+    </div>
+    <div
+      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+      [class]="iconWrapClass"
+    >
+      <lucide-icon [img]="icon" [size]="20" class="stroke-[2]" />
+    </div>
+  </div>
+
+  <p
+    class="mt-4 font-outfit text-4xl font-bold tracking-tight text-foreground md:text-5xl"
+  >
+    <span
+      [appCountUp]="countValue"
+      [countUpDuration]="1200"
+      [countUpDecimals]="countDecimals"
+      [countUpPrefix]="countPrefix"
+      [countUpSuffix]="countSuffix"
+    ></span>
+  </p>
+
+  <div class="mt-3 flex items-center gap-1.5 font-dmsans text-sm font-medium">
+    <span [class]="trendClass() + ' inline-flex items-center gap-0.5'">
+      <lucide-icon [img]="iTrend" [size]="16" class="stroke-[2]" />
+      {{ trendLabel }}
+    </span>
+  </div>
+</article>

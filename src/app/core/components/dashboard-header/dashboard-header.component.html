@@ -1,0 +1,55 @@
+<header
+  class="sticky top-0 z-30 border-b border-muted/10 bg-background/90 px-4 py-5 backdrop-blur-sm md:px-8 md:py-6"
+>
+  <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+    <div>
+      <h1 class="font-outfit text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+        Hola,
+        <span class="text-primary">{{ greetingName }}</span>
+        👋
+      </h1>
+      <p class="mt-1 font-dmsans text-base text-muted">Aquí está el resumen de hoy</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3 md:justify-end">
+      <div
+        class="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-muted/20 bg-card px-3 py-2 shadow-sm md:min-w-[220px] md:flex-initial md:max-w-xs"
+      >
+        <lucide-icon [img]="iSearch" [size]="18" class="shrink-0 text-muted" />
+        <input
+          type="search"
+          class="min-w-0 flex-1 border-0 bg-transparent font-dmsans text-sm text-foreground outline-none placeholder:text-muted"
+          placeholder="Buscar…"
+          [ngModel]="searchQuery"
+          (ngModelChange)="onSearchInput($event)"
+          name="adminHeaderSearch"
+        />
+      </div>
+
+      <button
+        type="button"
+        class="relative flex h-11 w-11 items-center justify-center rounded-full border border-muted/15 bg-card text-foreground shadow-sm transition hover:bg-card/80"
+        aria-label="Notificaciones"
+      >
+        <lucide-icon [img]="iBell" [size]="20" class="text-foreground" />
+        <span
+          class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary ring-2 ring-card"
+          aria-hidden="true"
+        ></span>
+      </button>
+
+      <button
+        type="button"
+        class="flex h-11 w-11 items-center justify-center rounded-full border border-muted/15 bg-card text-foreground shadow-sm transition hover:bg-card/80"
+        (click)="darkModeToggle.emit()"
+        [attr.aria-label]="isDark ? 'Activar modo claro' : 'Activar modo oscuro'"
+      >
+        @if (isDark) {
+          <lucide-icon [img]="iSun" [size]="20" />
+        } @else {
+          <lucide-icon [img]="iMoon" [size]="20" />
+        }
+      </button>
+    </div>
+  </div>
+</header>

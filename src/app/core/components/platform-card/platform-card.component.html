@@ -1,0 +1,39 @@
+<article
+  class="animate-card-enter relative flex min-h-[280px] flex-col overflow-hidden border border-muted/10 bg-gradient-to-br from-primary via-secondary to-tertiary p-6 text-card shadow-sm rounded-card md:min-h-[300px]"
+  style="animation-delay: 90ms"
+>
+  <div class="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-card/10 blur-2xl"></div>
+  <div class="pointer-events-none absolute -bottom-10 left-1/3 h-36 w-36 rounded-full bg-card/10 blur-2xl"></div>
+
+  <div class="relative z-10 flex flex-1 flex-col">
+    <p class="font-outfit text-lg font-bold tracking-wide text-card/95">CODIPLAYCO ADMIN</p>
+
+    <div class="mt-5 space-y-3 font-dmsans">
+      <div
+        class="flex items-center justify-between rounded-full bg-card/15 px-4 py-2.5 text-sm backdrop-blur-sm"
+      >
+        <span class="text-card/90">Cursos activos</span>
+        <span class="font-semibold text-card">{{ cursosActivos }}</span>
+      </div>
+      <div
+        class="flex items-center justify-between rounded-full bg-card/15 px-4 py-2.5 text-sm backdrop-blur-sm"
+      >
+        <span class="text-card/90">Docentes activos</span>
+        <span class="font-semibold text-card">{{ docentesActivos }}</span>
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-1 flex-col">
+      <p class="font-dmsans text-xs font-medium uppercase tracking-wider text-card/70">
+        Actividad últimos 7 días
+      </p>
+      <div class="relative mt-2 h-36 w-full flex-1">
+        <canvas baseChart [type]="barType" [data]="barData" [options]="barOptions"></canvas>
+      </div>
+    </div>
+
+    <div class="relative z-10 mt-4 flex items-center justify-between border-t border-card/20 pt-4">
+      <span class="truncate font-dmsans text-sm font-medium text-card/95">{{ adminDisplayName }}</span>
+    </div>
+  </div>
+</article>

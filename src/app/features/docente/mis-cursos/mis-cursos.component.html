@@ -1,0 +1,122 @@
+<header>
+  <div class="header-logo-title">
+    <h1 class="titulo-blanco">
+      <span class="panel-icon"><i class="fa-solid fa-book"></i></span>Mis Cursos
+    </h1>
+  </div>
+</header>
+
+@if (!cursosLoading()) {
+  @if (cursos().length === 0) {
+    <div class="panel">
+      <h2><span class="panel-icon"><i class="fa-solid fa-chart-line"></i></span>Curso Asignado</h2>
+      <p>No tienes cursos asignados actualmente.</p>
+    </div>
+  }
+  @for (curso of cursos(); track curso.id) {
+    <div class="panel">
+      <h2>
+        <span class="panel-icon"><i class="fa-solid fa-chart-line"></i></span>
+        <span>{{ curso.nombre }}</span>
+      </h2>
+
+      <!-- Progreso General de Estudiantes -->
+      @if (getDetalle(curso.id); as detalle) {
+        @if (detalle.estudiantes && detalle.estudiantes.length > 0) {
+          <div>
+            <h3>Progreso General de Estudiantes</h3>
+            <table class="tabla-progreso">
+              <thead>
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Progreso</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (est of detalle.estudiantes; track est.id) {
+                  <tr>
+                    <td>{{ est.nombre }} {{ est.apellido }}</td>
+                    <td>
+                      <div class="progreso-container">
+                        <span class="progreso-percentage">{{ est.progreso }}%</span>
+                        <div class="barra-progreso">
+                          <div class="progreso {{ getEstadoClass(est.progreso) }}" [style.width.%]="est.progreso"></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span [class]="getEstadoCssClass(est)">
+                        <i [class]="getEstadoIcon(est)"></i> {{ getEstadoLabel(est) }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Progreso detallado por módulo -->
+          <div style="margin-top: 2rem;">
+            <h3>Progreso Detallado por Módulo</h3>
+            <table class="tabla-progreso tabla-detallada">
+              <thead>
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Módulo Actual</th>
+                  <th>Lección Actual</th>
+                  <th>Progreso del Módulo</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (est of detalle.estudiantes; track est.id) {
+                  <tr>
+                    <td>{{ est.nombre }} {{ est.apellido }}</td>
+                    <td>
+                      @if (est.moduloActual) {
+                        <span class="modulo-actual">{{ est.moduloActual }}</span>
+                      } @else {
+                        <span class="sin-progreso">Sin iniciar</span>
+                      }
+                    </td>
+                    <td>
+                      @if (est.leccionActual) {
+                        <span class="leccion-actual">{{ est.leccionActual }}</span>
+                      } @else {
+                        <span class="sin-progreso">Sin iniciar</span>
+                      }
+                    </td>
+                    <td>
+                      <div class="progreso-container">
+                        <div class="barra-progreso">
+                          <div class="progreso {{ getEstadoClass(est.progresoModulo || 0) }}" [style.width.%]="est.progresoModulo || 0"></div>
+                        </div>
+                        <span class="progreso-percentage">{{ est.progresoModulo || 0 }}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="no-estudiantes">
+            <i class="fas fa-user-graduate"></i>
+            <p>No hay estudiantes inscritos en este curso todavía.</p>
+            <p class="info">Los estudiantes aparecerán aquí una vez que se inscriban y paguen por el curso.</p>
+          </div>
+        }
+      } @else if (isDetalleLoading(curso.id)) {
+        <p>Cargando progreso de estudiantes…</p>
+      } @else {
+        <div class="no-estudiantes">
+          <i class="fas fa-user-graduate"></i>
+          <p>No hay estudiantes inscritos en este curso todavía.</p>
+          <p class="info">Los estudiantes aparecerán aquí una vez que se inscriban y paguen por el curso.</p>
+        </div>
+      }
+    </div>
+  }
+} @else {
+  <div class="panel"><p>Cargando cursos…</p></div>
+}
