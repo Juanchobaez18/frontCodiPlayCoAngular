@@ -35,6 +35,7 @@ export interface User {
   docNumber: string;
   email: string;
   isActive: boolean;
+  avatar?: string;
   roles: Role[]; // Nota que es un array según tu JSON
 }
 

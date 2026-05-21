@@ -1,8 +1,308 @@
-<div *ngIf="isLoading">Cargando...</div>
+<!-- Loading -->
+@if (isLoading) {
+  <div class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Cargando tu panel...</p>
+  </div>
+}
 
-<div *ngIf="user">
-  <h2>{{ user.name }} {{ user.lastName }}</h2>
-  <p>{{ user.email }}</p>
-  <p>{{ user.isActive ? 'Activo' : 'Inactivo' }}</p>
-  <p *ngFor="let rol of user.roles">{{ rol.name }}</p>
-</div>
+<!-- Error -->
+@if (!isLoading && error) {
+  <div class="error-state">
+    <span class="error-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </span>
+    <p>{{ error }}</p>
+  </div>
+}
+
+<!-- Dashboard -->
+@if (!isLoading && estudiante) {
+<div class="page-layout">
+
+  <!-- ────────────── MAIN CONTENT ────────────── -->
+  <div class="content-main">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div class="welcome-banner__body">
+        <p class="welcome-banner__hi">¡Hola!</p>
+        <h1 class="welcome-banner__title">
+          Bienvenido, <span>{{ estudiante.user.name }}</span>
+        </h1>
+        <p class="welcome-banner__sub">
+          Continúa aprendiendo y alcanza tus metas profesionales. ¡Cada lección cuenta!
+        </p>
+        <a class="welcome-banner__cta" routerLink="/curso">Explorar cursos →</a>
+      </div>
+      <div class="welcome-banner__art" aria-hidden="true">
+        <div class="art-blob art-blob--1"></div>
+        <div class="art-blob art-blob--2"></div>
+        <div class="art-blob art-blob--3"></div>
+        <!-- Rocket SVG illustration (no emoji) -->
+        <div class="art-icon">
+          <svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M45 8C45 8 27 26 27 50L63 50C63 26 45 8 45 8Z"
+                  fill="rgba(255,255,255,0.92)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+            <circle cx="45" cy="37" r="9" fill="rgba(108,53,222,0.3)"
+                    stroke="rgba(255,255,255,0.8)" stroke-width="2"/>
+            <circle cx="42" cy="34" r="2.5" fill="rgba(255,255,255,0.6)"/>
+            <path d="M27 50L17 67L33 62Z" fill="#FF6BAE"/>
+            <path d="M63 50L73 67L57 62Z" fill="#FF6BAE"/>
+            <ellipse cx="45" cy="62" rx="10" ry="15" fill="#FFD93D"/>
+            <ellipse cx="45" cy="64" rx="6" ry="10" fill="#FF6BAE" opacity="0.75"/>
+            <circle cx="18" cy="22" r="3.5" fill="#FFD93D"/>
+            <circle cx="74" cy="18" r="2.5" fill="rgba(255,255,255,0.7)"/>
+            <circle cx="70" cy="36" r="3" fill="#FF6BAE"/>
+            <circle cx="22" cy="48" r="2" fill="rgba(255,255,255,0.5)"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Courses In Progress (up to 3 cards) -->
+    @if (estudiante.cursos.length > 0) {
+    <section class="section">
+      <div class="section__header">
+        <h2 class="section__title">En progreso</h2>
+        <a class="section__more" routerLink="/curso">Ver todos</a>
+      </div>
+
+      <div class="prog-cards">
+        @for (curso of estudiante.cursos.slice(0, 3); track curso.id) {
+        <div class="prog-card">
+          <div class="prog-card__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <div class="prog-card__body">
+            <p class="prog-card__title">{{ curso.titulo }}</p>
+            <p class="prog-card__pct">{{ estudiante.progreso || 0 }}% completado</p>
+            <div class="thin-bar">
+              <div class="thin-bar__fill" [style.width.%]="estudiante.progreso || 0"></div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+    }
+
+    <!-- Continue Learning Grid -->
+    <section class="section">
+      <div class="section__header">
+        <h2 class="section__title">Continuar aprendiendo</h2>
+        @if (estudiante.cursos.length > 0) {
+          <a class="section__more" routerLink="/curso">Ver todos</a>
+        }
+      </div>
+
+      <!-- Empty state: pure SVG illustration, no emoji -->
+      @if (estudiante.cursos.length === 0) {
+      <div class="empty-box">
+        <div class="empty-illust" aria-hidden="true">
+          <svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <!-- Open book left page -->
+            <rect x="34" y="72" width="68" height="80" rx="7" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="2"/>
+            <!-- Open book right page -->
+            <rect x="118" y="72" width="68" height="80" rx="7" fill="#EDE9FE" stroke="#C4B5FD" stroke-width="2"/>
+            <!-- Spine -->
+            <rect x="100" y="68" width="20" height="88" rx="5" fill="#A78BFA"/>
+            <!-- Left page lines -->
+            <line x1="48" y1="96" x2="90" y2="96" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/>
+            <line x1="48" y1="110" x2="90" y2="110" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/>
+            <line x1="48" y1="124" x2="72" y2="124" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/>
+            <!-- Right page lines -->
+            <line x1="130" y1="96" x2="172" y2="96" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/>
+            <line x1="130" y1="110" x2="172" y2="110" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/>
+            <line x1="130" y1="124" x2="154" y2="124" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/>
+            <!-- Rocket on top of book -->
+            <path d="M110 14C110 14 96 28 96 48L124 48C124 28 110 14 110 14Z"
+                  fill="white" stroke="#A78BFA" stroke-width="2"/>
+            <circle cx="110" cy="36" r="7" fill="#EDE9FE" stroke="#6C35DE" stroke-width="2"/>
+            <path d="M96 48L87 62L101 58Z" fill="#FF6BAE"/>
+            <path d="M124 48L133 62L119 58Z" fill="#FF6BAE"/>
+            <ellipse cx="110" cy="58" rx="8" ry="11" fill="#FFD93D"/>
+            <ellipse cx="110" cy="60" rx="5" ry="7" fill="#FF6BAE" opacity="0.7"/>
+            <!-- Decorative stars -->
+            <circle cx="26" cy="52" r="5" fill="#FFD93D"/>
+            <circle cx="194" cy="42" r="4" fill="#FF6BAE"/>
+            <circle cx="187" cy="64" r="3" fill="#6C35DE"/>
+            <circle cx="30" cy="82" r="3" fill="#FF6BAE"/>
+            <circle cx="180" cy="102" r="3.5" fill="#FFD93D"/>
+            <!-- Plus sparkles -->
+            <path d="M168 26L168 34M164 30L172 30" stroke="#FF6BAE" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M38 118L38 124M35 121L41 121" stroke="#FFD93D" stroke-width="2" stroke-linecap="round"/>
+            <path d="M190 80L190 86M187 83L193 83" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="empty-box__title">¡Aún no tienes cursos!</h3>
+        <p class="empty-box__text">Explora el catálogo y empieza tu aventura de aprendizaje.</p>
+        <a class="empty-box__btn" routerLink="/curso">Explorar cursos →</a>
+      </div>
+      }
+
+      @if (estudiante.cursos.length > 0) {
+      <div class="course-grid">
+        @for (curso of estudiante.cursos; track curso.id) {
+        <div class="course-card">
+          <!-- Thumbnail with SVG code icon instead of emoji -->
+          <div class="course-card__thumb">
+            <div class="course-card__icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 4C20 4 8 13 8 24L32 24C32 13 20 4 20 4Z"
+                      fill="rgba(108,53,222,0.12)" stroke="rgba(108,53,222,0.4)" stroke-width="1.5"/>
+                <circle cx="20" cy="18" r="5" fill="rgba(108,53,222,0.15)"
+                        stroke="rgba(108,53,222,0.5)" stroke-width="1.5"/>
+                <path d="M8 24L4 31L11 29Z" fill="#FF6BAE" opacity="0.8"/>
+                <path d="M32 24L36 31L29 29Z" fill="#FF6BAE" opacity="0.8"/>
+                <ellipse cx="20" cy="29" rx="5" ry="6" fill="#FFD93D" opacity="0.9"/>
+              </svg>
+            </div>
+            <span class="course-card__tag">Programación</span>
+          </div>
+          <div class="course-card__body">
+            <p class="course-card__cat">Desarrollo de Software</p>
+            <h3 class="course-card__title">{{ curso.titulo }}</h3>
+            <p class="course-card__desc">{{ curso.descripcion }}</p>
+            <p class="course-card__instructor">Instructor CodiPlay</p>
+            <div class="course-card__foot">
+              <div class="mini-bar">
+                <div class="mini-bar__fill" [style.width.%]="estudiante.progreso || 0"></div>
+              </div>
+              <span class="mini-bar__pct">{{ estudiante.progreso || 0 }}%</span>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </section>
+
+    <!-- Foros recientes -->
+    @if (estudiante.foros.length > 0) {
+    <section class="section">
+      <div class="section__header">
+        <h2 class="section__title">Foros recientes</h2>
+        <a class="section__more" routerLink="/foros">Ver todos</a>
+      </div>
+      <div class="foros-list">
+        @for (foro of estudiante.foros; track foro.id) {
+        <div class="foro-row">
+          <span class="foro-row__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </span>
+          <span class="foro-row__title">{{ foro.titulo }}</span>
+          <a class="foro-row__link" routerLink="/foros">Ver →</a>
+        </div>
+        }
+      </div>
+    </section>
+    }
+
+  </div><!-- /content-main -->
+
+  <!-- ────────────── RIGHT PANEL (solo datos reales) ────────────── -->
+  <aside class="right-panel">
+
+    <!-- Profile card — datos del estudiante -->
+    <div class="panel-card profile-card">
+      <div class="profile-card__avatar">
+        @if (estudiante.user.avatar?.startsWith('uploads/')) {
+          <img [src]="'http://localhost:3000/' + estudiante.user.avatar"
+               [alt]="estudiante.user.name"
+               style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;" />
+        } @else {
+          {{ estudiante.user.name.charAt(0) }}{{ estudiante.user.lastName.charAt(0) }}
+        }
+      </div>
+      <h3 class="profile-card__name">{{ estudiante.user.name }} {{ estudiante.user.lastName }}</h3>
+      <p class="profile-card__quote">"El conocimiento es poder. ¡Sigue adelante!"</p>
+      <div class="profile-stats">
+        <div class="ps">
+          <p class="ps__val">{{ estudiante.cursos.length }}</p>
+          <p class="ps__lbl">Cursos</p>
+        </div>
+        <div class="ps-sep"></div>
+        <div class="ps">
+          <p class="ps__val">{{ estudiante.progreso || 0 }}</p>
+          <p class="ps__lbl">XP</p>
+        </div>
+        <div class="ps-sep"></div>
+        <div class="ps">
+          <p class="ps__val">{{ estudiante.foros.length }}</p>
+          <p class="ps__lbl">Foros</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progreso general — dato real -->
+    <div class="panel-card progress-panel">
+      <h3 class="progress-panel__title">Progreso general</h3>
+      <div class="progress-panel__ring-wrap">
+        <svg class="prog-ring" viewBox="0 0 80 80">
+          <circle class="prog-ring__bg"   cx="40" cy="40" r="32"/>
+          <circle class="prog-ring__fill" cx="40" cy="40" r="32"
+            [attr.stroke-dashoffset]="201.1 * (1 - (estudiante.progreso || 0) / 100)"/>
+        </svg>
+        <div class="progress-panel__label">
+          <span class="progress-panel__pct">{{ estudiante.progreso || 0 }}%</span>
+          <span class="progress-panel__sub">completado</span>
+        </div>
+      </div>
+      <p class="progress-panel__note">
+        {{ estudiante.cursos.length }} curso{{ estudiante.cursos.length !== 1 ? 's' : '' }} inscrito{{ estudiante.cursos.length !== 1 ? 's' : '' }}
+      </p>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="panel-card quick-panel">
+      <h3 class="quick-panel__title">Acciones rápidas</h3>
+      <div class="quick-list">
+        <a class="quick-link" routerLink="/curso">
+          <span class="quick-link__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+            </svg>
+          </span>
+          <span>Mis Cursos</span>
+        </a>
+        <a class="quick-link" routerLink="/foros">
+          <span class="quick-link__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </span>
+          <span>Foros</span>
+        </a>
+        <a class="quick-link" routerLink="/mensajes">
+          <span class="quick-link__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </span>
+          <span>Mensajes</span>
+        </a>
+      </div>
+    </div>
+
+  </aside><!-- /right-panel -->
+
+</div><!-- /page-layout -->
+}

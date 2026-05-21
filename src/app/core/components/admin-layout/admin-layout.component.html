@@ -1,50 +1,199 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
-    <mat-toolbar>Menu</mat-toolbar>
-    @if (authService.isAuthenticated()) {
-    <mat-nav-list>
-      @for (moduleName of menuItems(); track moduleName) {
-      <a mat-list-item [routerLink]="'/' + moduleName.toLowerCase()" routerLinkActive="active-link">
-        <!-- <mat-icon matListItemIcon>{{ getIcon(moduleName) }}</mat-icon> -->
-        <span matListItemTitle>{{ moduleName }}</span>
-      </a>
+<mat-sidenav-container class="layout-container">
+  <mat-sidenav #drawer class="layout-sidebar" fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false">
+
+    <div class="sidebar-inner">
+
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <span class="logo-text">Codi<span class="logo-play">Play</span>Co</span>
+      </div>
+
+      @if (authService.isAuthenticated()) {
+      <nav class="sidebar-nav">
+        <span class="nav-label">MENÚ PRINCIPAL</span>
+
+        <!-- Mi Panel -->
+        <a class="nav-item" routerLink="/users" routerLinkActive="nav-item--active">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Mi Panel</span>
+        </a>
+
+        <!-- Mis Cursos -->
+        <a class="nav-item" routerLink="/curso" routerLinkActive="nav-item--active">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Mis Cursos</span>
+        </a>
+
+        <!-- Foros -->
+        <a class="nav-item" routerLink="/foros" routerLinkActive="nav-item--active">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Foros</span>
+        </a>
+
+        <!-- Mensajes -->
+        <a class="nav-item" routerLink="/mensajes" routerLinkActive="nav-item--active">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Mensajes</span>
+        </a>
+
+        <div class="nav-divider"></div>
+
+        <!-- Cerrar sesión -->
+        <button class="nav-item nav-item--logout" (click)="logout()">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Cerrar sesión</span>
+        </button>
+      </nav>
       }
-      <a mat-list-item (click)="logout()">
-        <!-- <mat-icon matListItemIcon>{{ getIcon(moduleName) }}</mat-icon> -->
-        <span matListItemTitle>cerrar sesion</span>
-      </a>
-      <!-- <a mat-list-item 
-          routerLink="/users" 
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Usuarios</span>
-        </a>
-        <a mat-list-item 
-          routerLink="/roles" 
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Roles</span>
-        </a>
-        <a mat-list-item 
-          routerLink="/modules" 
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>people</mat-icon>
-          <span matListItemTitle>Modulos</span>
-        </a> -->
-    </mat-nav-list>
-    }
+
+      <!-- Bottom user card -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user__avatar">
+            @if (authService.currentUser()?.avatar?.startsWith('uploads/')) {
+              <img [src]="'http://localhost:3000/' + authService.currentUser()?.avatar"
+                   [alt]="authService.currentUser()?.name" class="avatar-photo" />
+            } @else {
+              {{ authService.currentUser()?.name?.charAt(0) }}{{ authService.currentUser()?.lastName?.charAt(0) }}
+            }
+          </div>
+          <div class="sidebar-user__info">
+            <p class="sidebar-user__name">{{ authService.currentUser()?.name }} {{ authService.currentUser()?.lastName }}</p>
+            <p class="sidebar-user__role">Estudiante</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </mat-sidenav>
-  <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      @if (isHandset$ | async) {
-      <button type="button" aria-label="Toggle sidenav" matIconButton (click)="drawer.toggle()">
-        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-      </button>
-      }
-      <span>adso_3063267</span>
-    </mat-toolbar>
-    <!-- Add Content Here -->
-    <router-outlet></router-outlet>
+
+  <mat-sidenav-content class="layout-content">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="top-bar__left">
+        @if (isHandset$ | async) {
+          <button mat-icon-button class="menu-toggle" (click)="drawer.toggle()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+        }
+      </div>
+
+      <div class="top-bar__center">
+        <div class="search-bar">
+          <!-- SVG icon positioned inside the input -->
+          <span class="search-bar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </span>
+          <input class="search-bar__input" type="text" placeholder="Buscar cursos, lecciones...">
+        </div>
+      </div>
+
+      <div class="top-bar__right">
+        <button class="notif-btn" aria-label="Notificaciones">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 01-3.46 0"/>
+          </svg>
+        </button>
+
+        <div class="user-chip-wrap" (click)="$event.stopPropagation()">
+          <div class="user-chip" [class.user-chip--open]="isUserMenuOpen"
+               (click)="toggleUserMenu()" role="button" tabindex="0"
+               [attr.aria-expanded]="isUserMenuOpen">
+            <div class="user-chip__avatar">
+              @if (authService.currentUser()?.avatar?.startsWith('uploads/')) {
+                <img [src]="'http://localhost:3000/' + authService.currentUser()?.avatar"
+                     [alt]="authService.currentUser()?.name" class="avatar-photo" />
+              } @else {
+                {{ authService.currentUser()?.name?.charAt(0) }}{{ authService.currentUser()?.lastName?.charAt(0) }}
+              }
+            </div>
+            <span class="user-chip__name">{{ authService.currentUser()?.name }}</span>
+            <span class="user-chip__caret" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </span>
+          </div>
+
+          <div class="user-menu" [class.user-menu--open]="isUserMenuOpen" role="menu">
+            <a routerLink="/perfil" class="user-menu-item"
+               (click)="isUserMenuOpen = false" role="menuitem">
+              <span class="user-menu-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </span>
+              Mi Perfil
+            </a>
+            <div class="user-menu-divider"></div>
+            <button class="user-menu-item user-menu-item--danger"
+                    (click)="logout()" role="menuitem">
+              <span class="user-menu-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </span>
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <router-outlet></router-outlet>
+    </main>
+
   </mat-sidenav-content>
 </mat-sidenav-container>

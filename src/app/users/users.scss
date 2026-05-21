@@ -1,0 +1,526 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+* { font-family: 'Nunito', sans-serif; }
+
+// ── Tokens ────────────────────────────────────────────────────
+$white:      #ffffff;
+$page-bg:    #F0EEFF;
+$purple:     #6C35DE;
+$purple-lt:  #EDE9FE;
+$purple-md:  #A78BFA;
+$purple-dk:  #4C1D95;
+$pink:       #FF6BAE;
+$cyan:       #00C2FF;
+$yellow:     #FFD93D;
+$green:      #4ADE80;
+$indigo:     #4F46E5;
+$gray-100:   #F3F4F6;
+$gray-200:   #E5E7EB;
+$gray-400:   #9CA3AF;
+$gray-500:   #6B7280;
+$text-dark:  #1A0A3C;
+$text-mid:   #3B2D6E;
+$text-light: #6B7280;
+$red:        #EF4444;
+$shadow-sm:  0 2px 8px rgba(108,53,222,0.08);
+$shadow-md:  0 4px 20px rgba(108,53,222,0.14);
+$shadow-lg:  0 8px 32px rgba(108,53,222,0.2);
+$topbar-h:   64px;
+$right-w:    280px;
+
+// ── Animations ────────────────────────────────────────────────
+@keyframes spin       { to { transform: rotate(360deg); } }
+@keyframes float      { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes bounce-in  { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes shimmer    { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes pulse-ring { 0%,100% { box-shadow: 0 0 0 0 rgba($purple,.3); } 50% { box-shadow: 0 0 0 8px rgba($purple,0); } }
+@keyframes code-float { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
+
+// ── Loading / Error ───────────────────────────────────────────
+.loading-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 320px; gap: 14px;
+  color: $text-light; font-size: 15px; font-weight: 700;
+}
+
+.loading-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid $gray-200;
+  border-top-color: $purple;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.error-state {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 20px; border-radius: 14px;
+  background: #FEF2F2; border: 1px solid #FCA5A5;
+  color: $red; font-size: 14px; font-weight: 600;
+  p { margin: 0; }
+}
+
+.error-ico {
+  width: 28px; height: 28px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  svg { width: 28px; height: 28px; }
+}
+
+// ── Page layout ───────────────────────────────────────────────
+.page-layout {
+  display: flex; gap: 24px; align-items: flex-start;
+}
+
+.content-main {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 28px;
+}
+
+// ── Welcome Banner ────────────────────────────────────────────
+.welcome-banner {
+  border-radius: 24px;
+  background: linear-gradient(135deg, #3D1CB2 0%, #6C35DE 45%, #A855F7 75%, #EC4899 100%);
+  padding: 36px 40px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  overflow: hidden; position: relative;
+  box-shadow: 0 12px 40px rgba(108,53,222,0.35);
+  animation: bounce-in 0.5s ease forwards;
+
+  // decorative code elements
+  &::before {
+    content: '</>'; position: absolute;
+    top: 16px; right: 180px;
+    font-family: monospace; font-size: 28px; font-weight: 900;
+    color: rgba(255,255,255,0.12); pointer-events: none;
+    animation: code-float 4s ease-in-out infinite;
+  }
+  &::after {
+    content: '{ }'; position: absolute;
+    bottom: 12px; right: 220px;
+    font-family: monospace; font-size: 22px; font-weight: 900;
+    color: rgba(255,255,255,0.1); pointer-events: none;
+    animation: code-float 3s ease-in-out infinite reverse;
+  }
+
+  &__body { position: relative; z-index: 1; flex: 1; min-width: 0; }
+
+  &__hi {
+    font-size: 14px; color: rgba(255,255,255,0.8);
+    margin: 0 0 6px; font-weight: 700; letter-spacing: 0.5px;
+  }
+
+  &__title {
+    font-size: 32px; font-weight: 900;
+    color: #fff; margin: 0 0 10px; line-height: 1.15;
+    span { color: $yellow; text-shadow: 0 0 20px rgba($yellow,.5); }
+  }
+
+  &__sub {
+    font-size: 14px; color: rgba(255,255,255,0.75);
+    margin: 0 0 24px; max-width: 460px; line-height: 1.65; font-weight: 600;
+  }
+
+  &__cta {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 12px 24px;
+    background: $white; color: $purple;
+    border-radius: 12px; font-size: 14px; font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+
+    &:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,0.22); }
+  }
+
+  &__art {
+    position: relative; flex-shrink: 0;
+    width: 120px; height: 100px; margin-left: 24px;
+  }
+}
+
+.art-blob {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  &--1 { width: 110px; height: 110px; top: -28px; right: -20px; }
+  &--2 { width: 68px; height: 68px; bottom: -18px; right: 8px; background: rgba(255,255,255,0.08); }
+  &--3 { width: 38px; height: 38px; top: 12px; right: 68px; background: rgba($yellow,.2); }
+}
+
+.art-icon {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px; height: 90px; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.25));
+  svg { width: 100%; height: 100%; }
+}
+
+// ── Sections ──────────────────────────────────────────────────
+.section {
+  &__header {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 16px;
+  }
+  &__title {
+    font-size: 18px; font-weight: 800; color: $text-dark; margin: 0;
+  }
+  &__more {
+    font-size: 13px; font-weight: 700; color: $purple;
+    text-decoration: none; padding: 4px 12px;
+    border-radius: 8px; transition: background 0.15s;
+    &:hover { background: $purple-lt; }
+  }
+}
+
+// ── In-Progress Cards ─────────────────────────────────────────
+.prog-cards {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 14px;
+}
+
+.prog-card {
+  background: $white; border-radius: 16px; padding: 16px;
+  display: flex; align-items: flex-start; gap: 12px;
+  box-shadow: $shadow-sm; border: 2px solid transparent;
+  transition: all 0.25s cubic-bezier(.34,1.56,.64,1);
+
+  &:hover {
+    box-shadow: $shadow-lg; transform: translateY(-4px);
+    border-color: rgba($purple,.2);
+  }
+
+  &__ico {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, $purple-lt, #C4B5FD);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: $purple;
+    animation: pulse-ring 2.5s ease-in-out infinite;
+    svg { width: 22px; height: 22px; }
+  }
+
+  &__body { flex: 1; min-width: 0; }
+
+  &__title {
+    font-size: 13px; font-weight: 700; color: $text-dark;
+    margin: 0 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  &__pct {
+    font-size: 12px; color: $purple; font-weight: 700; margin: 0 0 8px;
+  }
+}
+
+.thin-bar {
+  height: 6px; background: $gray-100; border-radius: 3px; overflow: hidden;
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, $purple, $pink);
+    background-size: 200% auto;
+    border-radius: 3px; min-width: 4px;
+    animation: shimmer 2s linear infinite;
+  }
+}
+
+// ── Course Cards ──────────────────────────────────────────────
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.course-card {
+  background: $white; border-radius: 18px; overflow: hidden;
+  box-shadow: $shadow-sm; border: 2px solid transparent;
+  display: flex; flex-direction: column;
+  transition: all 0.25s cubic-bezier(.34,1.56,.64,1);
+
+  &:hover {
+    box-shadow: $shadow-lg; transform: translateY(-6px) scale(1.01);
+    border-color: rgba($purple,.25);
+  }
+
+  &__thumb {
+    height: 120px;
+    background: linear-gradient(135deg, #EDE9FE 0%, #DBEAFE 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+
+    // code decoration inside thumb
+    &::before {
+      content: '[ ]'; position: absolute;
+      top: 8px; right: 10px;
+      font-family: monospace; font-size: 14px; font-weight: 900;
+      color: rgba($purple,.2); pointer-events: none;
+    }
+  }
+
+  &__icon-wrap {
+    position: relative; z-index: 1;
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 2px 10px rgba($purple,.25));
+    svg { width: 56px; height: 56px; }
+  }
+
+  &__tag {
+    position: absolute; bottom: 10px; left: 10px;
+    background: rgba($white,.92); color: $purple;
+    font-size: 10px; font-weight: 800; padding: 3px 8px;
+    border-radius: 6px; letter-spacing: 0.3px;
+  }
+
+  &__body {
+    padding: 16px; display: flex; flex-direction: column; flex: 1; gap: 0;
+  }
+
+  &__cat {
+    font-size: 11px; font-weight: 800; color: $purple;
+    text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 6px;
+  }
+
+  &__title {
+    font-size: 14px; font-weight: 800; color: $text-dark;
+    margin: 0 0 6px; line-height: 1.35;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+
+  &__desc {
+    font-size: 12px; color: $text-light; margin: 0 0 10px;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+    line-height: 1.55; flex: 1;
+  }
+
+  &__instructor {
+    font-size: 12px; color: $gray-500; margin: 0 0 12px; font-weight: 600;
+  }
+
+  &__foot { display: flex; align-items: center; gap: 8px; }
+}
+
+.mini-bar {
+  flex: 1; height: 6px; background: $gray-100; border-radius: 3px; overflow: hidden;
+  &__fill {
+    height: 100%;
+    background: linear-gradient(90deg, $purple, $pink);
+    border-radius: 3px; min-width: 2px;
+  }
+  &__pct { font-size: 11px; color: $gray-500; white-space: nowrap; flex-shrink: 0; font-weight: 700; }
+}
+
+// ── Foros ─────────────────────────────────────────────────────
+.foros-list { display: flex; flex-direction: column; gap: 8px; }
+
+.foro-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-radius: 12px;
+  background: $white; border: 2px solid transparent;
+  box-shadow: $shadow-sm;
+  transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+
+  &:hover { transform: translateX(4px); border-color: rgba($purple,.2); box-shadow: $shadow-md; }
+
+  &__ico {
+    width: 32px; height: 32px; flex-shrink: 0; border-radius: 8px;
+    background: $purple-lt; color: $purple;
+    display: flex; align-items: center; justify-content: center;
+    svg { width: 16px; height: 16px; }
+  }
+  &__title {
+    flex: 1; font-size: 13px; font-weight: 700; color: $text-dark;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  &__link {
+    font-size: 12px; font-weight: 800; color: $purple;
+    text-decoration: none; flex-shrink: 0;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// ── Empty ─────────────────────────────────────────────────────
+.empty-box {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 52px 20px; border-radius: 20px;
+  background: $white; border: 3px dashed rgba($purple,.2);
+  text-align: center; gap: 12px; box-shadow: $shadow-sm;
+
+  &__illust {
+    width: 220px; max-width: 100%;
+    svg { width: 100%; height: auto; }
+  }
+
+  &__title {
+    font-size: 18px; font-weight: 900; color: $text-dark; margin: 0;
+  }
+
+  &__text { font-size: 14px; color: $text-light; margin: 0; font-weight: 600; }
+
+  &__btn {
+    margin-top: 4px; padding: 12px 28px;
+    background: linear-gradient(135deg, $purple, $pink);
+    color: $white; border-radius: 12px;
+    font-size: 14px; font-weight: 800; text-decoration: none;
+    box-shadow: 0 4px 16px rgba($purple,.3);
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+
+    &:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 24px rgba($purple,.4); }
+  }
+}
+
+// ── Right Panel ───────────────────────────────────────────────
+.right-panel {
+  width: $right-w; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 16px;
+  position: sticky; top: calc(#{$topbar-h} + 4px);
+  max-height: calc(100vh - #{$topbar-h} - 48px);
+  overflow-y: auto; padding-bottom: 4px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.panel-card {
+  background: $white; border-radius: 18px;
+  box-shadow: $shadow-sm; border: 2px solid rgba($purple,.06);
+}
+
+// Profile Card
+.profile-card {
+  padding: 24px 20px; text-align: center;
+
+  &__avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: linear-gradient(135deg, $purple, $pink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 900; color: $white;
+    margin: 0 auto 14px;
+    box-shadow: 0 0 0 5px rgba($purple,.12), 0 4px 20px rgba($purple,.28);
+    animation: pulse-ring 3s ease-in-out infinite;
+  }
+
+  &__name {
+    font-size: 17px; font-weight: 900; color: $text-dark; margin: 0 0 6px;
+  }
+
+  &__quote {
+    font-size: 12px; color: $text-light; font-style: italic;
+    margin: 0 0 18px; line-height: 1.65; font-weight: 600;
+  }
+}
+
+.profile-stats {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; padding: 14px 0 0; border-top: 2px solid $gray-100;
+}
+
+.ps {
+  text-align: center;
+  &__val {
+    font-size: 22px; font-weight: 900; color: $purple;
+    margin: 0 0 2px; line-height: 1;
+  }
+  &__lbl { font-size: 11px; color: $text-light; margin: 0; font-weight: 700; }
+}
+
+.ps-sep { width: 1px; height: 32px; background: $gray-200; }
+
+// Progress Panel
+.progress-panel {
+  padding: 20px; text-align: center;
+
+  &__title {
+    font-size: 14px; font-weight: 800; color: $text-dark; margin: 0 0 16px;
+  }
+
+  &__ring-wrap {
+    position: relative; width: 80px; height: 80px;
+    margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  &__label {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+
+  &__pct {
+    font-size: 18px; font-weight: 900; color: $purple; line-height: 1;
+  }
+
+  &__sub {
+    font-size: 9px; font-weight: 700; color: $text-light; white-space: nowrap;
+  }
+
+  &__note {
+    font-size: 12px; color: $text-light; margin: 0; font-weight: 600;
+  }
+}
+
+.prog-ring {
+  width: 80px; height: 80px;
+
+  &__bg {
+    fill: none; stroke: $gray-100; stroke-width: 8;
+  }
+
+  &__fill {
+    fill: none;
+    stroke: url(#ring-grad);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 201.1;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.6s ease;
+    stroke: $purple;
+  }
+}
+
+// Quick Actions Panel
+.quick-panel {
+  padding: 20px;
+
+  &__title {
+    font-size: 14px; font-weight: 800; color: $text-dark; margin: 0 0 14px;
+  }
+}
+
+.quick-list { display: flex; flex-direction: column; gap: 6px; }
+
+.quick-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  color: $text-light; font-size: 13px; font-weight: 700;
+  text-decoration: none; transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+
+  &__ico {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: $gray-100; color: $gray-400;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.2s;
+    svg { width: 18px; height: 18px; }
+  }
+
+  &:hover {
+    color: $purple; background: $purple-lt;
+    transform: translateX(3px);
+    .quick-link__ico { background: #DDD6FE; color: $purple; }
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────
+@media (max-width: 1100px) { .right-panel { width: 256px; } }
+
+@media (max-width: 920px) {
+  .page-layout { flex-direction: column; }
+  .right-panel { width: 100%; position: static; max-height: none; overflow-y: visible; }
+  .prog-cards  { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .welcome-banner { padding: 26px 22px; &__title { font-size: 24px; } &__art { display: none; } }
+  .course-grid { grid-template-columns: 1fr; }
+}
