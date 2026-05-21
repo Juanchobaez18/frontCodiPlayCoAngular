@@ -1,704 +1,199 @@
-@if (isAdminShell()) {
-  <div class="app-admin-root" [class.dark]="isDarkMode()">
-    <app-dashboard-layout>
-      <app-sidebar
-        sidebar
-        [userName]="userDisplayName()"
-        [userEmail]="userEmail()"
-        [isDark]="isDarkMode()"
-        (darkModeToggle)="toggleDarkMode()"
-        (logout)="logout()"
-      />
+<mat-sidenav-container class="layout-container">
+  <mat-sidenav #drawer class="layout-sidebar" fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false">
 
-      <main class="admin-main-content flex-1 px-4 pt-8 pb-6 lg:px-8 lg:pt-10">
-          @switch (adminPanelView()) {
-            @case ('dashboard') {
-              <app-admin-dashboard
-                [loading]="dashboardLoading"
-                [stats]="dashboardStats"
-                [error]="dashboardError"
-              />
-            }
-        @case ('usuarios') {
-          <div class="dashboard-content">
-            <div class="page-header-section">
-              <div>
-                <h1 class="page-main-title">Gestionar Usuarios</h1>
-                <p class="page-subtitle">Lista completa de usuarios registrados</p>
-              </div>
-            </div>
+    <div class="sidebar-inner">
 
-            <div class="search-filters-container">
-              <div class="search-input-wrapper">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" placeholder="Buscar usuarios..." class="search-input" />
-              </div>
-              <button type="button" class="filter-btn">
-                <i class="fas fa-filter"></i>
-                Filtros
-              </button>
-            </div>
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <span class="logo-text">Codi<span class="logo-play">Play</span>Co</span>
+      </div>
 
-            @if (usersLoading) {
-              <p class="page-subtitle">Cargando…</p>
-            } @else if (usersError) {
-              <p class="page-subtitle" style="color: #f87171">{{ usersError }}</p>
-            } @else if (!users.length) {
-              <div class="empty-state">
-                <div class="empty-icon">
-                  <i class="fas fa-users"></i>
-                </div>
-                <h3>No hay usuarios registrados</h3>
-                <p>Aún no se han registrado usuarios en el sistema.</p>
-              </div>
-            } @else {
-              <div class="view-container">
-                <div class="grid grid-cols-12 gap-4" id="usersContainer">
-                  @for (u of users; track u.id) {
-                    <div class="col-span-12 sm:col-span-6 lg:col-span-4 xl:col-span-3">
-                      <div class="glass-card stat-card user-card-item">
-                        <div class="stat-header">
-                          <div
-                            class="stat-icon user-avatar-icon"
-                            [class.gradient-green]="isDocente(u)"
-                            [class.gradient-blue]="isEstudiante(u)"
-                            [class.gradient-purple]="!isDocente(u) && !isEstudiante(u)"
-                          >
-                            <i
-                              class="fas"
-                              [class.fa-chalkboard-teacher]="isDocente(u)"
-                              [class.fa-user-graduate]="isEstudiante(u)"
-                              [class.fa-user-friends]="!isDocente(u) && !isEstudiante(u)"
-                            ></i>
-                          </div>
-                          <span class="user-status-badge user-status" [class.active]="u.isActive" [class.inactive]="!u.isActive">
-                            {{ u.isActive ? 'Activo' : 'Inactivo' }}
-                          </span>
-                        </div>
+      @if (authService.isAuthenticated()) {
+      <nav class="sidebar-nav">
+        <span class="nav-label">MENÚ PRINCIPAL</span>
 
-                        <h3 class="stat-value">{{ u.name }} {{ u.lastName }}</h3>
-                        <p class="stat-label">{{ u.email }}</p>
-
-                        <div class="user-card-details">
-                          <div class="user-detail-item">
-                            <span class="detail-label">Rol:</span>
-                            <span class="detail-value">{{ rolesLabel(u) }}</span>
-                          </div>
-                        </div>
-
-                        <div class="user-actions user-actions--row">
-                          <button
-                            type="button"
-                            class="action-btn toggle-btn"
-                            [disabled]="isAdminPanelUser(u)"
-                            [attr.title]="isAdminPanelUser(u) ? 'No disponible para administradores' : (u.isActive ? 'Desactivar usuario' : 'Activar usuario')"
-                            (click)="toggleUserActiveStatus(u)"
-                          >
-                            <i class="fas" [class.fa-user-slash]="u.isActive" [class.fa-user-check]="!u.isActive"></i>
-                            {{ u.isActive ? 'Desactivar' : 'Activar' }}
-                          </button>
-                          <button
-                            type="button"
-                            class="action-btn edit-btn"
-                            [disabled]="isAdminPanelUser(u)"
-                            [attr.title]="isAdminPanelUser(u) ? 'No disponible para administradores' : 'Editar usuario'"
-                            (click)="openUserEdit(u)"
-                          >
-                            <i class="fas fa-edit"></i>
-                            Editar
-                          </button>
-                          <button
-                            type="button"
-                            class="action-btn delete-btn"
-                            [disabled]="isAdminPanelUser(u)"
-                            [attr.title]="isAdminPanelUser(u) ? 'No disponible para administradores' : 'Eliminar usuario'"
-                            (click)="deleteUser(u)"
-                          >
-                            <i class="fas fa-trash"></i>
-                            Eliminar
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-            @if (userEditModalOpen) {
-              <div class="user-edit-backdrop" (click)="closeUserEdit()">
-                <div class="user-edit-dialog" (click)="$event.stopPropagation()">
-                  <div class="user-edit-dialog__header">
-                    <h2>Editar usuario</h2>
-                    <button type="button" class="user-edit-close" aria-label="Cerrar" (click)="closeUserEdit()">×</button>
-                  </div>
-                  <form (ngSubmit)="saveUserEdit()" #userEditNgForm="ngForm" class="user-edit-form">
-                    <div class="form-group">
-                      <label for="ue-name">Nombre</label>
-                      <input id="ue-name" name="ueName" type="text" [(ngModel)]="userEditForm.name" required />
-                    </div>
-                    <div class="form-group">
-                      <label for="ue-last">Apellidos</label>
-                      <input id="ue-last" name="ueLast" type="text" [(ngModel)]="userEditForm.lastName" required />
-                    </div>
-                    <div class="form-group">
-                      <label for="ue-email">Correo</label>
-                      <input id="ue-email" name="ueEmail" type="email" [(ngModel)]="userEditForm.email" required />
-                    </div>
-                    <div class="form-group form-row-inline">
-                      <div>
-                        <label for="ue-doctype">Tipo doc.</label>
-                        <select id="ue-doctype" name="ueDocType" [(ngModel)]="userEditForm.docType">
-                          <option value="CC">CC</option>
-                          <option value="CE">CE</option>
-                          <option value="TI">TI</option>
-                          <option value="PA">PA</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label for="ue-docnum">Número</label>
-                        <input id="ue-docnum" name="ueDocNum" type="text" [(ngModel)]="userEditForm.docNumber" />
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="checkbox-inline">
-                        <input type="checkbox" name="ueActive" [(ngModel)]="userEditForm.isActive" />
-                        Usuario activo
-                      </label>
-                    </div>
-                    <div class="form-group">
-                      <label for="ue-pass">Nueva contraseña (opcional)</label>
-                      <input
-                        id="ue-pass"
-                        name="uePass"
-                        type="password"
-                        [(ngModel)]="userEditForm.password"
-                        autocomplete="new-password"
-                        placeholder="Dejar vacío para no cambiar"
-                      />
-                    </div>
-                    <fieldset class="form-group user-edit-roles">
-                      <legend>Roles</legend>
-                      @for (r of rolesCatalog; track r.id) {
-                        <label class="row-inline user-edit-role-row">
-                          <input
-                            type="checkbox"
-                            [checked]="userEditHasRole(r.id)"
-                            (change)="toggleUserEditRole(r.id, ($any($event.target)).checked)"
-                          />
-                          <span>{{ r.name }}</span>
-                        </label>
-                      }
-                    </fieldset>
-                    @if (userEditError) {
-                      <p class="user-edit-error">{{ userEditError }}</p>
-                    }
-                    <div class="user-edit-dialog__actions">
-                      <button type="button" class="action-btn toggle-btn" (click)="closeUserEdit()">Cancelar</button>
-                      <button type="submit" class="btn-primary" [disabled]="userEditSaving || userEditNgForm.invalid">
-                        {{ userEditSaving ? 'Guardando…' : 'Guardar' }}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            }
-          </div>
-        }
-        @case ('docentes') {
-          <div class="dashboard-content">
-            <div class="page-header-section">
-              <div>
-                <div class="page-header-title-group">
-                  <h1 class="page-main-title">Registrar Docentes</h1>
-                  <p class="page-subtitle">Completa todos los campos para registrar un nuevo docente</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-container">
-              <div class="form-wrapper">
-                @if (docenteMessage) {
-                  <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    <span>{{ docenteMessage }}</span>
-                  </div>
-                }
-                @if (docenteError) {
-                  <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>{{ docenteError }}</span>
-                  </div>
-                }
-
-                <form (ngSubmit)="submitDocente()" class="registration-form" #docForm="ngForm">
-                  <div class="form-header">
-                    <h2><i class="fas fa-chalkboard-teacher"></i> Información del Docente</h2>
-                  </div>
-
-                  <div class="form-grid">
-                    <div class="form-section">
-                      <h3 class="section-title">
-                        <i class="fas fa-user"></i>
-                        Información Personal
-                      </h3>
-
-                      <div class="form-row">
-                        <div class="form-group">
-                          <label for="nombre">
-                            <i class="fas fa-user"></i>
-                            Nombres *
-                          </label>
-                          <input type="text" id="nombre" name="nombre" [(ngModel)]="docenteRegModel.name" placeholder="Ingrese los nombres completos" required />
-                        </div>
-                        <div class="form-group">
-                          <label for="apellido">
-                            <i class="fas fa-user"></i>
-                            Apellidos *
-                          </label>
-                          <input type="text" id="apellido" name="apellido" [(ngModel)]="docenteRegModel.lastName" placeholder="Ingrese los apellidos completos" required />
-                        </div>
-                      </div>
-
-                      <div class="form-row">
-                        <div class="form-group">
-                          <label for="tipoDocumento">
-                            <i class="fas fa-id-card"></i>
-                            Tipo de Documento *
-                          </label>
-                          <select id="tipoDocumento" name="tipoDocumento" [(ngModel)]="docenteRegModel.docType" required>
-                            <option value="CC">Cédula de Ciudadanía</option>
-                            <option value="CE">Cédula de Extranjería</option>
-                            <option value="TI">Tarjeta de Identidad</option>
-                            <option value="PA">Pasaporte</option>
-                          </select>
-                        </div>
-                        <div class="form-group">
-                          <label for="documento">
-                            <i class="fas fa-hashtag"></i>
-                            Número de Documento *
-                          </label>
-                          <input type="text" id="documento" name="documento" [(ngModel)]="docenteRegModel.docNumber" placeholder="Número de documento" required />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="form-section">
-                      <h3 class="section-title">
-                        <i class="fas fa-address-book"></i>
-                        Información de Contacto
-                      </h3>
-
-                      <div class="form-row">
-                        <div class="form-group">
-                          <label for="email">
-                            <i class="fas fa-envelope"></i>
-                            Correo electrónico *
-                          </label>
-                          <input type="email" id="email" name="email" [(ngModel)]="docenteRegModel.email" placeholder="correo@ejemplo.com" required />
-                        </div>
-                        <div class="form-group">
-                          <label for="password">
-                            <i class="fas fa-lock"></i>
-                            Contraseña *
-                          </label>
-                          <input type="password" id="password" name="password" [(ngModel)]="docenteRegModel.password" placeholder="Mínimo 6 caracteres" required minlength="6" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="form-actions">
-                    <button type="submit" class="btn-primary" [disabled]="docenteSending || docForm.invalid">
-                      <i class="fas fa-save"></i>
-                      {{ docenteSending ? 'Guardando…' : 'Registrar Docente' }}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        }
-        @case ('cursos') {
-          <div class="dashboard-content">
-            <div class="page-header-section">
-              <div>
-                <div class="page-header-title-group">
-                  <h1 class="page-main-title">Cursos Disponibles</h1>
-                  <p class="page-subtitle">Gestiona y monitorea todos los cursos de la plataforma</p>
-                </div>
-              </div>
-            </div>
-
-            <section class="quick-actions">
-              <div class="section-header">
-                <h3 class="section-title">
-                  <i class="fas fa-graduation-cap"></i>
-                  Gestión de Cursos
-                </h3>
-                <a routerLink="/admin/cursos/nuevo" class="btn-primary">
-                  <i class="fas fa-plus"></i>
-                  Crear Nuevo Curso
-                </a>
-              </div>
-
-              <div class="search-filters-container">
-                <div class="search-input-wrapper">
-                  <i class="fas fa-search search-icon"></i>
-                  <input type="text" placeholder="Buscar cursos..." class="search-input" />
-                </div>
-                <button type="button" class="filter-btn">
-                  <i class="fas fa-filter"></i>
-                  Filtros
-                </button>
-              </div>
-
-              @if (cursosLoading) {
-                <p class="page-subtitle">Cargando…</p>
-              } @else if (cursosError) {
-                <p class="page-subtitle">{{ cursosError }}</p>
-              } @else if (!cursos.length) {
-                <div class="empty-state">
-                  <div class="empty-icon">
-                    <i class="fas fa-book-open"></i>
-                  </div>
-                  <h3>No hay cursos creados</h3>
-                  <p>Comienza creando tu primer curso para la plataforma.</p>
-                  <a routerLink="/admin/cursos/nuevo" class="btn-primary">
-                    <i class="fas fa-plus"></i>
-                    Crear Primer Curso
-                  </a>
-                </div>
-              } @else {
-                <div class="courses-container" id="coursesContainer">
-                  @for (curso of cursos; track curso.id) {
-                    <div class="course-card" [class.course-inactive]="!curso.estado">
-                      <div class="course-header">
-                        <div class="course-icon">
-                          <i class="fas fa-book-open"></i>
-                        </div>
-                        <div class="course-info">
-                          <h4>{{ curso.nombre }}</h4>
-                          <p>
-                            <i class="fas fa-align-left"></i>
-                            <span>{{ shortText(curso.descripcion, 80) }}</span>
-                          </p>
-                        </div>
-                        <div class="course-price">
-                          <span class="course-status" [class.status-active]="curso.estado" [class.status-inactive]="!curso.estado">
-                            {{ estadoLabel(curso) }}
-                          </span>
-                          <span class="price">${{ curso.precio }}</span>
-                        </div>
-                      </div>
-
-                      <div class="course-description">
-                        <p>{{ shortText(curso.descripcion, 100) }}</p>
-                      </div>
-
-                      <div class="course-details">
-                        <div class="instructor-rating">
-                          <div class="instructor-info">
-                            <div class="instructor-avatar">
-                              <span>{{ docenteInicial(curso) }}</span>
-                            </div>
-                            <div class="instructor-info-text">
-                              <p class="instructor-name">{{ docenteNombre(curso) }}</p>
-                              <div class="rating-stars">
-                                @for (i of [1, 2, 3, 4, 5]; track i) {
-                                  <i class="fas fa-star" [class.star-filled]="i <= dificultadNivel(curso)" [class.star-empty]="i > dificultadNivel(curso)"></i>
-                                }
-                                <span class="rating-text">{{ dificultadNivel(curso) }}/5</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="course-actions">
-                        <a [routerLink]="['/admin/cursos', curso.id, 'editar']" class="action-btn edit-btn">
-                          <i class="fas fa-edit"></i>
-                          Editar
-                        </a>
-                        <button type="button" class="action-btn toggle-btn" (click)="toggleCurso(curso)">
-                          {{ curso.estado ? 'Desactivar' : 'Activar' }}
-                        </button>
-                        <button type="button" class="action-btn delete-btn" (click)="eliminarCurso(curso)">
-                          <i class="fas fa-trash"></i>
-                          Eliminar
-                        </button>
-                      </div>
-                    </div>
-                  }
-                </div>
-              }
-            </section>
-          </div>
-        }
-        @case ('curso-create') {
-          <ng-container *ngTemplateOutlet="cursoFormTpl" />
-        }
-        @case ('curso-edit') {
-          <ng-container *ngTemplateOutlet="cursoFormTpl" />
-        }
-        @case ('mensajes') {
-          <div class="dashboard-content">
-            <div class="page-header-section">
-              <div>
-                <div class="page-header-title-group">
-                  <h1 class="page-main-title">Mensajes</h1>
-                  <p class="page-subtitle">Envía mensajes a los usuarios inscritos en los cursos</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-container">
-              <div class="form-wrapper">
-                @if (msgLoading) {
-                  <p class="page-subtitle">Cargando…</p>
-                } @else {
-                  <div class="registration-form">
-                    <div class="form-header">
-                      <h2><i class="fas fa-paper-plane"></i> Enviar Mensaje</h2>
-                    </div>
-
-                    <div class="form-grid">
-                      <div class="form-section">
-                        <h3 class="section-title">
-                          <i class="fas fa-envelope"></i>
-                          Correos de estudiantes
-                        </h3>
-
-                        <div class="form-group">
-                          <label><i class="fas fa-users"></i> Seleccionar destinatarios</label>
-                          <div class="correos-container">
-                            <ul class="usuarios-lista" style="list-style: none; padding: 0; margin: 0 0 1rem">
-                              @for (s of msgStudents; track s.id) {
-                                <li style="margin-bottom: 0.35rem">
-                                  <label class="row-inline" style="cursor: pointer">
-                                    <input type="checkbox" [checked]="isMsgChecked(s.email)" (change)="toggleMsgEmail(s.email, ($any($event.target)).checked)" />
-                                    <span>{{ s.name }} {{ s.lastName }} — {{ s.email }}</span>
-                                  </label>
-                                </li>
-                              }
-                            </ul>
-                            <label class="row-inline" style="cursor: pointer">
-                              <input type="checkbox" (change)="selectAllMsgs(($any($event.target)).checked)" />
-                              Seleccionar todos
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="form-section">
-                        <h3 class="section-title">
-                          <i class="fas fa-comment-alt"></i>
-                          Mensaje
-                        </h3>
-
-                        <div class="form-group">
-                          <label for="mensaje">
-                            <i class="fas fa-comment-alt"></i>
-                            Escribe tu mensaje
-                          </label>
-                          <textarea
-                            id="mensaje"
-                            name="mensaje"
-                            class="mensaje-textarea"
-                            [(ngModel)]="msgBody"
-                            [ngModelOptions]="{ standalone: true }"
-                            rows="10"
-                            placeholder="Escribe tu mensaje aquí..."
-                          ></textarea>
-                        </div>
-                      </div>
-                    </div>
-
-                    @if (msgInfo) {
-                      <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i>
-                        <span>{{ msgInfo }}</span>
-                      </div>
-                    }
-                    @if (msgError) {
-                      <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>{{ msgError }}</span>
-                      </div>
-                    }
-
-                    <div class="form-actions">
-                      <button type="button" class="btn-primary" (click)="sendMsgs()" [disabled]="msgSending">
-                        <i class="fas fa-paper-plane"></i>
-                        {{ msgSending ? 'Enviando…' : 'Enviar mensaje' }}
-                      </button>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-        }
-        @default {
-          <div class="dashboard-content">
-            <p class="page-subtitle">Cargando vista…</p>
-          </div>
-        }
-      }
-        </main>
-
-    <ng-template #cursoFormTpl>
-    <div class="dashboard-content">
-      <div class="page-header-section">
-        <a routerLink="/admin/cursos" class="btn-back">
-          <i class="fas fa-arrow-left"></i>
-          <span>Volver</span>
+        <!-- Mi Panel -->
+        <a class="nav-item" routerLink="/users" routerLinkActive="nav-item--active">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Mi Panel</span>
         </a>
-        <div class="page-header-title-group">
-          <h1 class="page-main-title">
-            <i class="fas" [class.fa-plus-circle]="cursoFormMode === 'create'" [class.fa-edit]="cursoFormMode === 'edit'"></i>
-            {{ cursoFormMode === 'create' ? 'Crear Nuevo Curso' : 'Editar Curso' }}
-          </h1>
-          <p class="page-subtitle">Complete todos los campos para {{ cursoFormMode === 'create' ? 'crear' : 'actualizar' }} el curso educativo</p>
+
+        <!-- Mis Cursos -->
+        <a class="nav-item" routerLink="/curso" routerLinkActive="nav-item--active">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Mis Cursos</span>
+        </a>
+
+        <!-- Foros -->
+        <a class="nav-item" routerLink="/foros" routerLinkActive="nav-item--active">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Foros</span>
+        </a>
+
+        <!-- Mensajes -->
+        <a class="nav-item" routerLink="/mensajes" routerLinkActive="nav-item--active">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Mensajes</span>
+        </a>
+
+        <div class="nav-divider"></div>
+
+        <!-- Cerrar sesión -->
+        <button class="nav-item nav-item--logout" (click)="logout()">
+          <span class="nav-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </span>
+          <span class="nav-item__text">Cerrar sesión</span>
+        </button>
+      </nav>
+      }
+
+      <!-- Bottom user card -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user__avatar">
+            @if (authService.currentUser()?.avatar?.startsWith('uploads/')) {
+              <img [src]="'http://localhost:3000/' + authService.currentUser()?.avatar"
+                   [alt]="authService.currentUser()?.name" class="avatar-photo" />
+            } @else {
+              {{ authService.currentUser()?.name?.charAt(0) }}{{ authService.currentUser()?.lastName?.charAt(0) }}
+            }
+          </div>
+          <div class="sidebar-user__info">
+            <p class="sidebar-user__name">{{ authService.currentUser()?.name }} {{ authService.currentUser()?.lastName }}</p>
+            <p class="sidebar-user__role">Estudiante</p>
+          </div>
         </div>
       </div>
 
-      @if (cursoFormLoading) {
-        <p class="page-subtitle">Cargando…</p>
-      } @else {
-        <div class="form-container">
-          <div class="form-wrapper">
-            <form (ngSubmit)="submitCurso()" class="course-form" #curForm="ngForm">
-              <div class="form-header">
-                <div class="form-icon"><i class="fas fa-book-open"></i></div>
-                <h2>Información del Curso</h2>
-                <p>Complete todos los campos requeridos</p>
-              </div>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label for="curso"><i class="fas fa-graduation-cap"></i> Nombre del Curso *</label>
-                  <input type="text" id="curso" name="nombre" [(ngModel)]="cursoModel.nombre" placeholder="Ej: HTML para Principiantes" required />
-                </div>
-
-                <div class="form-group">
-                  <label for="descripcion"><i class="fas fa-align-left"></i> Descripción *</label>
-                  <textarea id="descripcion" name="descripcion" rows="3" [(ngModel)]="cursoModel.descripcion" required placeholder="Describe brevemente el contenido del curso"></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label for="dirigido"><i class="fas fa-users"></i> Dirigido a</label>
-                  <input type="text" id="dirigido" name="dirigido" [(ngModel)]="cursoDirigido" placeholder="Ej: Principiantes en programación (se incluye al inicio de la descripción si lo completas)" />
-                </div>
-
-                <div class="form-group">
-                  <label for="asignacionDocente"><i class="fas fa-chalkboard-teacher"></i> Docente Asignado *</label>
-                  <select id="asignacionDocente" name="docenteId" [(ngModel)]="cursoModel.docenteId" required>
-                    <option [ngValue]="0">Seleccionar docente...</option>
-                    @for (d of cursoDocentes; track d.id) {
-                      <option [ngValue]="d.id">{{ d.user.name }} {{ d.user.lastName }}</option>
-                    }
-                  </select>
-                  @if (!cursoDocentes.length) {
-                    <div class="alert alert-warning">
-                      <i class="fas fa-exclamation-triangle"></i>
-                      <span>No hay docentes registrados. Primero registra un docente.</span>
-                    </div>
-                  }
-                </div>
-
-                <div class="form-group">
-                  <label for="dificultadSel"><i class="fas fa-star"></i> Nivel de Dificultad *</label>
-                  <select id="dificultadSel" name="dificultad" [(ngModel)]="cursoModel.dificultad" required>
-                    <option value="Baja">Baja</option>
-                    <option value="Media">Media</option>
-                    <option value="Alta">Alta</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="precio"><i class="fas fa-dollar-sign"></i> Precio *</label>
-                  <input type="number" id="precio" name="precio" min="0" step="0.01" [(ngModel)]="cursoModel.precio" required />
-                </div>
-
-                <div class="form-group">
-                  <label class="checkbox-inline">
-                    <input type="checkbox" name="estado" [(ngModel)]="cursoModel.estado" />
-                    Curso activo
-                  </label>
-                </div>
-              </div>
-
-              @if (cursoFormError) {
-                <div class="alert alert-error">
-                  <i class="fas fa-exclamation-circle"></i>
-                  <span>{{ cursoFormError }}</span>
-                </div>
-              }
-
-              <div class="form-actions">
-                <button type="submit" class="btn-primary" [disabled]="cursoFormSaving || curForm.invalid || !cursoDocentes.length">
-                  <i class="fas fa-save"></i>
-                  {{ cursoFormSaving ? 'Guardando…' : 'Guardar curso' }}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      }
     </div>
-    </ng-template>
-    </app-dashboard-layout>
-  </div>
-} @else {
-  <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav
-      #drawer
-      class="sidenav"
-      fixedInViewport
-      [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-      [mode]="(isHandset$ | async) ? 'over' : 'side'"
-      [opened]="(isHandset$ | async) === false"
-    >
-      <mat-toolbar>{{ isAdminShell() ? 'CodiPlayCo Admin' : 'Menu' }}</mat-toolbar>
-      @if (authService.isAuthenticated()) {
-        <mat-nav-list>
-          @if (isAdminShell()) {
-            <p class="nav-section-title">Panel administración</p>
-            <a mat-list-item routerLink="/admin/dashboard" routerLinkActive="active-link">Dashboard</a>
-            <a mat-list-item routerLink="/admin/usuarios" routerLinkActive="active-link">Usuarios</a>
-            <a mat-list-item routerLink="/admin/docentes" routerLinkActive="active-link">Registrar docentes</a>
-            <a mat-list-item routerLink="/admin/cursos" routerLinkActive="active-link">Cursos</a>
-            <a mat-list-item routerLink="/admin/mensajes" routerLinkActive="active-link">Mensajes</a>
-            <p class="nav-section-title">Aplicación</p>
-            <a mat-list-item routerLink="/users" routerLinkActive="active-link">Módulos (inicio)</a>
-          } @else {
-            @if (isAppAdmin()) {
-              <a mat-list-item routerLink="/admin/dashboard" routerLinkActive="active-link">
-                <span matListItemTitle>Panel administración</span>
-              </a>
-            }
-            @for (moduleName of menuItems(); track moduleName) {
-              <a mat-list-item [routerLink]="'/' + moduleName.toLowerCase()" routerLinkActive="active-link">
-                <span matListItemTitle>{{ moduleName }}</span>
-              </a>
-            }
-          }
-          <a mat-list-item (click)="logout()">
-            <span matListItemTitle>Cerrar sesión</span>
-          </a>
-        </mat-nav-list>
-      }
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <mat-toolbar color="primary">
+  </mat-sidenav>
+
+  <mat-sidenav-content class="layout-content">
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="top-bar__left">
         @if (isHandset$ | async) {
-          <button type="button" aria-label="Alternar menú" matIconButton (click)="drawer.toggle()">
-            <mat-icon aria-hidden="true">menu</mat-icon>
+          <button mat-icon-button class="menu-toggle" (click)="drawer.toggle()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
           </button>
         }
-        <span>{{ isAdminShell() ? 'CodiPlayCo — Administración' : 'adso_3063267' }}</span>
-      </mat-toolbar>
+      </div>
+
+      <div class="top-bar__center">
+        <div class="search-bar">
+          <!-- SVG icon positioned inside the input -->
+          <span class="search-bar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </span>
+          <input class="search-bar__input" type="text" placeholder="Buscar cursos, lecciones...">
+        </div>
+      </div>
+
+      <div class="top-bar__right">
+        <button class="notif-btn" aria-label="Notificaciones">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 01-3.46 0"/>
+          </svg>
+        </button>
+
+        <div class="user-chip-wrap" (click)="$event.stopPropagation()">
+          <div class="user-chip" [class.user-chip--open]="isUserMenuOpen"
+               (click)="toggleUserMenu()" role="button" tabindex="0"
+               [attr.aria-expanded]="isUserMenuOpen">
+            <div class="user-chip__avatar">
+              @if (authService.currentUser()?.avatar?.startsWith('uploads/')) {
+                <img [src]="'http://localhost:3000/' + authService.currentUser()?.avatar"
+                     [alt]="authService.currentUser()?.name" class="avatar-photo" />
+              } @else {
+                {{ authService.currentUser()?.name?.charAt(0) }}{{ authService.currentUser()?.lastName?.charAt(0) }}
+              }
+            </div>
+            <span class="user-chip__name">{{ authService.currentUser()?.name }}</span>
+            <span class="user-chip__caret" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </span>
+          </div>
+
+          <div class="user-menu" [class.user-menu--open]="isUserMenuOpen" role="menu">
+            <a routerLink="/perfil" class="user-menu-item"
+               (click)="isUserMenuOpen = false" role="menuitem">
+              <span class="user-menu-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </span>
+              Mi Perfil
+            </a>
+            <div class="user-menu-divider"></div>
+            <button class="user-menu-item user-menu-item--danger"
+                    (click)="logout()" role="menuitem">
+              <span class="user-menu-item__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </span>
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
       <router-outlet></router-outlet>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-}
+    </main>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>

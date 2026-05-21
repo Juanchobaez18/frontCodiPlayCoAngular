@@ -1,0 +1,250 @@
+<!-- Loading -->
+@if (isLoading) {
+  <div class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Cargando tu perfil...</p>
+  </div>
+}
+
+@if (!isLoading && user) {
+<div class="perfil-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-header__icon" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="page-header__title">Mi Perfil</h1>
+      <p class="page-header__sub">Tu información y configuración de seguridad</p>
+    </div>
+  </div>
+
+  <div class="perfil-layout">
+
+    <!-- ── LEFT COLUMN ── -->
+    <div class="perfil-main">
+
+      <!-- Avatar card -->
+      <div class="card">
+        <h2 class="card__title">
+          <span class="card__title-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="4"/>
+              <circle cx="12" cy="10" r="3"/>
+              <path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+            </svg>
+          </span>
+          Foto de Perfil
+        </h2>
+
+        <div class="avatar-zone">
+          <div class="avatar-frame">
+            @if (avatarUrl) {
+              <img [src]="avatarUrl" [alt]="avatarInitials" class="avatar-img" />
+            } @else {
+              <span class="avatar-letters">{{ avatarInitials }}</span>
+            }
+            @if (isLoadingAvatar) {
+              <div class="avatar-overlay">
+                <div class="spinner spinner--sm spinner--white"></div>
+              </div>
+            }
+          </div>
+
+          <div class="avatar-meta">
+            <label class="btn-upload" for="avatarInput">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Cambiar foto
+            </label>
+            <input id="avatarInput" type="file" accept=".jpg,.jpeg,.png,.webp"
+                   (change)="onAvatarChange($event)" hidden />
+            <p class="upload-hint">JPG, PNG o WEBP · Máx. 2&nbsp;MB</p>
+          </div>
+        </div>
+
+        @if (avatarError) {
+          <div class="alert alert--error" role="alert">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ avatarError }}
+          </div>
+        }
+        @if (avatarSuccess) {
+          <div class="alert alert--success" role="status">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            {{ avatarSuccess }}
+          </div>
+        }
+      </div>
+
+      <!-- Read-only personal info card -->
+      <div class="card">
+        <h2 class="card__title">
+          <span class="card__title-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </span>
+          Mi Información
+        </h2>
+
+        <div class="info-list">
+
+          <div class="info-row">
+            <span class="info-row__label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              Nombre completo
+            </span>
+            <span class="info-row__value">{{ user.name }} {{ user.lastName }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-row__label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              Correo electrónico
+            </span>
+            <span class="info-row__value">{{ user.email }}</span>
+          </div>
+
+          @if (fecharegistro) {
+            <div class="info-row">
+              <span class="info-row__label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Miembro desde
+              </span>
+              <span class="info-row__value">{{ fecharegistro | date:'mediumDate':'':'es' }}</span>
+            </div>
+          }
+
+        </div>
+      </div>
+
+    </div><!-- /perfil-main -->
+
+    <!-- ── RIGHT COLUMN ── -->
+    <aside class="perfil-side">
+
+      <div class="card">
+        <h2 class="card__title">
+          <span class="card__title-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </span>
+          Cambiar Contraseña
+        </h2>
+
+        <form [formGroup]="passForm" (ngSubmit)="savePassword()" class="form" novalidate>
+
+          <div class="form-group">
+            <label class="form-label" for="fcurrentPass">Contraseña actual</label>
+            <input id="fcurrentPass" type="password" class="form-input"
+                   formControlName="currentPassword"
+                   placeholder="Tu contraseña actual"
+                   [class.form-input--error]="passForm.get('currentPassword')?.invalid
+                                               && passForm.get('currentPassword')?.touched" />
+            @if (passForm.get('currentPassword')?.invalid && passForm.get('currentPassword')?.touched) {
+              <span class="field-error">Ingresa tu contraseña actual</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="fnewPass">Nueva contraseña</label>
+            <input id="fnewPass" type="password" class="form-input"
+                   formControlName="newPassword"
+                   placeholder="Mínimo 6 caracteres"
+                   [class.form-input--error]="passForm.get('newPassword')?.invalid
+                                               && passForm.get('newPassword')?.touched" />
+            @if (passForm.get('newPassword')?.invalid && passForm.get('newPassword')?.touched) {
+              <span class="field-error">Mínimo 6 caracteres</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="fconfirmPass">Confirmar nueva contraseña</label>
+            <input id="fconfirmPass" type="password" class="form-input"
+                   formControlName="confirmPassword"
+                   placeholder="Repite la nueva contraseña"
+                   [class.form-input--error]="passForm.hasError('mismatch')
+                                               && passForm.get('confirmPassword')?.touched" />
+            @if (passForm.hasError('mismatch') && passForm.get('confirmPassword')?.touched) {
+              <span class="field-error">Las contraseñas no coinciden</span>
+            }
+          </div>
+
+          @if (passError) {
+            <div class="alert alert--error" role="alert">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              {{ passError }}
+            </div>
+          }
+          @if (passSuccess) {
+            <div class="alert alert--success" role="status">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              {{ passSuccess }}
+            </div>
+          }
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary btn-primary--pink" [disabled]="isLoadingPass">
+              @if (isLoadingPass) {
+                <span class="spinner spinner--sm spinner--white"></span>
+              }
+              Actualizar contraseña
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </aside><!-- /perfil-side -->
+
+  </div><!-- /perfil-layout -->
+</div><!-- /perfil-page -->
+}

@@ -1,5 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, HostListener, inject } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AsyncPipe, CommonModule, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -64,149 +63,31 @@ const THEME_STORAGE_KEY = 'codipayco-admin-theme';
     AdminDashboardComponent,
   ],
 })
-export class AdminLayoutComponent implements OnInit {
-  private readonly breakpointObserver = inject(BreakpointObserver);
-  private readonly router = inject(Router);
-  private readonly adminApi = inject(AdminApiService);
+export class AdminLayoutComponent {
+  private breakpointObserver = inject(BreakpointObserver);
 
-  public authService = inject(Auth);
+  public authService = inject(Auth); // Inyectamos tu servicio de Core
+
+  // Obtenemos los módulos del usuario
   public menuItems = this.authService.userModules;
 
-  readonly isAdminShell = signal(this.router.url.split('?')[0].startsWith('/admin'));
-  readonly adminPanelView = signal<AdminPanelView>(null);
+  isUserMenuOpen = false;
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map((result) => result.matches),
     shareReplay(),
   );
 
-  readonly isDarkMode = signal(false);
-
-  private lastAdminDataKey = '';
-
-  readonly userDisplayName = computed(() => {
-    const u = this.authService.currentUser();
-    const full = [u?.name, u?.lastName]
-      .map((s) => s?.trim())
-      .filter((s): s is string => !!s && s.length > 0)
-      .join(' ');
-    return full.length > 0 ? full : 'Admin';
-  });
-
-  readonly userRoleLabel = computed(() => {
-    const role = this.authService.currentUser()?.roles?.[0]?.name;
-    return role?.trim() || 'Administrador';
-  });
-
-  readonly userEmail = computed(() => {
-    const email = this.authService.currentUser()?.email?.trim();
-    return email && email.length > 0 ? email : '';
-  });
-
-  /** Dashboard */
-  dashboardStats: DashboardStats | null = null;
-  dashboardLoading = true;
-  dashboardError: string | null = null;
-
-  /** Usuarios */
-  users: ManagedUser[] = [];
-  usersLoading = true;
-  usersError: string | null = null;
-
-  rolesCatalog: AdminRoleOption[] = [];
-  rolesCatalogLoaded = false;
-  userEditModalOpen = false;
-  userEditSaving = false;
-  userEditError: string | null = null;
-  userEditForm = {
-    id: 0,
-    name: '',
-    lastName: '',
-    email: '',
-    docType: 'CC',
-    docNumber: '',
-    isActive: true,
-    roleIds: [] as number[],
-    password: '',
-  };
-
-  /** Docentes registro */
-  docenteRegModel = {
-    name: '',
-    lastName: '',
-    email: '',
-    password: '',
-    docType: 'CC',
-    docNumber: '',
-  };
-  docenteSending = false;
-  docenteMessage: string | null = null;
-  docenteError: string | null = null;
-
-  /** Cursos listado */
-  cursos: CursoRow[] = [];
-  cursosLoading = true;
-  cursosError: string | null = null;
-
-  /** Curso form */
-  cursoFormMode: 'create' | 'edit' = 'create';
-  cursoFormId: number | null = null;
-  cursoDocentes: DocenteRow[] = [];
-  cursoDirigido = '';
-  cursoModel: CursoPayload = {
-    nombre: '',
-    descripcion: '',
-    dificultad: 'Baja',
-    precio: 0,
-    estado: true,
-    docenteId: 0,
-    estudiantesIds: [],
-  };
-  cursoFormLoading = true;
-  cursoFormSaving = false;
-  cursoFormError: string | null = null;
-
-  /** Mensajes masivos */
-  msgStudents: StudentEmailRow[] = [];
-  msgSelected = new Set<string>();
-  msgBody = '';
-  msgLoading = true;
-  msgSending = false;
-  msgInfo: string | null = null;
-  msgError: string | null = null;
-
-  constructor() {
-    this.applyAdminRoute(this.router.url);
-    this.router.events
-      .pipe(
-        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-        takeUntilDestroyed(),
-      )
-      .subscribe((e) => {
-        const path = e.urlAfterRedirects.split('?')[0];
-        this.isAdminShell.set(path.startsWith('/admin'));
-        this.applyAdminRoute(e.urlAfterRedirects);
-        if (path.startsWith('/admin')) {
-          /* noop */
-        }
-      });
+  @HostListener('document:click')
+  closeUserMenu() {
+    this.isUserMenuOpen = false;
   }
 
-  ngOnInit(): void {
-    const saved = localStorage.getItem(THEME_STORAGE_KEY);
-    const prefersDark = saved === 'dark';
-    this.isDarkMode.set(prefersDark);
-    document.body.classList.toggle('dark', prefersDark);
+  toggleUserMenu() {
+    this.isUserMenuOpen = !this.isUserMenuOpen;
   }
 
-  toggleDarkMode(): void {
-    const next = !this.isDarkMode();
-    this.isDarkMode.set(next);
-    document.body.classList.toggle('dark', next);
-    localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light');
-  }
-
-  logout(): void {
+  logout(){
     this.authService.logout();
   }
 
