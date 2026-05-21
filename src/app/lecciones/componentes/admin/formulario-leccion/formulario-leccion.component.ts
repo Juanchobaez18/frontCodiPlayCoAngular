@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { Leccion, CrearLeccionDto, ActualizarLeccionDto, EstadoLeccion } from '../../../modelos/leccion.model';
@@ -8,7 +9,9 @@ import { LeccionesService } from '../../../servicios/lecciones.service';
 @Component({
   selector: 'app-formulario-leccion',
   templateUrl: './formulario-leccion.component.html',
-  styleUrls: ['./formulario-leccion.component.scss']
+  styleUrls: ['./formulario-leccion.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule]
 })
 export class FormularioLeccionComponent implements OnInit, OnDestroy {
   form: FormGroup;

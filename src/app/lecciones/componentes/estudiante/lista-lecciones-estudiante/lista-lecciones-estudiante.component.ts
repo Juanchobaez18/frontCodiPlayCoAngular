@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { Leccion, ProgresoLeccion } from '../../../modelos/leccion.model';
@@ -7,7 +8,9 @@ import { LeccionesService } from '../../../servicios/lecciones.service';
 @Component({
   selector: 'app-lista-lecciones-estudiante',
   templateUrl: './lista-lecciones-estudiante.component.html',
-  styleUrls: ['./lista-lecciones-estudiante.component.scss']
+  styleUrls: ['./lista-lecciones-estudiante.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class ListaLeccionesEstudianteComponent implements OnInit, OnDestroy {
   lecciones: Leccion[] = [];

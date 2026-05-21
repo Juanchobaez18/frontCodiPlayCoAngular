@@ -3,11 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { Leccion, ProgresoLeccion } from '../../../modelos/leccion.model';
 import { LeccionesService } from '../../../servicios/lecciones.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-detalle-leccion',
   templateUrl: './detalle-leccion.component.html',
-  styleUrls: ['./detalle-leccion.component.scss']
+  styleUrls: ['./detalle-leccion.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class DetalleLeccionComponent implements OnInit, OnDestroy {
   leccion: Leccion | null = null;

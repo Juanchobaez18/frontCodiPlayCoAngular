@@ -1,10 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Leccion } from '../../../modelos/leccion.model';
 
 @Component({
   selector: 'app-dialogo-eliminar-leccion',
   templateUrl: './dialogo-eliminar-leccion.component.html',
-  styleUrls: ['./dialogo-eliminar-leccion.component.scss']
+  styleUrls: ['./dialogo-eliminar-leccion.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class DialogoEliminarLeccionComponent {
   @Input() leccion: Leccion | null = null;
