@@ -11,7 +11,6 @@ import { LeccionesService } from '../../../servicios/lecciones.service';
 })
 export class ListaLeccionesEstudianteComponent implements OnInit, OnDestroy {
   lecciones: Leccion[] = [];
-  progresoMap: Map<string, ProgresoLeccion> = new Map();
   cargando = false;
   error: string | null = null;
   private destroy$ = new Subject<void>();
@@ -33,13 +32,15 @@ export class ListaLeccionesEstudianteComponent implements OnInit, OnDestroy {
   cargarLecciones(): void {
     this.cargando = true;
     this.error = null;
-    
-    this.leccionesService.getLeccionesPublicadas()
+
+    this.leccionesService.getLecciones()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.lecciones = data.sort((a, b) => a.orden - b.orden);
-          this.cargarProgreso();
+          // Filtrar solo lecciones publicadas y ordenar por orden numérico
+          this.lecciones = data
+            .filter(leccion => leccion.estado === 'publicado')
+            .sort((a, b) => parseInt(a.orden) - parseInt(b.orden));
           this.cargando = false;
         },
         error: (err) => {
@@ -50,26 +51,7 @@ export class ListaLeccionesEstudianteComponent implements OnInit, OnDestroy {
       });
   }
 
-  cargarProgreso(): void {
-    this.lecciones.forEach(leccion => {
-      this.leccionesService.getProgresoLeccion(leccion.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (progreso) => {
-            this.progresoMap.set(leccion.id, progreso);
-          },
-          error: () => {
-            // Si no hay progreso, es normal
-          }
-        });
-    });
-  }
-
-  verDetalle(id: string): void {
+  verDetalle(id: number): void {
     this.router.navigate(['/lecciones', id]);
-  }
-
-  estaCompletada(id: string): boolean {
-    return this.progresoMap.get(id)?.completada || false;
   }
 }

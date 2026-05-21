@@ -26,8 +26,7 @@ export class DetalleLeccionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.cargarLeccion(id);
-      this.cargarProgreso(id);
+      this.cargarLeccion(+id);
     }
   }
 
@@ -36,7 +35,7 @@ export class DetalleLeccionComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  cargarLeccion(id: string): void {
+  cargarLeccion(id: number): void {
     this.cargando = true;
     this.leccionesService.getLeccionById(id)
       .pipe(takeUntil(this.destroy$))
@@ -53,24 +52,16 @@ export class DetalleLeccionComponent implements OnInit, OnDestroy {
       });
   }
 
-  cargarProgreso(id: string): void {
-    this.leccionesService.getProgresoLeccion(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          this.progreso = data;
-        },
-        error: () => {
-          // Si no hay progreso, es normal
-        }
-      });
-  }
-
   marcarComoCompletada(): void {
     if (!this.leccion) return;
 
     this.marcandoCompletada = true;
-    this.leccionesService.marcarComoCompletada(this.leccion.id)
+    const datos = {
+      estado: 'completada',
+      notas: '',
+      tiempo_total_minutos: 0
+    };
+    this.leccionesService.marcarComoCompletada(this.leccion.id, datos)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
@@ -90,6 +81,6 @@ export class DetalleLeccionComponent implements OnInit, OnDestroy {
   }
 
   estaCompletada(): boolean {
-    return this.progreso?.completada || false;
+    return this.progreso?.estado === 'completada' || false;
   }
 }

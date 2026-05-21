@@ -28,8 +28,9 @@ export class FormularioLeccionComponent implements OnInit, OnDestroy {
       titulo: ['', [Validators.required, Validators.minLength(3)]],
       descripcion: ['', [Validators.required, Validators.minLength(10)]],
       contenido: ['', [Validators.required, Validators.minLength(20)]],
-      orden: [1, [Validators.required, Validators.min(1)]],
-      estado: ['borrador' as EstadoLeccion, Validators.required]
+      orden: ['1', [Validators.required]],
+      estado: ['borrador' as EstadoLeccion, Validators.required],
+      moduloId: [1, [Validators.required, Validators.min(1)]]
     });
   }
 
@@ -37,7 +38,7 @@ export class FormularioLeccionComponent implements OnInit, OnDestroy {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.modoEdicion = true;
-      this.cargarLeccion(id);
+      this.cargarLeccion(+id);
     }
   }
 
@@ -46,7 +47,7 @@ export class FormularioLeccionComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  cargarLeccion(id: string): void {
+  cargarLeccion(id: number): void {
     this.cargando = true;
     this.leccionesService.getLeccionById(id)
       .pipe(takeUntil(this.destroy$))

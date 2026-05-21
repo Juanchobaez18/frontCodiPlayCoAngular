@@ -58,15 +58,14 @@
     <div class="form-row">
       <div class="form-group">
         <label for="orden">Orden *</label>
-        <input 
-          id="orden" 
-          type="number" 
-          formControlName="orden" 
-          min="1"
+        <input
+          id="orden"
+          type="text"
+          formControlName="orden"
+          placeholder="1"
         >
         <div class="error-msg" *ngIf="form.get('orden')?.touched && form.get('orden')?.invalid">
           <small *ngIf="form.get('orden')?.errors?.['required']">El orden es requerido</small>
-          <small *ngIf="form.get('orden')?.errors?.['min']">Mínimo 1</small>
         </div>
       </div>
 
@@ -76,6 +75,21 @@
           <option value="borrador">Borrador</option>
           <option value="publicado">Publicado</option>
         </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="moduloId">ID del Módulo *</label>
+      <input
+        id="moduloId"
+        type="number"
+        formControlName="moduloId"
+        placeholder="1"
+        min="1"
+      >
+      <div class="error-msg" *ngIf="form.get('moduloId')?.touched && form.get('moduloId')?.invalid">
+        <small *ngIf="form.get('moduloId')?.errors?.['required']">El ID del módulo es requerido</small>
+        <small *ngIf="form.get('moduloId')?.errors?.['min']">Mínimo 1</small>
       </div>
     </div>
 

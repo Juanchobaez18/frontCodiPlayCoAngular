@@ -61,4 +61,23 @@
       </button>
     </div>
   </div>
+
+  <!-- Diálogo de eliminación -->
+  <div class="dialogo-overlay" *ngIf="mostrandoDialogo" (click)="cancelarEliminacion()">
+    <div class="dialogo-contenido" (click)="$event.stopPropagation()">
+      <div class="dialogo-header">
+        <h2>Confirmar Eliminación</h2>
+      </div>
+      
+      <div class="dialogo-body">
+        <p>¿Estás seguro de que deseas eliminar la lección <strong>{{ leccionAEliminar?.titulo }}</strong>?</p>
+        <p class="advertencia">Esta acción no se puede deshacer.</p>
+      </div>
+      
+      <div class="dialogo-footer">
+        <button class="btn btn-secondary" (click)="cancelarEliminacion()">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmarEliminacion()">Eliminar</button>
+      </div>
+    </div>
+  </div>
 </div>

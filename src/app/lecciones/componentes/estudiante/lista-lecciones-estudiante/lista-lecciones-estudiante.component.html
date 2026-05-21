@@ -16,7 +16,6 @@
     <div class="card" *ngFor="let leccion of lecciones" (click)="verDetalle(leccion.id)">
       <div class="card-header">
         <span class="orden">{{ leccion.orden }}</span>
-        <span class="badge-completado" *ngIf="estaCompletada(leccion.id)">✓ Completada</span>
       </div>
       <h3>{{ leccion.titulo }}</h3>
       <p>{{ leccion.descripcion }}</p>

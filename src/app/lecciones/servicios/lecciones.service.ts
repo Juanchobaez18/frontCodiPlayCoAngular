@@ -9,7 +9,7 @@ import { Leccion, CrearLeccionDto, ActualizarLeccionDto, ProgresoLeccion } from 
   providedIn: 'root'
 })
 export class LeccionesService {
-  private readonly API_URL = '/api/lecciones';
+  private readonly API_URL = 'http://localhost:3000/lecciones';
 
   constructor(private http: HttpClient) {}
 
@@ -19,14 +19,8 @@ export class LeccionesService {
     );
   }
 
-  getLeccionById(id: string): Observable<Leccion> {
+  getLeccionById(id: number): Observable<Leccion> {
     return this.http.get<Leccion>(`${this.API_URL}/${id}`).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  getLeccionesPublicadas(): Observable<Leccion[]> {
-    return this.http.get<Leccion[]>(`${this.API_URL}/publicadas`).pipe(
       catchError(this.handleError)
     );
   }
@@ -37,26 +31,20 @@ export class LeccionesService {
     );
   }
 
-  updateLeccion(id: string, leccion: ActualizarLeccionDto): Observable<Leccion> {
-    return this.http.patch<Leccion>(`${this.API_URL}/${id}`, leccion).pipe(
+  updateLeccion(id: number, leccion: ActualizarLeccionDto): Observable<Leccion> {
+    return this.http.put<Leccion>(`${this.API_URL}/${id}`, leccion).pipe(
       catchError(this.handleError)
     );
   }
 
-  deleteLeccion(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}/${id}`).pipe(
+  deleteLeccion(id: number): Observable<{ message: string; id: number }> {
+    return this.http.delete<{ message: string; id: number }>(`${this.API_URL}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  marcarComoCompletada(leccionId: string): Observable<ProgresoLeccion> {
-    return this.http.post<ProgresoLeccion>(`${this.API_URL}/${leccionId}/progreso`, {}).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  getProgresoLeccion(leccionId: string): Observable<ProgresoLeccion> {
-    return this.http.get<ProgresoLeccion>(`${this.API_URL}/${leccionId}/progreso`).pipe(
+  marcarComoCompletada(leccionId: number, datos: any): Observable<ProgresoLeccion> {
+    return this.http.post<ProgresoLeccion>(`${this.API_URL}/${leccionId}/completar`, datos).pipe(
       catchError(this.handleError)
     );
   }

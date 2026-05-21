@@ -15,6 +15,8 @@ export class ListaLeccionesAdminComponent implements OnInit, OnDestroy {
   lecciones: Leccion[] = [];
   cargando = false;
   error: string | null = null;
+  leccionAEliminar: Leccion | null = null;
+  mostrandoDialogo = false;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -39,7 +41,7 @@ export class ListaLeccionesAdminComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.lecciones = data.sort((a, b) => a.orden - b.orden);
+          this.lecciones = data.sort((a, b) => parseInt(a.orden) - parseInt(b.orden));
           this.cargando = false;
         },
         error: (err) => {
@@ -54,12 +56,39 @@ export class ListaLeccionesAdminComponent implements OnInit, OnDestroy {
     this.router.navigate(['/admin/lecciones/nueva']);
   }
 
-  irAEditar(id: string): void {
+  irAEditar(id: number): void {
     this.router.navigate(['/admin/lecciones', id, 'editar']);
   }
 
-  irAEliminar(id: string): void {
-    this.router.navigate(['/admin/lecciones', id, 'eliminar']);
+  irAEliminar(id: number): void {
+    const leccion = this.lecciones.find(l => l.id === id);
+    if (leccion) {
+      this.leccionAEliminar = leccion;
+      this.mostrandoDialogo = true;
+    }
+  }
+
+  confirmarEliminacion(): void {
+    if (!this.leccionAEliminar) return;
+
+    this.leccionesService.deleteLeccion(this.leccionAEliminar.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.mostrandoDialogo = false;
+          this.leccionAEliminar = null;
+          this.cargarLecciones();
+        },
+        error: (err) => {
+          this.error = 'Error al eliminar la lección';
+          console.error('Error:', err);
+        }
+      });
+  }
+
+  cancelarEliminacion(): void {
+    this.mostrandoDialogo = false;
+    this.leccionAEliminar = null;
   }
 
   getEstadoBadge(estado: string): string {
