@@ -5,9 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Auth } from '../../services/auth';
-import { DocenteApiService, type CursoDocente } from '../../services/docente-api.service';
+import { DocenteApiService, type CursoDocente, type DocenteForo, type DocenteMensaje, type DocenteEstudiante } from '../../services/docente-api.service';
 import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.component';
 import { AdminLucideIconsModule } from '../admin-lucide-icons.module';
+import { MisCursosComponent } from '../../../features/docente/mis-cursos/mis-cursos.component';
 import { LayoutDashboard, BookOpen, LogOut, ClipboardList, MessageSquare, Mail, Sun, Moon } from 'lucide-angular';
 
 export type DocentePanelView = 'dashboard' | 'mis-cursos' | 'tareas' | 'foros' | 'mensajes' | null;
@@ -25,6 +26,7 @@ const THEME_KEY = 'codipayco-admin-theme';
     RouterLinkActive,
     DashboardLayoutComponent,
     AdminLucideIconsModule,
+    MisCursosComponent,
   ],
 })
 export class DocenteLayoutComponent implements OnInit {
@@ -59,12 +61,22 @@ export class DocenteLayoutComponent implements OnInit {
   });
 
   perfilError: string | null = null;
+  uploadError: string | null = null;
   selectedFile: File | null = null;
   uploadSuccess = false;
 
   readonly misCursosSig = signal<CursoDocente[]>([]);
   cursosLoading = false;
   cursosError: string | null = null;
+
+  readonly forosSig = signal<DocenteForo[]>([]);
+  forosLoading = false;
+
+  readonly mensajesEnviadosSig = signal<DocenteMensaje[]>([]);
+  readonly mensajesRecibidosSig = signal<DocenteMensaje[]>([]);
+  mensajesLoading = false;
+
+  readonly estudiantesSig = signal<DocenteEstudiante[]>([]);
 
   readonly misStats = computed(() => {
     const userId = this.authService.currentUser()?.id;
@@ -155,6 +167,13 @@ export class DocenteLayoutComponent implements OnInit {
     if (view === 'dashboard' || view === 'mis-cursos' || view === 'tareas' || view === 'foros') {
       this.loadCursos();
     }
+    if (view === 'foros') {
+      this.loadForos();
+    }
+    if (view === 'mensajes') {
+      this.loadMensajes();
+      this.loadEstudiantes();
+    }
   }
 
   loadCursos(): void {
@@ -204,8 +223,35 @@ export class DocenteLayoutComponent implements OnInit {
   uploadProfileImage(): void {
     if (!this.selectedFile) return;
     this.perfilError = null;
-    this.uploadSuccess = true;
-    this.selectedFile = null;
+    this.uploadError = null;
+    this.uploadSuccess = false;
+    const file = this.selectedFile;
+    this.docenteApi.uploadFotoPerfil(file).subscribe({
+      next: () => {
+        this.uploadSuccess = true;
+        this.selectedFile = null;
+      },
+      error: () => {
+        this.uploadError = 'Error al subir la imagen. Intenta de nuevo.';
+      },
+    });
+  }
+
+  loadForos(): void {
+    this.forosLoading = true;
+    this.docenteApi.getForos().subscribe({
+      next: (foros) => {
+        this.forosSig.set(foros);
+        this.forosLoading = false;
+      },
+      error: () => {
+        this.forosLoading = false;
+      },
+    });
+  }
+
+  forosPorCurso(cursoId: number): DocenteForo[] {
+    return this.forosSig().filter((f) => f.cursoId === cursoId);
   }
 
   crearForo(): void {
@@ -213,13 +259,52 @@ export class DocenteLayoutComponent implements OnInit {
     this.foroSending = true;
     this.foroInfo = null;
     this.foroError = null;
-    setTimeout(() => {
-      this.foroInfo = 'Foro creado exitosamente.';
-      this.foroTitulo = '';
-      this.foroCursoId = 0;
-      this.foroDescripcion = '';
-      this.foroSending = false;
-    }, 600);
+    this.docenteApi.createForo({ titulo: this.foroTitulo, descripcion: this.foroDescripcion, cursoId: this.foroCursoId }).subscribe({
+      next: () => {
+        this.foroInfo = 'Foro creado exitosamente.';
+        this.foroTitulo = '';
+        this.foroCursoId = 0;
+        this.foroDescripcion = '';
+        this.foroSending = false;
+        this.loadForos();
+      },
+      error: () => {
+        this.foroError = 'Error al crear el foro. Intenta de nuevo.';
+        this.foroSending = false;
+      },
+    });
+  }
+
+  eliminarForo(foroId: number): void {
+    this.docenteApi.deleteForo(foroId).subscribe({
+      next: () => {
+        this.forosSig.update((list) => list.filter((f) => f.id !== foroId));
+      },
+      error: () => {
+        this.foroError = 'Error al eliminar el foro.';
+      },
+    });
+  }
+
+  loadMensajes(): void {
+    this.mensajesLoading = true;
+    Promise.all([
+      this.docenteApi.getMensajesEnviados().toPromise(),
+      this.docenteApi.getMensajesRecibidos().toPromise(),
+    ]).then(([enviados, recibidos]) => {
+      this.mensajesEnviadosSig.set(enviados ?? []);
+      this.mensajesRecibidosSig.set(recibidos ?? []);
+      this.mensajesLoading = false;
+    }).catch(() => {
+      this.mensajesLoading = false;
+    });
+  }
+
+  loadEstudiantes(): void {
+    this.docenteApi.getEstudiantes().subscribe({
+      next: (data) => this.estudiantesSig.set(data),
+      error: () => {},
+    });
   }
 
   enviarMensajeDocente(): void {
@@ -227,11 +312,18 @@ export class DocenteLayoutComponent implements OnInit {
     this.msgSendingDocente = true;
     this.msgInfoDocente = null;
     this.msgErrorDocente = null;
-    setTimeout(() => {
-      this.msgInfoDocente = 'Mensaje enviado correctamente.';
-      this.msgContenido = '';
-      this.msgDestinatarioId = 0;
-      this.msgSendingDocente = false;
-    }, 600);
+    this.docenteApi.sendMensaje({ destinatarioId: this.msgDestinatarioId, contenido: this.msgContenido }).subscribe({
+      next: () => {
+        this.msgInfoDocente = 'Mensaje enviado correctamente.';
+        this.msgContenido = '';
+        this.msgDestinatarioId = 0;
+        this.msgSendingDocente = false;
+        this.loadMensajes();
+      },
+      error: () => {
+        this.msgErrorDocente = 'Error al enviar el mensaje. Intenta de nuevo.';
+        this.msgSendingDocente = false;
+      },
+    });
   }
 }

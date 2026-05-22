@@ -1,91 +1,383 @@
-<body class="text-white">
-	<header id="main-header" class="glass-navbar animate-navbar-slideIn">
-		<div class="header-container">
-			<a routerLink="/" class="logo-wrapper">
-				<img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
-			</a>
+<header id="main-header" class="glass-navbar animate-navbar-slideIn">
+  <div class="header-container">
+    <a routerLink="/" class="logo-wrapper">
+      <img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
+    </a>
 
-			<nav id="main-nav" class="nav-wrapper">
-				<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
-				<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
-				<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
-			</nav>
+    <nav class="nav-wrapper">
+      <a class="nav-link-glass" routerLink="/cursos"><span>Cursos</span></a>
+      <a class="nav-link-glass" routerLink="/quienes-somos"><span>Quienes Somos</span></a>
+      <a class="nav-link-glass" routerLink="/preguntas-frecuentes"><span>Preguntas Frecuentes</span></a>
+    </nav>
 
-			<div class="actions-wrapper">
-				<div id="nav-toggle" class="hamburger">
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
-				<a class="btn-launch" href="/auth">
-					<span>Iniciar Sesión</span>
-				</a>
-			</div>
-		</div>
-	</header>
+    <div class="actions-wrapper">
+      <div class="hamburger" [class.active]="mobileMenuOpen" (click)="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+      <a class="btn-launch" routerLink="/auth"><span>Iniciar Sesión</span></a>
+    </div>
+  </div>
+</header>
 
-	<div id="mobile-menu" class="mobile-menu">
-		<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
-		<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
-		<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
-	</div>
+<div class="mobile-menu" [class.active]="mobileMenuOpen">
+  <a class="nav-link-glass" routerLink="/cursos" (click)="closeMenu()"><span>Cursos</span></a>
+  <a class="nav-link-glass" routerLink="/quienes-somos" (click)="closeMenu()"><span>Quienes Somos</span></a>
+  <a class="nav-link-glass" routerLink="/preguntas-frecuentes" (click)="closeMenu()"><span>Preguntas Frecuentes</span></a>
+</div>
 
-	<main class="container mx-auto px-4 py-10">
-		<section class="hero-futuristic mb-16">
-			<div class="hero-content">
-				<h1 class="hero-title">¿Quiénes Somos?</h1>
-				<p class="hero-subtitle">Transformando el futuro digital de la próxima generación</p>
-			</div>
-		</section>
+<main class="main-content">
+  <!-- Hero Section -->
+  <section class="hero-futuristic mb-section">
+    <div class="hero-content">
+      <div class="hero-icon-wrapper">
+        <span class="material-icons hero-icon">rocket_launch</span>
+        <div class="icon-pulse-ring"></div>
+        <div class="icon-pulse-ring-2"></div>
+      </div>
+      <h1 class="hero-title">¿Quiénes Somos?</h1>
+      <p class="hero-subtitle">Transformando el futuro digital de la próxima generación</p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">Niños Inspirados</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">10+</span>
+          <span class="stat-label">Cursos Interactivos</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">95%</span>
+          <span class="stat-label">Satisfacción</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+  </section>
 
-		<section class="mission-vision-section mb-16">
-			<div class="section-header">
-				<h2 class="section-title">Nuestra Esencia Digital</h2>
-				<p class="section-subtitle">Los pilares que fundamentan nuestra revolución educativa</p>
-			</div>
-			<div class="mission-grid">
-				<div class="mission-card">
-					<h3 class="card-title">Sobre CodiPlay</h3>
-					<p class="card-description">Somos una plataforma de vanguardia que transforma la programación en una aventura épica para niños y niñas entre 7 y 12 años.</p>
-				</div>
+  <!-- Misión, Visión, Sobre -->
+  <section class="mission-vision-section mb-section">
+    <div class="section-header">
+      <h2 class="section-title">Nuestra Esencia Digital</h2>
+      <p class="section-subtitle">Los pilares que fundamentan nuestra revolución educativa</p>
+    </div>
+    <div class="mission-grid">
+      <div class="mission-card" data-type="sobre">
+        <div class="card-glow"></div>
+        <div class="card-icon-wrapper">
+          <span class="material-icons card-icon">sports_esports</span>
+          <div class="icon-bg-effect"></div>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Sobre CodiPlay</h3>
+          <p class="card-description">Somos una plataforma de vanguardia que transforma la programación en una aventura épica para niños y niñas entre 7 y 12 años. Cada línea de código se convierte en una misión, cada bug en un desafío, y cada proyecto en una conquista digital.</p>
+          <div class="card-features">
+            <span class="feature-tag">Gamificación</span>
+            <span class="feature-tag">Aprendizaje Activo</span>
+            <span class="feature-tag">Innovación</span>
+          </div>
+        </div>
+      </div>
 
-				<div class="mission-card">
-					<h3 class="card-title">Nuestra Misión</h3>
-					<p class="card-description">Democratizar el acceso a la educación digital de calidad, creando ecosistemas de aprendizaje donde cada niño pueda descubrir su potencial.</p>
-				</div>
+      <div class="mission-card" data-type="mision">
+        <div class="card-glow"></div>
+        <div class="card-icon-wrapper">
+          <span class="material-icons card-icon">flag</span>
+          <div class="icon-bg-effect"></div>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Nuestra Misión</h3>
+          <p class="card-description">Democratizar el acceso a la educación digital de calidad, creando ecosistemas de aprendizaje donde cada niño pueda descubrir su potencial como creador de tecnología y no solo consumidor.</p>
+          <div class="card-features">
+            <span class="feature-tag">Accesibilidad</span>
+            <span class="feature-tag">Inclusión</span>
+            <span class="feature-tag">Excelencia</span>
+          </div>
+        </div>
+      </div>
 
-				<div class="mission-card">
-					<h3 class="card-title">Nuestra Visión</h3>
-					<p class="card-description">Convertirnos en el referente latinoamericano de educación tecnológica infantil, formando la primera generación de nativos digitales creativos.</p>
-				</div>
-			</div>
-		</section>
-	</main>
+      <div class="mission-card" data-type="vision">
+        <div class="card-glow"></div>
+        <div class="card-icon-wrapper">
+          <span class="material-icons card-icon">visibility</span>
+          <div class="icon-bg-effect"></div>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Nuestra Visión</h3>
+          <p class="card-description">Convertirnos en el referente latinoamericano de educación tecnológica infantil, formando la primera generación de nativos digitales creativos, críticos y preparados para el futuro.</p>
+          <div class="card-features">
+            <span class="feature-tag">Liderazgo</span>
+            <span class="feature-tag">Transformación</span>
+            <span class="feature-tag">Futuro</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-	<footer>
-		<p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
-	</footer>
+  <!-- Equipo -->
+  <section class="team-section mb-section">
+    <div class="team-header">
+      <span class="material-icons team-icon">groups</span>
+      <h2 class="team-title">Equipo CodiPlayCo</h2>
+      <span class="team-subtitle">Los creadores detrás de la magia</span>
+    </div>
+    <div class="team-grid">
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <img src="img/angely.png" alt="Angely Sánchez" class="team-photo" />
+          </div>
+          <div class="flip-card-back">
+            <p class="flip-name">Angely Sánchez</p>
+            <p class="flip-role">Desarrolladora & Arquitecta Creativa</p>
+          </div>
+        </div>
+      </div>
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			const navToggle = document.getElementById('nav-toggle');
-			const mobileMenu = document.getElementById('mobile-menu');
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <img src="img/amado.png" alt="Alejandro Amado" class="team-photo" />
+          </div>
+          <div class="flip-card-back">
+            <p class="flip-name">Alejandro Amado</p>
+            <p class="flip-role">Desarrollador Backend & Solucionador Estratégico</p>
+          </div>
+        </div>
+      </div>
 
-			if (navToggle && mobileMenu) {
-				navToggle.addEventListener('click', () => {
-					navToggle.classList.toggle('active');
-					mobileMenu.classList.toggle('active');
-					document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
-				});
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <img src="img/javier.png" alt="Javier Rincón" class="team-photo" />
+          </div>
+          <div class="flip-card-back">
+            <p class="flip-name">Javier Rincón</p>
+            <p class="flip-role">Desarrollador Frontend & Diseñador de Experiencias</p>
+          </div>
+        </div>
+      </div>
 
-				mobileMenu.addEventListener('click', (e) => {
-					if (e.target.closest('.nav-link-glass')) {
-						navToggle.classList.remove('active');
-						mobileMenu.classList.remove('active');
-						document.body.style.overflow = 'auto';
-					}
-				});
-			}
-		});
-	</script>
-</body>
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <img src="img/juan.png" alt="Juan Báez" class="team-photo" />
+          </div>
+          <div class="flip-card-back">
+            <p class="flip-name">Juan Báez</p>
+            <p class="flip-role">Líder del Proyecto & Full Stack Developer</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+            <img src="img/riveros.png" alt="Julián Riveros" class="team-photo" />
+          </div>
+          <div class="flip-card-back">
+            <p class="flip-name">Julián Riveros</p>
+            <p class="flip-role">Especialista en Integraciones & DevOps</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Valores -->
+  <section class="values-futuristic mb-section">
+    <div class="section-header">
+      <h2 class="section-title">Nuestros Valores Digitales</h2>
+      <p class="section-subtitle">Los principios que guían nuestra revolución educativa</p>
+    </div>
+    <div class="values-grid">
+      <div class="value-card" data-value="creativity">
+        <div class="value-icon-wrapper">
+          <span class="material-icons value-icon">emoji_emotions</span>
+          <div class="value-icon-bg"></div>
+        </div>
+        <div class="value-content">
+          <h3 class="value-title">Creatividad & Diversión</h3>
+          <p class="value-description">Transformamos el aprendizaje en una aventura épica donde cada línea de código es una oportunidad para crear e innovar.</p>
+          <div class="value-metrics"><span class="metric">95% Engagement</span></div>
+        </div>
+      </div>
+
+      <div class="value-card" data-value="security">
+        <div class="value-icon-wrapper">
+          <span class="material-icons value-icon">security</span>
+          <div class="value-icon-bg"></div>
+        </div>
+        <div class="value-content">
+          <h3 class="value-title">Seguridad & Confianza</h3>
+          <p class="value-description">Creamos un entorno digital seguro donde los niños pueden explorar, aprender y crecer con total tranquilidad.</p>
+          <div class="value-metrics"><span class="metric">100% Seguro</span></div>
+        </div>
+      </div>
+
+      <div class="value-card" data-value="education">
+        <div class="value-icon-wrapper">
+          <span class="material-icons value-icon">school</span>
+          <div class="value-icon-bg"></div>
+        </div>
+        <div class="value-content">
+          <h3 class="value-title">Educación & Accesibilidad</h3>
+          <p class="value-description">Democratizamos el acceso a la educación tecnológica de calidad, rompiendo barreras y construyendo puentes hacia el futuro.</p>
+          <div class="value-metrics"><span class="metric">10+ Cursos</span></div>
+        </div>
+      </div>
+
+      <div class="value-card" data-value="teamwork">
+        <div class="value-icon-wrapper">
+          <span class="material-icons value-icon">diversity_3</span>
+          <div class="value-icon-bg"></div>
+        </div>
+        <div class="value-content">
+          <h3 class="value-title">Colaboración & Inclusión</h3>
+          <p class="value-description">Fomentamos el trabajo en equipo y la inclusión, creando una comunidad donde cada voz importa y cada idea cuenta.</p>
+          <div class="value-metrics"><span class="metric">500+ Estudiantes</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section class="contact-futuristic mb-section">
+    <div class="contact-wrapper">
+      <div class="contact-header">
+        <div class="contact-icon-wrapper">
+          <span class="material-icons contact-icon">support_agent</span>
+          <div class="contact-icon-glow"></div>
+        </div>
+        <h2 class="contact-title">Conecta con el Futuro</h2>
+        <p class="contact-subtitle">¿Listo para comenzar la aventura digital? Estamos aquí para guiarte.</p>
+      </div>
+      <div class="contact-content">
+        <div class="contact-info-grid">
+          <div class="contact-info-card">
+            <div class="contact-info-icon">
+              <span class="material-icons">whatsapp</span>
+            </div>
+            <div class="contact-info-details">
+              <h4>WhatsApp Directo</h4>
+              <p>+57 311 589 3731</p>
+              <span class="contact-status">Disponible ahora</span>
+            </div>
+          </div>
+
+          <div class="contact-info-card">
+            <div class="contact-info-icon">
+              <span class="material-icons">email</span>
+            </div>
+            <div class="contact-info-details">
+              <h4>Email Corporativo</h4>
+              <p>codiplayco&#64;gmail.com</p>
+              <span class="contact-status">Respuesta 24h</span>
+            </div>
+          </div>
+
+          <div class="contact-info-card">
+            <div class="contact-info-icon">
+              <span class="material-icons">schedule</span>
+            </div>
+            <div class="contact-info-details">
+              <h4>Horario Extendido</h4>
+              <p>Lun - Vie: 9:00 AM - 6:00 PM</p>
+              <span class="contact-status">Atención continua</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-action">
+          <div class="action-card">
+            <h3 class="action-title">¿Listo para transformar el futuro?</h3>
+            <p class="action-description">Únete a la revolución educativa y descubre el potencial ilimitado de la próxima generación.</p>
+            <a routerLink="/cursos" class="action-btn">
+              <span class="material-icons">rocket_launch</span>
+              <span>Comenzar Ahora</span>
+              <div class="btn-glow"></div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="codiplay-footer">
+  <div class="footer-container">
+    <div class="footer-main">
+      <div class="footer-left">
+        <div class="company-info">
+          <h3>CodiPlayCo</h3>
+          <p>Programadores que sueñan en grande</p>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-links">
+          <a routerLink="/">Inicio</a>
+          <a routerLink="/cursos">Cursos</a>
+          <a routerLink="/quienes-somos">Quienes Somos</a>
+        </div>
+      </div>
+
+      <div class="footer-right">
+        <div class="footer-contact-info">
+          <a href="mailto:codiplayco@gmail.com" class="footer-contact-link">
+            <div class="footer-contact-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <span>codiplayco&#64;gmail.com</span>
+          </a>
+          <a href="tel:+573115893731" class="footer-contact-link">
+            <div class="footer-contact-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+            </div>
+            <span>+57 311 589 3731</span>
+          </a>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="social-media">
+          <a href="#" class="social-link" aria-label="Facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01M6.5 6.5h11a2 2 0 012 2v11a2 2 0 01-2 2h-11a2 2 0 01-2-2v-11a2 2 0 012-2z"/>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Twitter">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="copyright">&copy; 2025 <span>CodiPlayCo</span>. Todos los derechos reservados.</p>
+      <div class="legal-links">
+        <a href="#">Privacidad</a>
+        <span>&bull;</span>
+        <a href="#">Términos</a>
+      </div>
+    </div>
+  </div>
+</footer>

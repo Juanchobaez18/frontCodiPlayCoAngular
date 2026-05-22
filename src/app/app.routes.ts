@@ -27,6 +27,19 @@ export const routes: Routes = [
         loadComponent: () => import('./features/contacto/contacto').then(m => m.ContactoComponent)
     },
     {
+        path: 'registro-pago/:id',
+        loadComponent: () => import('./features/registro-pago/registro-pago').then(m => m.RegistroPagoComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'pago-exitoso',
+        loadComponent: () => import('./features/pago-exitoso/pago-exitoso').then(m => m.PagoExitosoComponent)
+    },
+    {
+        path: 'registroclasegratis',
+        loadComponent: () => import('./auth/register/register').then(m => m.Register)
+    },
+    {
         path: 'auth',
         loadChildren: () => import('./auth/auth.routes').then(m => m.AUTH_ROUTES)
     },

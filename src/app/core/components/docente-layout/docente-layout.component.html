@@ -225,75 +225,7 @@
           }
 
           @case ('mis-cursos') {
-            <div class="dashboard-content">
-              <div class="page-header-section">
-                <div>
-                  <div class="page-header-title-group">
-                    <h1 class="page-main-title">Mis Cursos</h1>
-                    <p class="page-subtitle">Cursos que tienes asignados como docente</p>
-                  </div>
-                </div>
-              </div>
-
-              @if (cursosLoading) {
-                <p class="page-subtitle">Cargando…</p>
-              } @else if (cursosError) {
-                <p class="page-subtitle" style="color:#f87171">{{ cursosError }}</p>
-              } @else if (!misCursosFiltered.length) {
-                <div class="empty-state">
-                  <div class="empty-icon"><i class="fas fa-book-open"></i></div>
-                  <h3>Sin cursos asignados</h3>
-                  <p>El administrador aún no te ha asignado ningún curso.</p>
-                </div>
-              } @else {
-                <div class="courses-container" id="coursesContainer">
-                  @for (curso of misCursosFiltered; track curso.id) {
-                    <div class="course-card" [class.course-inactive]="!curso.estado">
-                      <div class="course-header">
-                        <div class="course-icon"><i class="fas fa-book-open"></i></div>
-                        <div class="course-info">
-                          <h4>{{ curso.nombre }}</h4>
-                          <p><span>{{ shortText(curso.descripcion, 80) }}</span></p>
-                        </div>
-                        <div class="course-price">
-                          <span class="course-status" [class.status-active]="curso.estado" [class.status-inactive]="!curso.estado">
-                            {{ estadoLabel(curso) }}
-                          </span>
-                          <span class="price">${{ curso.precio }}</span>
-                        </div>
-                      </div>
-
-                      <div class="course-description">
-                        <p>{{ shortText(curso.descripcion, 100) }}</p>
-                      </div>
-
-                      <div class="course-details">
-                        <div class="instructor-rating">
-                          <div class="instructor-info">
-                            <div class="instructor-avatar">
-                              <span>{{ userInitial() }}</span>
-                            </div>
-                            <div class="instructor-info-text">
-                              <p class="instructor-name">{{ userDisplayName() }}</p>
-                              <div class="rating-stars">
-                                @for (i of [1,2,3,4,5]; track i) {
-                                  <i class="fas fa-star" [class.star-filled]="i <= dificultadNivel(curso)" [class.star-empty]="i > dificultadNivel(curso)"></i>
-                                }
-                                <span class="rating-text">{{ dificultadNivel(curso) }}/5</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="course-meta" style="margin-top:0.5rem;font-size:0.8rem;color:var(--muted)">
-                            <i class="fas fa-users"></i>
-                            {{ curso.estudiantes?.length ?? 0 }} estudiante(s)
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                </div>
-              }
-            </div>
+            <app-mis-cursos></app-mis-cursos>
           }
 
           @case ('tareas') {
@@ -424,13 +356,34 @@
                   <span class="panel-icon"><i class="fas fa-list"></i></span>
                   Foros creados
                 </h2>
-                @if (!misCursosFiltered.length) {
-                  <p class="page-subtitle">No hay foros para mostrar.</p>
+                @if (forosLoading) {
+                  <p class="page-subtitle">Cargando foros…</p>
+                } @else if (!misCursosFiltered.length) {
+                  <p class="page-subtitle">No hay cursos asignados.</p>
                 } @else {
                   @for (curso of misCursosFiltered; track curso.id) {
                     <div class="docente-foro-curso-bloque">
                       <h3>{{ curso.nombre }}</h3>
-                      <p class="page-subtitle" style="margin-top:.25rem">No hay foros creados para este curso.</p>
+                      @if (forosPorCurso(curso.id).length === 0) {
+                        <p class="page-subtitle" style="margin-top:.25rem">No hay foros creados para este curso.</p>
+                      } @else {
+                        <ul class="docente-foro-lista">
+                          @for (foro of forosPorCurso(curso.id); track foro.id) {
+                            <li class="docente-foro-item">
+                              <div class="docente-foro-item__header">
+                                <strong>{{ foro.titulo }}</strong>
+                                <button type="button" class="btn-icon btn-danger-sm" (click)="eliminarForo(foro.id)" title="Eliminar foro">
+                                  <i class="fas fa-trash-alt"></i>
+                                </button>
+                              </div>
+                              <p class="docente-foro-item__desc">{{ foro.descripcion }}</p>
+                              @if (foro.fechaCreacion) {
+                                <small class="docente-foro-item__fecha">{{ foro.fechaCreacion | date:'dd/MM/yyyy' }}</small>
+                              }
+                            </li>
+                          }
+                        </ul>
+                      }
                     </div>
                   }
                 }
@@ -480,10 +433,8 @@
                         <label for="msgDest">Para:</label>
                         <select id="msgDest" class="docente-foro-input" [(ngModel)]="msgDestinatarioId" [ngModelOptions]="{standalone: true}" required>
                           <option [ngValue]="0" disabled>Seleccione un estudiante</option>
-                          @for (curso of misCursosFiltered; track curso.id) {
-                            @for (est of curso.estudiantes ?? []; track est.id) {
-                              <option [ngValue]="est.id">Estudiante #{{ est.id }} — {{ curso.nombre }}</option>
-                            }
+                          @for (est of estudiantesSig(); track est.id) {
+                            <option [ngValue]="est.id">{{ est.nombre }} {{ est.apellido }}</option>
                           }
                         </select>
                       </div>
@@ -503,19 +454,51 @@
 
                 @if (activeTabMensajes === 'enviados') {
                   <div class="docente-tab-content">
-                    <div class="docente-no-messages">
-                      <i class="far fa-paper-plane fa-3x"></i>
-                      <p>No has enviado mensajes todavía.</p>
-                    </div>
+                    @if (mensajesLoading) {
+                      <p class="page-subtitle">Cargando mensajes…</p>
+                    } @else if (mensajesEnviadosSig().length === 0) {
+                      <div class="docente-no-messages">
+                        <i class="far fa-paper-plane fa-3x"></i>
+                        <p>No has enviado mensajes todavía.</p>
+                      </div>
+                    } @else {
+                      <ul class="docente-mensajes-lista">
+                        @for (msg of mensajesEnviadosSig(); track msg.id) {
+                          <li class="docente-mensaje-item">
+                            <div class="docente-mensaje-item__header">
+                              <strong>Para: {{ msg.destinatario ?? 'Estudiante' }}</strong>
+                              <small>{{ msg.fecha | date:'dd/MM/yyyy HH:mm' }}</small>
+                            </div>
+                            <p>{{ msg.contenido }}</p>
+                          </li>
+                        }
+                      </ul>
+                    }
                   </div>
                 }
 
                 @if (activeTabMensajes === 'recibidos') {
                   <div class="docente-tab-content">
-                    <div class="docente-no-messages">
-                      <i class="far fa-envelope fa-3x"></i>
-                      <p>No tienes mensajes recibidos.</p>
-                    </div>
+                    @if (mensajesLoading) {
+                      <p class="page-subtitle">Cargando mensajes…</p>
+                    } @else if (mensajesRecibidosSig().length === 0) {
+                      <div class="docente-no-messages">
+                        <i class="far fa-envelope fa-3x"></i>
+                        <p>No tienes mensajes recibidos.</p>
+                      </div>
+                    } @else {
+                      <ul class="docente-mensajes-lista">
+                        @for (msg of mensajesRecibidosSig(); track msg.id) {
+                          <li class="docente-mensaje-item" [class.unread]="!msg.leido">
+                            <div class="docente-mensaje-item__header">
+                              <strong>De: {{ msg.remitente }}</strong>
+                              <small>{{ msg.fecha | date:'dd/MM/yyyy HH:mm' }}</small>
+                            </div>
+                            <p>{{ msg.contenido }}</p>
+                          </li>
+                        }
+                      </ul>
+                    }
                   </div>
                 }
               </div>

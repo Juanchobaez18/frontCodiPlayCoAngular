@@ -1,0 +1,793 @@
+/* ═══════════════════════════════════════════
+   VISTA MÓDULO — diseño vistascodi modulo1.html
+═══════════════════════════════════════════ */
+.estudiante-modulo-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-body-gradient-start, #F0F9FF), var(--bg-body-gradient-end, #e8f5ff));
+  font-family: 'Poppins', sans-serif;
+}
+
+body.dark-mode .estudiante-modulo-page {
+  background: linear-gradient(135deg, #020617, #0B1120);
+}
+
+/* Botón volver */
+.estudiante-modulo-page .btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-panel, #fff);
+  padding: 12px 24px;
+  border-radius: 30px;
+  color: var(--text-main, #1e293b);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  position: fixed;
+  top: 28px;
+  left: 28px;
+  z-index: 100;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateX(-4px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    color: var(--primary-blue, #00c2ff);
+  }
+}
+
+body.dark-mode .estudiante-modulo-page .btn-volver {
+  background: #0F172A;
+  color: #E5E7EB;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* Layout 2 columnas */
+.estudiante-modulo-page .layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Panel izquierdo: imagen flotante */
+.estudiante-modulo-page .left-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 40px;
+}
+
+body.dark-mode .estudiante-modulo-page .left-panel {
+  background: radial-gradient(circle at top left, #1E293B, #020617);
+}
+
+.estudiante-modulo-page .left-panel img {
+  max-width: 90%;
+  max-height: 80vh;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
+  animation: robotFloat 4s ease-in-out infinite;
+}
+
+@keyframes robotFloat {
+  0%   { transform: translateY(0) scale(1); }
+  25%  { transform: translateY(-10px) scale(1.02); }
+  50%  { transform: translateY(0) scale(1); }
+  75%  { transform: translateY(6px) scale(0.99); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Panel derecho: lista de lecciones */
+.estudiante-modulo-page .right-panel {
+  flex: 1.5;
+  padding: 60px 60px 60px 50px;
+  overflow-y: auto;
+  max-height: 100vh;
+  background: transparent;
+}
+
+.estudiante-modulo-page .right-panel h1 {
+  font-size: 2.2rem;
+  color: var(--text-main, #1e293b);
+  margin: 0 0 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+body.dark-mode .estudiante-modulo-page .right-panel h1 { color: #f1f5f9; }
+
+.estudiante-modulo-page .lessons-info {
+  font-size: 13px;
+  color: var(--text-secondary, #64748b);
+  margin: 0 0 14px;
+}
+
+.estudiante-modulo-page .subtitulo {
+  font-size: 0.95rem;
+  color: var(--text-secondary, #64748b);
+  background: #F8FAFC;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border-left: 4px solid var(--primary-blue, #00c2ff);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+body.dark-mode .estudiante-modulo-page .subtitulo {
+  background: rgba(255,255,255,0.04);
+  color: #CBD5F5;
+}
+
+/* Tarjetas de lecciones */
+.estudiante-modulo-page .card {
+  background: var(--bg-panel, #fff);
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 20px;
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  cursor: default;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 16px; bottom: 16px;
+    width: 4px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 0 4px 4px 0;
+    transition: background 0.3s;
+  }
+
+  &:hover {
+    transform: translateY(-4px) scale(1.005);
+    box-shadow: 0 15px 30px rgba(0, 194, 255, 0.1);
+    border-color: rgba(0, 194, 255, 0.25);
+
+    &::before { background: var(--primary-blue, #00c2ff); }
+
+    .card-button { background: var(--primary-blue, #00c2ff); color: #fff; box-shadow: 0 4px 12px rgba(0,194,255,0.35); }
+  }
+}
+
+body.dark-mode .estudiante-modulo-page .card {
+  background: #020617;
+  border-color: rgba(148, 163, 184, 0.25);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+
+  &:hover {
+    border-color: rgba(0, 194, 255, 0.4);
+    box-shadow: 0 15px 30px rgba(0, 194, 255, 0.15);
+  }
+}
+
+.card-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #0369a1;
+  flex-shrink: 0;
+}
+
+body.dark-mode .card-num {
+  background: rgba(0, 194, 255, 0.15);
+  color: #4dfff6;
+}
+
+.card-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main, #1e293b);
+    margin: 0 0 5px;
+  }
+
+  p {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #64748b);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+body.dark-mode .card-content h3 { color: #e2e8f0; }
+
+/* Botón "Vamos" */
+.card-button, .lesson-btn {
+  background: var(--bg-input, #f1f5f9);
+  color: var(--text-main, #1e293b);
+  padding: 10px 22px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+body.dark-mode .card-button {
+  background: #0F172A;
+  color: #E5E7EB;
+}
+
+.no-lecciones {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+
+  i { font-size: 2.5rem; margin-bottom: 16px; display: block; opacity: 0.4; }
+}
+
+/* Loading states */
+.modulo-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  gap: 16px;
+  color: var(--text-secondary);
+}
+
+.modulo-loader {
+  width: 48px; height: 48px;
+  border: 3px solid rgba(0,194,255,0.15);
+  border-top-color: var(--primary-blue, #00c2ff);
+  border-radius: 50%;
+  animation: spinLoader 0.8s linear infinite;
+}
+
+@keyframes spinLoader { to { transform: rotate(360deg); } }
+
+.estudiante-panel-root .sidebar.sidebar--open {
+  transform: translateX(0);
+}
+
+@media (max-width: 900px) {
+  .estudiante-modulo-page .layout { flex-direction: column; }
+  .estudiante-modulo-page .left-panel { min-height: 280px; padding: 32px 20px; }
+  .estudiante-modulo-page .right-panel { padding: 80px 24px 40px; max-height: none; overflow: visible; }
+  .estudiante-modulo-page .card { flex-direction: column; align-items: flex-start; }
+  .card-button { width: 100%; text-align: center; margin-top: 10px; }
+}
+
+/* ---- Módulos BE list (dentro del dashboard) ---- */
+.modulos-be-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 0;
+}
+
+.modulo-be-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--bg-panel);
+  border-radius: 16px;
+  padding: 18px 22px;
+  text-decoration: none;
+  color: var(--text-main);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4361ee, #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: 1.2rem;
+  }
+
+  &__info {
+    flex: 1;
+
+    h3 { margin: 0 0 4px; font-size: 1rem; font-weight: 600; }
+    p  { margin: 0 0 6px; font-size: 0.85rem; color: var(--text-secondary); }
+  }
+
+  &__meta {
+    font-size: 0.78rem;
+    background: rgba(67,97,238,0.12);
+    color: #4361ee;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  &__arrow {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   VISTA LECCIÓN — diseño vistascodi leccion1-N.html
+═══════════════════════════════════════════ */
+.estudiante-leccion-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1b2141 0%, #050816 45%, #000 100%);
+  color: #e9f5ff;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.btn-volver-leccion {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 10px 20px;
+  border-radius: 30px;
+  color: #e9f5ff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  position: fixed;
+  top: 22px;
+  left: 22px;
+  z-index: 100;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+
+  &:hover { background: rgba(255,255,255,0.15); transform: translateX(-2px); }
+}
+
+/* Estrellas animadas */
+.leccion-stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(255,255,255,0.8) 0, transparent 2px),
+    radial-gradient(circle at 85% 25%, rgba(255,255,255,0.6) 0, transparent 2px),
+    radial-gradient(circle at 50% 70%, rgba(255,255,255,0.5) 0, transparent 2px),
+    radial-gradient(circle at 35% 45%, rgba(255,255,255,0.4) 0, transparent 1.5px),
+    radial-gradient(circle at 70% 55%, rgba(255,255,255,0.5) 0, transparent 1.5px),
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.3) 0, transparent 1px);
+  background-size: 600px 600px, 600px 600px, 600px 600px, 400px 400px, 500px 500px, 700px 700px;
+  animation: leccionStars 30s linear infinite;
+}
+
+@keyframes leccionStars {
+  from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  to   { background-position: 600px 600px, -600px 600px, 600px -600px, 400px 400px, -500px 500px, 700px -700px; }
+}
+
+/* Contenedor principal */
+.leccion-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 88px 24px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header con título Orbitron */
+.leccion-header {
+  text-align: center;
+  margin-bottom: 28px;
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    font-weight: 700;
+    background: var(--lec-gradient, linear-gradient(90deg, #4dfff6, #63a0ff));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0 0 8px;
+    text-shadow: none;
+  }
+
+  p { font-size: 0.95rem; color: #a0b0d0; margin: 0 0 16px; }
+}
+
+/* Indicador de pasos */
+.leccion-pasos-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.leccion-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transition: all 0.3s;
+
+  &.active {
+    background: #4dfff6;
+    width: 24px;
+    border-radius: 4px;
+    box-shadow: 0 0 8px rgba(77,255,246,0.6);
+  }
+}
+
+/* Card oscura con blobs */
+.leccion-card {
+  position: relative;
+  background: rgba(5, 8, 22, 0.92);
+  border-radius: 20px;
+  padding: 36px 40px 28px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.8), 0 0 40px rgba(0, 200, 255, 0.12);
+  overflow: hidden;
+}
+
+.leccion-blob-top {
+  position: absolute;
+  width: 220px; height: 220px;
+  background: var(--blob1, radial-gradient(circle, #00ffe7, #006d6c));
+  filter: blur(80px);
+  opacity: 0.25;
+  top: -40px; right: -40px;
+  z-index: 0; pointer-events: none;
+}
+
+.leccion-blob-bot {
+  position: absolute;
+  width: 260px; height: 260px;
+  background: var(--blob2, radial-gradient(circle, #ff00ff, #1c3aff));
+  filter: blur(90px);
+  opacity: 0.2;
+  bottom: -70px; left: -40px;
+  z-index: 0; pointer-events: none;
+}
+
+/* Contenido de la lección */
+.leccion-content {
+  position: relative;
+  z-index: 2;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #d0e4f7;
+  animation: fadeInContent 0.4s ease;
+
+  h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    color: #4dfff6;
+    border-bottom: 1px solid rgba(77,255,246,0.25);
+    padding-bottom: 8px;
+    margin: 0 0 18px;
+    text-align: center;
+  }
+
+  h3 { color: #7effff; font-size: 1rem; margin: 16px 0 8px; }
+
+  p { margin: 0 0 12px; }
+
+  ul, ol { padding-left: 20px; margin: 0 0 14px; li { margin-bottom: 6px; } }
+
+  strong { color: #e2f0fb; }
+
+  code {
+    background: rgba(0,255,231,0.08);
+    border: 1px solid rgba(77,255,246,0.2);
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+    color: #7effff;
+  }
+
+  pre.code-sample {
+    background: rgba(0,255,255,0.05);
+    border: 1px solid rgba(77,255,246,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.83rem;
+    color: #7effff;
+    margin: 14px 0 20px;
+    line-height: 1.6;
+  }
+}
+
+@keyframes fadeInContent {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Título del paso actual */
+.leccion-paso-titulo {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.05rem;
+  color: #4dfff6;
+  border-bottom: 1px solid rgba(77,255,246,0.25);
+  padding-bottom: 10px;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+/* Concept grid (4 tarjetas de concepto) */
+:host .concept-grid,
+.leccion-content .concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.concept-item {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  transition: transform 0.3s, border-color 0.3s;
+
+  &:hover { transform: translateY(-4px); border-color: #4dfff6; background: rgba(0,234,255,0.06); }
+}
+
+.concept-icon { font-size: 2.2rem; display: block; margin-bottom: 8px; animation: floatIcon 3s ease-in-out infinite; }
+@keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+.concept-title { font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 4px; display: block; }
+.concept-analogy { color: #f9d71c; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 8px; }
+.concept-desc { font-size: 0.82rem; color: #cbd5e1; line-height: 1.4; margin: 0; }
+
+/* Pizza / step timeline */
+.pizza-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 660px;
+  margin: 0 auto 28px;
+}
+
+.timeline-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 13px 16px;
+  border-radius: 12px;
+  transition: 0.3s;
+
+  &:hover { border-color: #4dfff6; background: rgba(0,234,255,0.05); }
+}
+
+.step-num {
+  background: #4dfff6; color: #000;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+}
+
+.step-emoji { font-size: 1.4rem; }
+.step-info { strong { display: block; color: #fff; margin-bottom: 2px; font-size: 0.9rem; } p { margin: 0; font-size: 0.82rem; color: #cbd5e1; } }
+
+/* Steps list (numbered mission steps) */
+.steps { display: grid; gap: 12px; margin: 16px 0 24px; }
+.step {
+  background: rgba(10, 15, 46, 0.85);
+  border-radius: 10px; padding: 11px 14px;
+  border-left: 4px solid #00eaff;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.step-number {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #00eaff; color: #000;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.82rem; flex-shrink: 0;
+}
+.step-text { font-size: 0.88rem; color: #cbd5e1; }
+
+/* Tags info grid */
+.tags-grid, .tags-info {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.tag-card {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px; padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 0.84rem; color: #d0e4f7;
+  strong { color: #76c9ff; }
+}
+
+/* Info block */
+.info-block {
+  background: rgba(255,255,255,0.04);
+  border-left: 3px solid #4dfff6;
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 0.9rem; color: #cbd5e1;
+  ul { margin: 8px 0 0; }
+}
+
+/* Activity box */
+.activity-box {
+  background: rgba(0, 234, 255, 0.04);
+  border: 2px dashed rgba(77,255,246,0.4);
+  border-radius: 14px;
+  padding: 22px 26px;
+  text-align: center;
+  margin: 8px 0;
+}
+
+/* Checklist */
+.checklist { text-align: left; display: inline-block; margin: 14px 0; list-style: none; padding: 0; }
+.checklist li { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+.checklist i { color: #39ff14; font-size: 1rem; }
+
+/* Navigation buttons */
+.leccion-nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  flex-wrap: wrap;
+}
+
+.btn-lec {
+  border: none;
+  border-radius: 50px;
+  padding: 11px 26px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  text-decoration: none;
+
+  &--next {
+    background: linear-gradient(90deg, #00eaff, #4da3ff);
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 234, 255, 0.3);
+    &:hover { transform: scale(1.04); box-shadow: 0 0 25px rgba(0, 234, 255, 0.6); }
+  }
+
+  &--prev {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    &:hover { background: rgba(255,255,255,0.18); }
+  }
+
+  &--back {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.75);
+    border: 1px solid rgba(255,255,255,0.15);
+    &:hover { background: rgba(255,255,255,0.14); }
+  }
+
+  &--finish {
+    background: linear-gradient(90deg, #39ff14, #00eaff);
+    color: #000;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+    &:hover { transform: scale(1.04); box-shadow: 0 0 22px rgba(57, 255, 20, 0.5); }
+  }
+}
+
+/* Loading / spinner */
+.leccion-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  gap: 16px;
+  color: #a0b0d0;
+  position: relative; z-index: 1;
+}
+
+.leccion-loader {
+  width: 52px; height: 52px;
+  border: 4px solid rgba(255,255,255,0.1);
+  border-top-color: #4dfff6;
+  border-radius: 50%;
+  animation: spinLoader 0.8s linear infinite;
+}
+
+/* ── Módulos BE list ─────────────────── */
+.modulos-be-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 0;
+}
+
+.modulo-be-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--bg-panel);
+  border-radius: 16px;
+  padding: 18px 22px;
+  text-decoration: none;
+  color: var(--text-main);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+
+  &__icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4361ee, #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: #fff; font-size: 1.2rem;
+  }
+
+  &__info {
+    flex: 1;
+    h3 { margin: 0 0 4px; font-size: 1rem; font-weight: 600; }
+    p  { margin: 0 0 6px; font-size: 0.85rem; color: var(--text-secondary); }
+  }
+
+  &__meta {
+    font-size: 0.78rem;
+    background: rgba(67,97,238,0.12);
+    color: #4361ee;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  &__arrow { color: var(--text-secondary); font-size: 0.9rem; flex-shrink: 0; }
+}
+
+@media (max-width: 700px) {
+  .leccion-card { padding: 24px 18px 20px; }
+  .leccion-container { padding: 80px 16px 40px; }
+  .leccion-nav { flex-direction: column; .btn-lec { width: 100%; justify-content: center; } }
+}

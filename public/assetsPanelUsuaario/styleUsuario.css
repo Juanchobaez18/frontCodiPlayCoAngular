@@ -1,0 +1,852 @@
+/* 1. DEFINICIÓN DE VARIABLES (TEMA CLARO POR DEFECTO) */
+:root {
+    /* Colores Principales */
+    --primary-blue: #00C2FF;
+    --primary-hover: #00A8FF;
+    
+    /* Fondos */
+    --bg-body-gradient-start: #F0F9FF;
+    --bg-body-gradient-end: #D6F1FF;
+    --bg-panel: #FFFFFF;        /* Color de tarjetas y sidebar */
+    --bg-input: #FFFFFF;        /* Fondo del buscador */
+    
+    /* Textos */
+    --text-main: #2C3E50;       /* Títulos y texto oscuro */
+    --text-secondary: #7F8C8D;  /* Subtítulos y textos grises */
+    --text-sidebar-link: #7F8C8D;
+    
+    /* Elementos UI */
+    --border-light: rgba(0,0,0,0.05);
+    --shadow-card: 0 10px 25px rgba(0,0,0,0.03);
+    --shadow-glow: 0 10px 30px rgba(0, 194, 255, 0.15);
+    
+    /* Específicos de Tarjetas */
+    --card-ring-color: #E0F7FA;
+    --badge-bg: #B3E5FC;
+    --badge-text: #0277BD;
+    --btn-locked-bg: #E0F7FA;
+    --btn-locked-text: #4FC3F7;
+    --lock-border: #FFFFFF; /* El borde del candadito debe coincidir con el fondo de la tarjeta */
+}
+
+/* 2. TEMA OSCURO (CLASE .dark-mode) */
+body.dark-mode {
+    /* Fondos Oscuros */
+    --bg-body-gradient-start: #0f172a; /* Slate 900 */
+    --bg-body-gradient-end: #1e293b;   /* Slate 800 */
+    --bg-panel: #1e293b;               /* Tarjetas oscuras */
+    --bg-input: #334155;               /* Buscador más claro que el fondo */
+    
+    /* Textos Claros */
+    --text-main: #f1f5f9;              /* Blanco humo */
+    --text-secondary: #94a3b8;         /* Gris azulado claro */
+    --text-sidebar-link: #cbd5e1;
+    
+    /* Elementos UI Oscuros */
+    --border-light: rgba(255,255,255,0.1);
+    --shadow-card: 0 10px 25px rgba(0,0,0,0.3); /* Sombra más fuerte en oscuro */
+    
+    /* Ajustes de Tarjetas en Oscuro */
+    --card-ring-color: #334155;
+    --badge-bg: #0ea5e9;     /* Azul más intenso para contraste */
+    --badge-text: #ffffff;
+    --btn-locked-bg: #334155;
+    --btn-locked-text: #64748b;
+    --lock-border: #1e293b;  /* Coincide con el fondo oscuro de la tarjeta */
+}
+
+/* RESET Y ESTILOS BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body {
+    background: linear-gradient(135deg, var(--bg-body-gradient-start), var(--bg-body-gradient-end));
+    color: var(--text-main); /* Texto base usa el color principal del tema (claro/oscuro) */
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+    width: 260px;
+    background: var(--bg-panel);
+    display: flex;
+    flex-direction: column;
+    padding: 30px 20px;
+    border-right: 1px solid var(--border-light);
+}
+
+/* Botón hamburguesa (solo visible en móvil mediante media query) */
+.mobile-nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: none;
+    background: var(--bg-panel);
+    color: var(--text-main);
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+}
+
+.mobile-nav-toggle i {
+    font-size: 18px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 50px;
+    padding-left: 10px;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #00C2FF, #0085FF);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0 4px 10px rgba(0, 133, 255, 0.3);
+}
+
+.logo-text {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.sidebar-menu ul { list-style: none; }
+.sidebar-menu li { margin-bottom: 15px; }
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: var(--text-sidebar-link);
+    border-radius: 15px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.sidebar-menu li.active a {
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-hover));
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 194, 255, 0.3);
+}
+
+.sidebar-menu a:hover:not(.active a) {
+    background-color: var(--border-light); /* Uso sutil para hover */
+    color: var(--primary-blue);
+}
+
+.sidebar-footer { margin-top: auto; }
+.support-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: var(--text-sidebar-link);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* --- MAIN CONTENT --- */
+.main-content {
+    flex: 1;
+    /* El fondo se maneja en el body para el gradiente completo, o aquí si prefieres panel separado */
+    /* background: transparente porque el body ya tiene el gradiente */
+    padding: 30px 40px;
+    overflow-y: auto;
+    position: relative;
+}
+
+.achievements-wrapper {
+    background: var(--bg-panel);
+    border-radius: 24px;
+    padding: 24px 28px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    max-width: 960px;
+    margin: 0 auto 32px auto;
+}
+
+body.dark-mode .achievements-wrapper {
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* --- HEADER --- */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.search-bar {
+    background: var(--bg-input);
+    padding: 12px 20px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    width: 400px;
+    box-shadow: var(--shadow-card);
+}
+
+.search-bar--hidden-logros {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.search-bar--hidden-bandeja {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.search-bar--hidden-foros {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 14px;
+    color: var(--text-main);
+}
+
+.search-bar input::placeholder {
+    color: var(--text-secondary);
+}
+
+.user-menu {
+    position: absolute;
+    top: 60px;
+    right: 40px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    z-index: 1000;
+}
+
+.user-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    color: #2C3E50; /* Texto oscuro siempre legible sobre fondo blanco, incluso en modo oscuro */
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.user-menu a:hover {
+    background-color: var(--border-light);
+}
+
+/* Hover especial para Cerrar sesión (último enlace del menú) */
+.user-menu a:last-child:hover {
+    background-color: #ffe5e5;
+    color: #e53935;
+}
+
+.avatar {
+    width: 35px;
+    height: 35px;
+    background-color: var(--primary-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+}
+
+/* Imagen interna del avatar: se recorta al círculo y no se sale del contenedor */
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+/* --- CARDS --- */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
+}
+
+/* TÍTULOS PRINCIPALES (Bienvenido..., Mis Cursos) */
+.welcome-section h1,
+.page-header h1 {
+    color: var(--text-main);
+    font-size: 32px;
+    font-weight: 700;
+}
+
+body.dark-mode .welcome-section h1,
+body.dark-mode .page-header h1 {
+    color: #ffffff;
+}
+
+.courses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.course-list-card {
+    background: var(--bg-panel);
+    border-radius: 20px;
+    padding: 18px 22px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: 20px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    max-width: 960px;
+    margin-inline: 0;
+}
+
+body.dark-mode .course-list-card {
+    background: rgba(255, 255, 255, 0.03); /* un poco más clara que el fondo oscuro */
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Texto de Mis Cursos en modo oscuro: igual que las tarjetas de inicio */
+body.dark-mode .course-list-card .course-title,
+body.dark-mode .course-list-card .course-description {
+    color: var(--text-main);
+}
+
+body.dark-mode .course-list-card .meta-item {
+    color: var(--text-secondary);
+}
+
+.course-card {
+    background: var(--bg-panel);
+    border-radius: 24px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+}
+
+/* En modo CLARO, que la tarjeta se vea claramente como una card sobre el fondo */
+body:not(.dark-mode) .course-card {
+    background: #fefeff; /* casi blanco, más claro que el gradiente de fondo */
+    box-shadow: 0 16px 35px rgba(0, 133, 255, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.course-actions {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.course-actions .btn-continue {
+    min-width: 180px;
+    width: auto !important; /* en mis_cursos no debe estirarse a todo el ancho */
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.badge {
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.card-icon-container {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.icon-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid var(--card-ring-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.rocket-icon {
+    font-size: 40px;
+    color: #FF5252;
+    background: -webkit-linear-gradient(#FF8A80, #D50000);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(2px 4px 6px rgba(255, 82, 82, 0.3));
+}
+
+.lock-overlay {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--primary-blue);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 3px solid var(--lock-border); /* Clave para el efecto de recorte */
+}
+
+.course-card h3 {
+    color: var(--text-main);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.lessons-info {
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+button {
+    border: none;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-continue {
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-hover));
+    color: #ffffff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(0, 194, 255, 0.3);
+    cursor: pointer;
+}
+
+.btn-locked {
+    background: var(--btn-locked-bg);
+    color: var(--btn-locked-text);
+    cursor: not-allowed;
+}
+
+.floating-help {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: #263238;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* --- BANDEJA (INBOX) --- */
+.inbox-container {
+    background: var(--bg-panel);
+    border-radius: 24px;
+    padding: 20px 24px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    max-width: 960px;
+    margin: 0 auto 32px auto;
+}
+
+.inbox-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    border-radius: 999px;
+    border: 1px solid var(--border-light);
+    background: #f5fbff;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-hover));
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 194, 255, 0.3);
+}
+
+.badge-mini {
+    background: rgba(255,255,255,0.9);
+    color: var(--primary-blue);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.inbox-panel {
+    margin-top: 10px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-icon-bg {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin: 0 auto 16px auto;
+    background: #e0f4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-blue);
+    font-size: 26px;
+}
+
+.message-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.message-card {
+    background: #f9fcff;
+    border-radius: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-light);
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+}
+
+.message-header strong {
+    font-size: 14px;
+}
+
+.message-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.message-content {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.reply-form textarea {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+    padding: 8px 10px;
+    resize: vertical;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.btn-ghost,
+.btn-primary-small {
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px dashed var(--primary-blue);
+    color: var(--primary-blue);
+}
+
+.btn-primary-small {
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-hover));
+    color: #ffffff;
+    border: none;
+}
+
+/* --- FOROS --- */
+.full-height-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 24px;
+}
+
+.forums-page-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.forums-page-title i {
+    font-size: 24px;
+    color: var(--primary-blue);
+}
+
+.forums-page-title h1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.empty-forum-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--bg-panel);
+    border-radius: 20px;
+    border: 1px dashed var(--border-light);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.empty-icon-simple {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin: 0 auto 16px auto;
+    background: #e0f4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-blue);
+    font-size: 26px;
+}
+
+.forums-panel {
+    background: var(--bg-panel);
+    border-radius: 20px;
+    padding: 20px 22px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    max-width: 960px;
+    margin: 0 auto 24px auto;
+}
+
+.forums-panel-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.foro-curso-titulo {
+    font-size: 16px;
+    margin: 16px 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.foro-curso-titulo i {
+    color: #4CAF50;
+}
+
+.foro-list {
+    margin-top: 10px;
+}
+
+.foro-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.foro-item:last-child {
+    border-bottom: none;
+}
+
+.foro-icon {
+    font-size: 22px;
+    margin-right: 14px;
+    color: #4CAF50;
+    min-width: 40px;
+    text-align: center;
+}
+
+.foro-content {
+    flex: 1;
+}
+
+.foro-title {
+    font-weight: 600;
+    margin: 0 0 4px 0;
+}
+
+.foro-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin: 0 0 4px 0;
+}
+
+.foro-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.respuestas-count {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.foro-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+.btn-action {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+}
+
+.btn-action:hover {
+    color: #4CAF50;
+}
+
+.foro-curso-empty {
+    padding: 12px 14px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+/* --- RESPONSIVE PANEL USUARIO (MÓVIL) --- */
+@media (max-width: 900px) {
+    .dashboard-container {
+        position: relative;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.35);
+    }
+
+    .sidebar.sidebar--open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        padding: 20px 16px;
+    }
+
+    .top-header {
+        gap: 12px;
+    }
+
+    .mobile-nav-toggle {
+        display: inline-flex;
+    }
+}

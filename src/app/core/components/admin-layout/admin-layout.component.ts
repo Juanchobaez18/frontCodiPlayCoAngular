@@ -1,15 +1,9 @@
-import { Component, HostListener, inject } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AsyncPipe, CommonModule, NgTemplateOutlet } from '@angular/common';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Observable, forkJoin } from 'rxjs';
-import { filter, map, shareReplay } from 'rxjs/operators';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { forkJoin } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { Auth } from '../../services/auth';
 import {
   userHasAdminPanelAccess,
@@ -26,8 +20,13 @@ import {
   type StudentEmailRow,
 } from '../../services/admin-api.service';
 import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.component';
-import { SidebarComponent } from '../sidebar/sidebar.component';
-import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
+import { AdminLucideIconsModule } from '../admin-lucide-icons.module';
+import {
+  LayoutDashboard, Users, BookOpen, GraduationCap, Mail, LogOut, Moon, Sun,
+  Zap, UserPlus, User, Pencil, Trash2, AlertCircle, CheckCircle,
+  CreditCard, Hash, Lock, KeyRound, Info, X, Plus, ArrowLeft,
+  Star, Send, Save, LayoutList,
+} from 'lucide-angular';
 
 export type AdminPanelView =
   | 'dashboard'
@@ -46,48 +45,148 @@ const THEME_STORAGE_KEY = 'codipayco-admin-theme';
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.scss',
   imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    MatToolbarModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatListModule,
-    MatIconModule,
-    AsyncPipe,
     CommonModule,
     FormsModule,
-    NgTemplateOutlet,
+    RouterLink,
+    RouterLinkActive,
     DashboardLayoutComponent,
-    SidebarComponent,
-    AdminDashboardComponent,
+    AdminLucideIconsModule,
   ],
 })
-export class AdminLayoutComponent {
-  private breakpointObserver = inject(BreakpointObserver);
+export class AdminLayoutComponent implements OnInit {
+  public authService = inject(Auth);
+  private readonly adminApi = inject(AdminApiService);
+  private readonly router = inject(Router);
 
-  public authService = inject(Auth); // Inyectamos tu servicio de Core
+  readonly isDarkMode = signal(false);
 
-  // Obtenemos los módulos del usuario
-  public menuItems = this.authService.userModules;
+  readonly userDisplayName = computed(() => {
+    const u = this.authService.currentUser();
+    const full = [u?.name, u?.lastName]
+      .map((s) => s?.trim())
+      .filter((s): s is string => !!s && s.length > 0)
+      .join(' ');
+    return full.length > 0 ? full : 'Admin';
+  });
 
-  isUserMenuOpen = false;
+  readonly userRoleLabel = computed(() => {
+    const role = this.authService.currentUser()?.roles?.[0]?.name;
+    return role?.trim() || 'Administrador';
+  });
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map((result) => result.matches),
-    shareReplay(),
-  );
+  readonly userEmail = computed(() => this.authService.currentUser()?.email?.trim() ?? '');
 
-  @HostListener('document:click')
-  closeUserMenu() {
-    this.isUserMenuOpen = false;
+  readonly userInitial = computed(() => {
+    const name = this.userDisplayName();
+    return (name.split(/\s+/)[0]?.[0] ?? 'A').toUpperCase();
+  });
+
+  // sidebar
+  protected readonly iDash     = LayoutDashboard;
+  protected readonly iUsers    = Users;
+  protected readonly iDocentes = GraduationCap;
+  protected readonly iCourses  = BookOpen;
+  protected readonly iMensajes = Mail;
+  protected readonly iLogOut   = LogOut;
+  protected readonly iSun      = Sun;
+  protected readonly iMoon     = Moon;
+  // content
+  protected readonly iZap          = Zap;
+  protected readonly iUserPlus     = UserPlus;
+  protected readonly iUser         = User;
+  protected readonly iPencil       = Pencil;
+  protected readonly iTrash        = Trash2;
+  protected readonly iAlertCircle  = AlertCircle;
+  protected readonly iCheckCircle  = CheckCircle;
+  protected readonly iCreditCard   = CreditCard;
+  protected readonly iHash         = Hash;
+  protected readonly iLock         = Lock;
+  protected readonly iKey          = KeyRound;
+  protected readonly iInfo         = Info;
+  protected readonly iX            = X;
+  protected readonly iPlus         = Plus;
+  protected readonly iArrowLeft    = ArrowLeft;
+  protected readonly iStar         = Star;
+  protected readonly iSend         = Send;
+  protected readonly iSave         = Save;
+  protected readonly iList         = LayoutList;
+
+  adminPanelView = signal<AdminPanelView>(null);
+  private lastAdminDataKey = '';
+
+  // dashboard
+  dashboardStats: DashboardStats | null = null;
+  dashboardLoading = false;
+  dashboardError: string | null = null;
+
+  // usuarios
+  users: ManagedUser[] = [];
+  usersLoading = false;
+  usersError: string | null = null;
+  rolesCatalogLoaded = false;
+  rolesCatalog: AdminRoleOption[] = [];
+  userEditError: string | null = null;
+  userEditModalOpen = false;
+  userEditSaving = false;
+  userEditForm: {
+    id: number; name: string; lastName: string; email: string;
+    docType: string; docNumber: string; isActive: boolean;
+    roleIds: number[]; password: string;
+  } = { id: 0, name: '', lastName: '', email: '', docType: 'CC', docNumber: '', isActive: true, roleIds: [], password: '' };
+
+  // docentes
+  docenteSending = false;
+  docenteMessage: string | null = null;
+  docenteError: string | null = null;
+  docenteRegModel: { name: string; lastName: string; email: string; password: string; docType: string; docNumber: string } =
+    { name: '', lastName: '', email: '', password: '', docType: 'CC', docNumber: '' };
+
+  // cursos
+  cursos: CursoRow[] = [];
+  cursosLoading = false;
+  cursosError: string | null = null;
+  cursoFormMode: 'create' | 'edit' = 'create';
+  cursoFormId: number | null = null;
+  cursoFormLoading = false;
+  cursoFormError: string | null = null;
+  cursoDirigido = '';
+  cursoDocentes: DocenteRow[] = [];
+  cursoFormSaving = false;
+  cursoModel: {
+    nombre: string; descripcion: string; dificultad: string;
+    precio: number; estado: boolean; docenteId: number; estudiantesIds: number[];
+  } = { nombre: '', descripcion: '', dificultad: 'Baja', precio: 0, estado: true, docenteId: 0, estudiantesIds: [] };
+
+  // mensajes
+  msgStudents: StudentEmailRow[] = [];
+  msgSelected = new Set<string>();
+  msgLoading = false;
+  msgError: string | null = null;
+  msgBody = '';
+  msgSending = false;
+  msgInfo: string | null = null;
+
+  constructor() {
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => this.applyAdminRoute(e.urlAfterRedirects));
+    this.applyAdminRoute(this.router.url);
   }
 
-  toggleUserMenu() {
-    this.isUserMenuOpen = !this.isUserMenuOpen;
+  ngOnInit(): void {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    this.isDarkMode.set(saved === 'dark');
+    document.body.classList.toggle('dark', saved === 'dark');
   }
 
-  logout(){
+  toggleDarkMode(): void {
+    const next = !this.isDarkMode();
+    this.isDarkMode.set(next);
+    document.body.classList.toggle('dark', next);
+    localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light');
+  }
+
+  logout(): void {
     this.authService.logout();
   }
 

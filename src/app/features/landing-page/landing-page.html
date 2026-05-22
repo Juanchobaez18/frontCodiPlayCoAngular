@@ -31,22 +31,20 @@
 	</div>
 
 	<main class="container">
-		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; width: 100%; padding: 0 2rem;">
-			<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+		<div class="hero-content">
+			<div class="hero-text">
 				<h1 class="animate-codiplay-title">
 					Empieza tu<br /> aventura<br /> con CodiPlay
 				</h1>
-				<p style="font-size: 1.125rem; max-width: 500px;">
+				<p class="hero-subtitle">
 					¡Diviértete programando desde cero!
 				</p>
-				<a class="btn-trade" routerLink="/contacto">
-					<span>Mas Informacion</span>
+				<a class="btn-trade" routerLink="/auth/register">
+					<span>Regístrate aquí</span>
 				</a>
 			</div>
-			<div style="display: flex; justify-content: center;">
-				<img src="img/astronautaFlotando.png"
-					alt="Astronauta flotando" class="astronaut-float-3d-big" 
-					style="max-width: 400px; height: auto;" />
+			<div class="hero-robot">
+				<img src="img/robot.png" alt="Robot CodiPlay" class="astronaut-float-3d-big" />
 			</div>
 		</div>
 	</main>

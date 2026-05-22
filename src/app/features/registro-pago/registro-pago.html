@@ -1,0 +1,128 @@
+<header class="glass-navbar animate-navbar-slideIn">
+  <div class="header-container">
+    <a routerLink="/" class="logo-wrapper">
+      <img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
+    </a>
+    <nav class="nav-wrapper">
+      <a class="nav-link-glass" routerLink="/cursos"><span>Cursos</span></a>
+      <a class="nav-link-glass" routerLink="/quienes-somos"><span>Quiénes Somos</span></a>
+    </nav>
+    <div class="actions-wrapper">
+      <a class="btn-launch" routerLink="/cursos"><span>← Volver</span></a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page-wrapper">
+
+    @if (cancelado) {
+      <div class="alert-cancelado">
+        <span>⚠️ El pago fue cancelado. Puedes intentarlo de nuevo cuando quieras.</span>
+      </div>
+    }
+
+    @if (cursoLoading) {
+      <p class="status-text">Cargando información del curso…</p>
+    } @else if (cursoError) {
+      <p class="status-text error-text">{{ cursoError }}</p>
+    } @else if (curso) {
+      <div class="checkout-layout">
+
+        <!-- Columna izquierda: resumen del curso -->
+        <div class="course-summary">
+          <div class="summary-badge">Inscripción</div>
+          <h1 class="course-title">{{ curso.nombre }}</h1>
+          <p class="course-desc">{{ curso.descripcion }}</p>
+
+          <div class="course-meta">
+            <div class="meta-row">
+              <span class="meta-label">Dificultad</span>
+              <div class="estrellas">
+                @for (s of getFilledStars(curso.dificultad); track s) {
+                  <span class="estrella estrella-filled">★</span>
+                }
+                @for (s of getEmptyStars(curso.dificultad); track s) {
+                  <span class="estrella estrella-empty">★</span>
+                }
+              </div>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Precio</span>
+              <span class="precio">$ {{ curso.precio | number:'1.0-0' }}</span>
+            </div>
+          </div>
+
+          <div class="what-you-get">
+            <h3>¿Qué incluye?</h3>
+            <ul>
+              <li><span class="check">✓</span> Acceso completo al curso</li>
+              <li><span class="check">✓</span> Certificado de finalización</li>
+              <li><span class="check">✓</span> Acceso a foros de discusión</li>
+              <li><span class="check">✓</span> Soporte del instructor</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Columna derecha: datos del estudiante + pago -->
+        <div class="payment-panel">
+          <div class="panel-header">
+            <h2>Confirmar Inscripción</h2>
+            <p>Verifica tus datos antes de continuar al pago</p>
+          </div>
+
+          @if (auth.currentUser(); as user) {
+            <div class="student-info">
+              <div class="info-icon">
+                <span>{{ (user.name || '?')[0].toUpperCase() }}</span>
+              </div>
+              <div class="info-details">
+                <p class="info-name">{{ user.name }} {{ user.lastName }}</p>
+                <p class="info-email">{{ user.email }}</p>
+              </div>
+            </div>
+          }
+
+          <div class="order-summary">
+            <div class="order-row">
+              <span>{{ curso.nombre }}</span>
+              <span>$ {{ curso.precio | number:'1.0-0' }}</span>
+            </div>
+            <div class="order-divider"></div>
+            <div class="order-row order-total">
+              <span>Total</span>
+              <span class="total-amount">$ {{ curso.precio | number:'1.0-0' }}</span>
+            </div>
+          </div>
+
+          @if (pagoError) {
+            <div class="alert-error">{{ pagoError }}</div>
+          }
+
+          <button
+            class="btn-pagar"
+            (click)="irAlPago()"
+            [disabled]="procesando"
+          >
+            @if (procesando) {
+              <span class="spinner"></span>
+              <span>Procesando…</span>
+            } @else {
+              <span>🔒 Registrar e Ir al Pago</span>
+            }
+          </button>
+
+          <p class="secure-note">
+            <span>🔐</span> Pago 100% seguro con Stripe
+          </p>
+        </div>
+
+      </div>
+    }
+
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+</footer>

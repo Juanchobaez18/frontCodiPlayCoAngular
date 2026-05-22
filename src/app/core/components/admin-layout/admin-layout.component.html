@@ -1,199 +1,887 @@
-<mat-sidenav-container class="layout-container">
-  <mat-sidenav #drawer class="layout-sidebar" fixedInViewport
-    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="(isHandset$ | async) === false">
+<div class="app-admin-root" [class.dark]="isDarkMode()">
+  <app-dashboard-layout>
 
-    <div class="sidebar-inner">
-
-      <!-- Logo -->
-      <div class="sidebar-logo">
-        <span class="logo-text">Codi<span class="logo-play">Play</span>Co</span>
+    <!-- ═══════════ SIDEBAR ═══════════ -->
+    <aside
+      sidebar
+      class="admin-sidebar fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center border-t border-muted/15 bg-card px-2 shadow-sm lg:bottom-auto lg:right-auto lg:flex-col lg:items-stretch lg:border-0 lg:px-0 lg:py-5"
+      aria-label="Menú administrador"
+    >
+      <!-- Móvil: logo compacto -->
+      <div class="flex shrink-0 items-center gap-3 px-3 lg:hidden">
+        <div class="admin-sidebar-brand__icon flex h-10 w-10 shrink-0 items-center justify-center" aria-hidden="true">
+          <img src="img/logo.png" alt="CodiPlayCo" class="admin-sidebar-logo" />
+        </div>
+        <p class="truncate font-outfit text-base font-bold text-foreground">CodiPlayCo</p>
       </div>
 
-      @if (authService.isAuthenticated()) {
-      <nav class="sidebar-nav">
-        <span class="nav-label">MENÚ PRINCIPAL</span>
+      <!-- Escritorio: logo + perfil -->
+      <div class="admin-sidebar-desktop-head hidden shrink-0 lg:flex">
+        <div class="admin-sidebar-brand">
+          <div class="admin-sidebar-brand__icon" aria-hidden="true">
+            <img src="img/logo.png" alt="CodiPlayCo" class="admin-sidebar-logo" />
+          </div>
+          <span class="admin-sidebar-brand__name">CodiPlayCo</span>
+        </div>
+        <div class="admin-sidebar-user" aria-label="Usuario conectado">
+          <div class="admin-sidebar-user__avatar" aria-hidden="true">{{ userInitial() }}</div>
+          <p class="admin-sidebar-user__greeting">Hola,</p>
+          <p class="admin-sidebar-user__name">{{ userDisplayName() }}</p>
+          @if (userEmail()) {
+            <p class="admin-sidebar-user__email" [title]="userEmail()">{{ userEmail() }}</p>
+          }
+        </div>
+      </div>
 
-        <!-- Mi Panel -->
-        <a class="nav-item" routerLink="/users" routerLinkActive="nav-item--active">
-          <span class="nav-item__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-          </span>
-          <span class="nav-item__text">Mi Panel</span>
+      <!-- Nav links -->
+      <nav
+        class="flex flex-1 items-center justify-around gap-0.5 lg:flex-col lg:items-stretch lg:justify-start lg:gap-1 lg:px-3"
+        aria-label="Navegación panel administrador"
+      >
+        <a routerLink="/admin/dashboard" routerLinkActive="admin-nav-link--active"
+          [routerLinkActiveOptions]="{ exact: false }" class="admin-nav-link" title="Dashboard">
+          <lucide-icon [img]="iDash" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Dashboard</span>
         </a>
-
-        <!-- Mis Cursos -->
-        <a class="nav-item" routerLink="/curso" routerLinkActive="nav-item--active">
-          <span class="nav-item__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
-            </svg>
-          </span>
-          <span class="nav-item__text">Mis Cursos</span>
+        <a routerLink="/admin/usuarios" routerLinkActive="admin-nav-link--active"
+          class="admin-nav-link" title="Usuarios">
+          <lucide-icon [img]="iUsers" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Usuarios</span>
         </a>
-
-        <!-- Foros -->
-        <a class="nav-item" routerLink="/foros" routerLinkActive="nav-item--active">
-          <span class="nav-item__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-            </svg>
-          </span>
-          <span class="nav-item__text">Foros</span>
+        <a routerLink="/admin/docentes" routerLinkActive="admin-nav-link--active"
+          class="admin-nav-link" title="Registrar Docentes">
+          <lucide-icon [img]="iDocentes" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Docentes</span>
         </a>
-
-        <!-- Mensajes -->
-        <a class="nav-item" routerLink="/mensajes" routerLinkActive="nav-item--active">
-          <span class="nav-item__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
-            </svg>
-          </span>
-          <span class="nav-item__text">Mensajes</span>
+        <a routerLink="/admin/cursos" routerLinkActive="admin-nav-link--active"
+          class="admin-nav-link" title="Cursos">
+          <lucide-icon [img]="iCourses" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Cursos</span>
         </a>
-
-        <div class="nav-divider"></div>
-
-        <!-- Cerrar sesión -->
-        <button class="nav-item nav-item--logout" (click)="logout()">
-          <span class="nav-item__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-          </span>
-          <span class="nav-item__text">Cerrar sesión</span>
-        </button>
+        <a routerLink="/admin/mensajes" routerLinkActive="admin-nav-link--active"
+          class="admin-nav-link" title="Mensajes">
+          <lucide-icon [img]="iMensajes" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label hidden lg:inline">Mensajes</span>
+        </a>
       </nav>
-      }
 
-      <!-- Bottom user card -->
-      <div class="sidebar-footer">
-        <div class="sidebar-user">
-          <div class="sidebar-user__avatar">
-            @if (authService.currentUser()?.avatar?.startsWith('uploads/')) {
-              <img [src]="'http://localhost:3000/' + authService.currentUser()?.avatar"
-                   [alt]="authService.currentUser()?.name" class="avatar-photo" />
+      <!-- Footer: dark mode + logout -->
+      <div class="admin-sidebar-footer hidden shrink-0 px-3 pb-2 lg:block lg:mt-auto">
+        <button type="button" class="admin-nav-link w-full border-0 bg-transparent"
+          (click)="toggleDarkMode()" [title]="isDarkMode() ? 'Modo claro' : 'Modo oscuro'">
+          <lucide-icon [img]="isDarkMode() ? iSun : iMoon" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label">{{ isDarkMode() ? 'Modo claro' : 'Modo oscuro' }}</span>
+        </button>
+        <button type="button" class="admin-nav-link w-full border-0 bg-transparent" (click)="logout()">
+          <lucide-icon [img]="iLogOut" [size]="18" class="shrink-0 stroke-[2]" />
+          <span class="admin-sidebar__label">Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ═══════════ CONTENIDO PRINCIPAL ═══════════ -->
+    <main class="admin-main-content flex-1 px-4 pt-8 pb-6 lg:px-8 lg:pt-10">
+
+      @switch (adminPanelView()) {
+
+        <!-- ─────────── DASHBOARD ─────────── -->
+        @case ('dashboard') {
+          <div class="admin-dashboard">
+
+            <!-- Hero card -->
+            <div class="admin-hero-card">
+              <p class="admin-hero-card__subtitle">Panel Administrativo — CodiPlayCo</p>
+              <h1 class="admin-hero-card__title">¡Bienvenido de nuevo, {{ userDisplayName() }}! 👋</h1>
+              <div class="admin-hero-stats">
+                <div class="admin-hero-stat">
+                  <p class="admin-hero-stat__label">Estudiantes Activos</p>
+                  <p class="admin-hero-stat__value">
+                    @if (dashboardLoading) { … } @else { {{ dashboardStats?.totalEstudiantesActivos ?? 0 }} }
+                  </p>
+                </div>
+                <div class="admin-hero-stat">
+                  <p class="admin-hero-stat__label">Tasa de Éxito</p>
+                  <p class="admin-hero-stat__value">
+                    @if (dashboardLoading) { … } @else { {{ dashboardStats?.tasaExito ?? 0 }}% }
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            @if (dashboardError) {
+              <div class="alert alert-error">
+                <lucide-icon [img]="iAlertCircle" [size]="16" class="shrink-0" />
+                <span>{{ dashboardError }}</span>
+              </div>
+            }
+
+            <!-- Metric cards -->
+            <div class="admin-metrics-grid">
+              <!-- Estudiantes Activos -->
+              <div class="admin-metric-card admin-metric-card--blue">
+                <div class="admin-metric-card__head">
+                  <div class="admin-metric-card__icon admin-metric-card__icon--blue">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                  </div>
+                  <div class="admin-metric-card__trend">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                      <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+                    </svg>
+                  </div>
+                </div>
+                <p class="admin-metric-card__value">
+                  @if (dashboardLoading) { … } @else { {{ dashboardStats?.totalEstudiantesActivos ?? 0 }} }
+                </p>
+                <p class="admin-metric-card__label">Estudiantes Activos</p>
+                <div class="admin-mini-chart">
+                  <div class="admin-mini-chart__bar" style="height:40%"></div>
+                  <div class="admin-mini-chart__bar" style="height:60%"></div>
+                  <div class="admin-mini-chart__bar" style="height:45%"></div>
+                  <div class="admin-mini-chart__bar" style="height:80%"></div>
+                  <div class="admin-mini-chart__bar" style="height:55%"></div>
+                  <div class="admin-mini-chart__bar" style="height:90%"></div>
+                  <div class="admin-mini-chart__bar" style="height:70%"></div>
+                </div>
+              </div>
+
+              <!-- Cursos Activos -->
+              <div class="admin-metric-card admin-metric-card--purple">
+                <div class="admin-metric-card__head">
+                  <div class="admin-metric-card__icon admin-metric-card__icon--purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                      <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                  </div>
+                </div>
+                <p class="admin-metric-card__value">
+                  @if (dashboardLoading) { … } @else { {{ dashboardStats?.totalCursosActivos ?? 0 }} }
+                </p>
+                <p class="admin-metric-card__label">Cursos Activos</p>
+                <div class="admin-mini-chart admin-mini-chart--purple">
+                  <div class="admin-mini-chart__bar" style="height:50%"></div>
+                  <div class="admin-mini-chart__bar" style="height:65%"></div>
+                  <div class="admin-mini-chart__bar" style="height:55%"></div>
+                  <div class="admin-mini-chart__bar" style="height:75%"></div>
+                  <div class="admin-mini-chart__bar" style="height:60%"></div>
+                  <div class="admin-mini-chart__bar" style="height:85%"></div>
+                  <div class="admin-mini-chart__bar" style="height:72%"></div>
+                </div>
+              </div>
+
+              <!-- Docentes Activos -->
+              <div class="admin-metric-card admin-metric-card--green">
+                <div class="admin-metric-card__head">
+                  <div class="admin-metric-card__icon admin-metric-card__icon--green">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                  </div>
+                </div>
+                <p class="admin-metric-card__value">
+                  @if (dashboardLoading) { … } @else { {{ dashboardStats?.totalDocentesActivos ?? 0 }} }
+                </p>
+                <p class="admin-metric-card__label">Docentes Activos</p>
+                <div class="admin-mini-chart admin-mini-chart--green">
+                  <div class="admin-mini-chart__bar" style="height:45%"></div>
+                  <div class="admin-mini-chart__bar" style="height:58%"></div>
+                  <div class="admin-mini-chart__bar" style="height:50%"></div>
+                  <div class="admin-mini-chart__bar" style="height:70%"></div>
+                  <div class="admin-mini-chart__bar" style="height:62%"></div>
+                  <div class="admin-mini-chart__bar" style="height:88%"></div>
+                  <div class="admin-mini-chart__bar" style="height:75%"></div>
+                </div>
+              </div>
+
+              <!-- Tasa de Éxito -->
+              <div class="admin-metric-card admin-metric-card--orange">
+                <div class="admin-metric-card__head">
+                  <div class="admin-metric-card__icon admin-metric-card__icon--orange">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                      <polyline points="17 6 23 6 23 12"/>
+                    </svg>
+                  </div>
+                </div>
+                <p class="admin-metric-card__value">
+                  @if (dashboardLoading) { … } @else { {{ dashboardStats?.tasaExito ?? 0 }}% }
+                </p>
+                <p class="admin-metric-card__label">Tasa de Éxito</p>
+                <div class="admin-tasa-bar">
+                  <div class="admin-tasa-bar__fill" [style.width.%]="dashboardStats?.tasaExito ?? 0"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div>
+              <h3 class="admin-quick-actions__title">
+                <lucide-icon [img]="iZap" [size]="16" class="shrink-0" />
+                Acciones Rápidas
+              </h3>
+              <div class="admin-quick-actions__grid">
+                <a routerLink="/admin/usuarios" class="admin-action-card">
+                  <lucide-icon [img]="iUsers" [size]="22" class="shrink-0 stroke-[1.5]" />
+                  <span>Gestionar Usuarios</span>
+                </a>
+                <a routerLink="/admin/docentes" class="admin-action-card">
+                  <lucide-icon [img]="iUserPlus" [size]="22" class="shrink-0 stroke-[1.5]" />
+                  <span>Registrar Docente</span>
+                </a>
+                <a routerLink="/admin/cursos" class="admin-action-card">
+                  <lucide-icon [img]="iCourses" [size]="22" class="shrink-0 stroke-[1.5]" />
+                  <span>Ver Cursos</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        }
+
+        <!-- ─────────── USUARIOS ─────────── -->
+        @case ('usuarios') {
+          <div class="dashboard-content">
+
+            <div class="page-header-section">
+              <div class="page-header-title-group">
+                <h1 class="page-main-title">
+                  <lucide-icon [img]="iUsers" [size]="22" class="shrink-0" />
+                  Usuarios
+                </h1>
+                <p class="page-subtitle">Gestiona todos los usuarios de la plataforma</p>
+              </div>
+            </div>
+
+            @if (usersError) {
+              <div class="alert alert-error">
+                <lucide-icon [img]="iAlertCircle" [size]="16" class="shrink-0" />
+                <span>{{ usersError }}</span>
+              </div>
+            }
+
+            @if (usersLoading) {
+              <p class="page-subtitle">Cargando usuarios…</p>
+            } @else if (!users.length) {
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <lucide-icon [img]="iUsers" [size]="40" class="shrink-0 stroke-[1]" />
+                </div>
+                <h3>No hay usuarios</h3>
+                <p>Aún no hay usuarios registrados en la plataforma.</p>
+              </div>
             } @else {
-              {{ authService.currentUser()?.name?.charAt(0) }}{{ authService.currentUser()?.lastName?.charAt(0) }}
+              <div class="courses-container">
+                @for (u of users; track u.id) {
+                  <div class="glass-card user-card-item">
+                    <div class="stat-header">
+                      <div class="stat-icon" [class.gradient-blue]="isEstudiante(u)" [class.gradient-purple]="isDocente(u)" [class.gradient-green]="isAdminPanelUser(u)">
+                        <lucide-icon [img]="iUser" [size]="20" class="shrink-0 stroke-[1.5]" style="color:#111827" />
+                      </div>
+                      <span class="user-status-badge" [class.active]="u.isActive" [class.inactive]="!u.isActive">
+                        {{ u.isActive ? 'Activo' : 'Inactivo' }}
+                      </span>
+                    </div>
+                    <p class="stat-value">{{ u.name }} {{ u.lastName }}</p>
+                    <p class="stat-label">{{ u.email }}</p>
+
+                    <div class="user-card-details">
+                      <div class="user-detail-item">
+                        <span class="detail-label">Rol:</span>
+                        <span class="detail-value">{{ rolesLabel(u) }}</span>
+                      </div>
+                      @if (u.docNumber) {
+                        <div class="user-detail-item" style="margin-top:.35rem">
+                          <span class="detail-label">Doc:</span>
+                          <span class="detail-value">{{ u.docType }} {{ u.docNumber }}</span>
+                        </div>
+                      }
+                    </div>
+
+                    @if (!isAdminPanelUser(u)) {
+                      <div class="user-actions user-actions--row">
+                        <button type="button" class="action-btn edit-btn" (click)="openUserEdit(u)">
+                          <lucide-icon [img]="iPencil" [size]="14" class="shrink-0" /> Editar
+                        </button>
+                        <button type="button" class="action-btn toggle-btn" (click)="toggleUserActiveStatus(u)">
+                          {{ u.isActive ? 'Desactivar' : 'Activar' }}
+                        </button>
+                        <button type="button" class="action-btn delete-btn" (click)="deleteUser(u)">
+                          <lucide-icon [img]="iTrash" [size]="14" class="shrink-0" /> Eliminar
+                        </button>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Modal editar usuario -->
+            @if (userEditModalOpen) {
+              <div class="user-edit-backdrop" (click)="closeUserEdit()">
+                <div class="user-edit-dialog" (click)="$event.stopPropagation()">
+                  <div class="user-edit-dialog__header">
+                    <h2>
+                      <lucide-icon [img]="iPencil" [size]="16" class="shrink-0" />
+                      Editar Usuario
+                    </h2>
+                    <button type="button" class="user-edit-close" (click)="closeUserEdit()">&times;</button>
+                  </div>
+                  <form class="user-edit-form" (ngSubmit)="saveUserEdit()">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" [(ngModel)]="userEditForm.name" name="name" required />
+                      </div>
+                      <div class="form-group">
+                        <label>Apellido</label>
+                        <input type="text" [(ngModel)]="userEditForm.lastName" name="lastName" required />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Email</label>
+                      <input type="email" [(ngModel)]="userEditForm.email" name="email" required />
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>Tipo Doc.</label>
+                        <select [(ngModel)]="userEditForm.docType" name="docType">
+                          <option value="CC">CC</option>
+                          <option value="CE">CE</option>
+                          <option value="TI">TI</option>
+                          <option value="PAS">Pasaporte</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Número Doc.</label>
+                        <input type="text" [(ngModel)]="userEditForm.docNumber" name="docNumber" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Nueva contraseña (opcional)</label>
+                      <input type="password" [(ngModel)]="userEditForm.password" name="password" placeholder="Dejar vacío para no cambiar" />
+                    </div>
+                    <div class="row-inline">
+                      <label class="checkbox-inline">
+                        <input type="checkbox" [(ngModel)]="userEditForm.isActive" name="isActive" />
+                        Usuario activo
+                      </label>
+                    </div>
+                    <fieldset class="user-edit-roles">
+                      <legend>Roles</legend>
+                      @for (role of rolesCatalog; track role.id) {
+                        <label class="user-edit-role-row">
+                          <input type="checkbox"
+                            [checked]="userEditHasRole(role.id)"
+                            (change)="toggleUserEditRole(role.id, $any($event.target).checked)" />
+                          {{ role.name }}
+                        </label>
+                      }
+                    </fieldset>
+                    @if (userEditError) {
+                      <p class="user-edit-error">{{ userEditError }}</p>
+                    }
+                    <div class="user-edit-dialog__actions">
+                      <button type="button" class="action-btn toggle-btn" (click)="closeUserEdit()">Cancelar</button>
+                      <button type="submit" class="btn-primary" [disabled]="userEditSaving">
+                        {{ userEditSaving ? 'Guardando…' : 'Guardar cambios' }}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            }
+
+          </div>
+        }
+
+        <!-- ─────────── DOCENTES ─────────── -->
+        @case ('docentes') {
+          <div class="dashboard-content">
+
+            <div class="page-header-section">
+              <div class="page-header-title-group">
+                <h1 class="page-main-title">
+                  <lucide-icon [img]="iDocentes" [size]="22" class="shrink-0" />
+                  Registrar Docentes
+                </h1>
+                <p class="page-subtitle">Completa todos los campos para registrar un nuevo docente</p>
+              </div>
+            </div>
+
+            @if (docenteMessage) {
+              <div class="alert alert-success">
+                <lucide-icon [img]="iCheckCircle" [size]="16" class="shrink-0" />
+                <span>{{ docenteMessage }}</span>
+              </div>
+            }
+            @if (docenteError) {
+              <div class="alert alert-error">
+                <lucide-icon [img]="iAlertCircle" [size]="16" class="shrink-0" />
+                <span>{{ docenteError }}</span>
+              </div>
+            }
+
+            <div class="form-container">
+              <div class="form-wrapper">
+                <div class="form-header">
+                  <div class="form-icon">
+                    <lucide-icon [img]="iDocentes" [size]="24" class="shrink-0 stroke-[1.5]" />
+                  </div>
+                  <div>
+                    <h2>
+                      <lucide-icon [img]="iDocentes" [size]="18" class="shrink-0" />
+                      Información del Docente
+                    </h2>
+                    <p>Completa los datos para registrar al nuevo docente en la plataforma</p>
+                  </div>
+                </div>
+
+                <form class="registration-form" (ngSubmit)="submitDocente()">
+                  <div class="form-grid">
+                    <!-- Información Personal -->
+                    <div class="form-section">
+                      <h3 class="section-title">
+                        <lucide-icon [img]="iUser" [size]="15" class="shrink-0" />
+                        Información Personal
+                      </h3>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label>
+                            <lucide-icon [img]="iUser" [size]="13" class="shrink-0" />
+                            Nombres *
+                          </label>
+                          <input type="text" [(ngModel)]="docenteRegModel.name" name="name"
+                            placeholder="Ingrese los nombres completos" required />
+                        </div>
+                        <div class="form-group">
+                          <label>
+                            <lucide-icon [img]="iUser" [size]="13" class="shrink-0" />
+                            Apellidos *
+                          </label>
+                          <input type="text" [(ngModel)]="docenteRegModel.lastName" name="lastName"
+                            placeholder="Ingrese los apellidos completos" required />
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label>
+                            <lucide-icon [img]="iCreditCard" [size]="13" class="shrink-0" />
+                            Tipo de Documento *
+                          </label>
+                          <select [(ngModel)]="docenteRegModel.docType" name="docType" required>
+                            <option value="CC">Cédula de Ciudadanía</option>
+                            <option value="CE">Cédula de Extranjería</option>
+                            <option value="TI">Tarjeta de Identidad</option>
+                            <option value="PAS">Pasaporte</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label>
+                            <lucide-icon [img]="iHash" [size]="13" class="shrink-0" />
+                            Número de Documento *
+                          </label>
+                          <input type="text" [(ngModel)]="docenteRegModel.docNumber" name="docNumber"
+                            placeholder="Número de documento" required />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Información de Acceso -->
+                    <div class="form-section">
+                      <h3 class="section-title">
+                        <lucide-icon [img]="iLock" [size]="15" class="shrink-0" />
+                        Información de Acceso
+                      </h3>
+                      <div class="form-group">
+                        <label>
+                          <lucide-icon [img]="iMensajes" [size]="13" class="shrink-0" />
+                          Correo Electrónico *
+                        </label>
+                        <input type="email" [(ngModel)]="docenteRegModel.email" name="email"
+                          placeholder="docente@ejemplo.com" required />
+                      </div>
+                      <div class="form-group">
+                        <label>
+                          <lucide-icon [img]="iKey" [size]="13" class="shrink-0" />
+                          Contraseña *
+                        </label>
+                        <input type="password" [(ngModel)]="docenteRegModel.password" name="password"
+                          placeholder="Mínimo 6 caracteres" required minlength="6" />
+                        <small style="color:var(--muted);font-size:.8rem;display:flex;align-items:center;gap:.3rem">
+                          <lucide-icon [img]="iInfo" [size]="12" class="shrink-0" />
+                          La contraseña debe tener al menos 6 caracteres
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <button type="button" class="action-btn toggle-btn"
+                      (click)="docenteRegModel = { name:'', lastName:'', email:'', password:'', docType:'CC', docNumber:'' }">
+                      <lucide-icon [img]="iX" [size]="14" class="shrink-0" /> Limpiar
+                    </button>
+                    <button type="submit" class="btn-primary" [disabled]="docenteSending">
+                      <lucide-icon [img]="iUserPlus" [size]="15" class="shrink-0" />
+                      {{ docenteSending ? 'Registrando…' : 'Registrar Docente' }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        }
+
+        <!-- ─────────── CURSOS ─────────── -->
+        @case ('cursos') {
+          <div class="dashboard-content">
+
+            <div class="page-header-section">
+              <div class="page-header-title-group">
+                <h1 class="page-main-title">
+                  <lucide-icon [img]="iCourses" [size]="22" class="shrink-0" />
+                  Cursos
+                </h1>
+                <p class="page-subtitle">Gestiona y monitorea todos los cursos de la plataforma</p>
+              </div>
+              <a routerLink="/admin/cursos/nuevo" class="btn-primary">
+                <lucide-icon [img]="iPlus" [size]="15" class="shrink-0" /> Crear Nuevo Curso
+              </a>
+            </div>
+
+            @if (cursosError) {
+              <div class="alert alert-error">
+                <lucide-icon [img]="iAlertCircle" [size]="16" class="shrink-0" />
+                <span>{{ cursosError }}</span>
+              </div>
+            }
+
+            @if (cursosLoading) {
+              <p class="page-subtitle">Cargando cursos…</p>
+            } @else if (!cursos.length) {
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <lucide-icon [img]="iCourses" [size]="40" class="shrink-0 stroke-[1]" />
+                </div>
+                <h3>No hay cursos creados</h3>
+                <p>Comienza creando el primer curso para la plataforma.</p>
+                <a routerLink="/admin/cursos/nuevo" class="btn-primary">
+                  <lucide-icon [img]="iPlus" [size]="15" class="shrink-0" /> Crear Primer Curso
+                </a>
+              </div>
+            } @else {
+              <div class="courses-container">
+                @for (c of cursos; track c.id) {
+                  <div class="course-card" [class.course-inactive]="!c.estado">
+                    <div class="course-header">
+                      <div class="course-icon">
+                        <lucide-icon [img]="iCourses" [size]="20" class="shrink-0 stroke-[1.5]" />
+                      </div>
+                      <div class="course-info">
+                        <h4>{{ c.nombre }}</h4>
+                        <p>{{ shortText(c.descripcion, 60) }}</p>
+                      </div>
+                      <div class="course-price">
+                        <span class="course-status" [class.status-active]="c.estado" [class.status-inactive]="!c.estado">
+                          {{ estadoLabel(c) }}
+                        </span>
+                        <span class="price">${{ c.precio }}</span>
+                      </div>
+                    </div>
+
+                    <div class="course-description">
+                      <p>{{ shortText(c.descripcion, 100) }}</p>
+                    </div>
+
+                    <div class="course-details">
+                      <div class="instructor-info">
+                        <div class="instructor-avatar">{{ docenteInicial(c) }}</div>
+                        <div>
+                          <p class="instructor-name">{{ docenteNombre(c) }}</p>
+                          <div class="rating-stars">
+                            @for (i of [1,2,3,4,5]; track i) {
+                              <lucide-icon [img]="iStar" [size]="12"
+                                [class.star-filled]="i <= dificultadNivel(c)"
+                                [class.star-empty]="i > dificultadNivel(c)"
+                                class="shrink-0" />
+                            }
+                            <span class="rating-text">{{ c.dificultad }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="course-actions">
+                      <a [routerLink]="['/admin/cursos', c.id, 'editar']" class="action-btn edit-btn">
+                        <lucide-icon [img]="iPencil" [size]="14" class="shrink-0" /> Editar
+                      </a>
+                      <button type="button" class="action-btn toggle-btn" (click)="toggleCurso(c)">
+                        {{ c.estado ? 'Desactivar' : 'Activar' }}
+                      </button>
+                      <button type="button" class="action-btn delete-btn" (click)="eliminarCurso(c)">
+                        <lucide-icon [img]="iTrash" [size]="14" class="shrink-0" /> Eliminar
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+          </div>
+        }
+
+        <!-- ─────────── CREAR CURSO ─────────── -->
+        @case ('curso-create') {
+          <div class="dashboard-content">
+            <div class="page-header-section">
+              <div class="page-header-title-group">
+                <h1 class="page-main-title">
+                  <lucide-icon [img]="iPlus" [size]="22" class="shrink-0" />
+                  Crear Curso
+                </h1>
+                <p class="page-subtitle">Completa el formulario para crear un nuevo curso</p>
+              </div>
+              <a routerLink="/admin/cursos" class="btn-back">
+                <lucide-icon [img]="iArrowLeft" [size]="15" class="shrink-0" /> Volver
+              </a>
+            </div>
+
+            @if (cursoFormError) {
+              <div class="alert alert-error">
+                <lucide-icon [img]="iAlertCircle" [size]="16" class="shrink-0" />
+                <span>{{ cursoFormError }}</span>
+              </div>
+            }
+            @if (cursoFormLoading) {
+              <p class="page-subtitle">Cargando…</p>
+            } @else {
+              <ng-container *ngTemplateOutlet="cursoFormTpl"></ng-container>
             }
           </div>
-          <div class="sidebar-user__info">
-            <p class="sidebar-user__name">{{ authService.currentUser()?.name }} {{ authService.currentUser()?.lastName }}</p>
-            <p class="sidebar-user__role">Estudiante</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </mat-sidenav>
-
-  <mat-sidenav-content class="layout-content">
-
-    <!-- Top Bar -->
-    <header class="top-bar">
-      <div class="top-bar__left">
-        @if (isHandset$ | async) {
-          <button mat-icon-button class="menu-toggle" (click)="drawer.toggle()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                 stroke-linecap="round" aria-hidden="true">
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <line x1="3" y1="12" x2="21" y2="12"/>
-              <line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-          </button>
         }
-      </div>
 
-      <div class="top-bar__center">
-        <div class="search-bar">
-          <!-- SVG icon positioned inside the input -->
-          <span class="search-bar__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                 stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
-            </svg>
-          </span>
-          <input class="search-bar__input" type="text" placeholder="Buscar cursos, lecciones...">
-        </div>
-      </div>
-
-      <div class="top-bar__right">
-        <button class="notif-btn" aria-label="Notificaciones">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 01-3.46 0"/>
-          </svg>
-        </button>
-
-        <div class="user-chip-wrap" (click)="$event.stopPropagation()">
-          <div class="user-chip" [class.user-chip--open]="isUserMenuOpen"
-               (click)="toggleUserMenu()" role="button" tabindex="0"
-               [attr.aria-expanded]="isUserMenuOpen">
-            <div class="user-chip__avatar">
-              @if (authService.currentUser()?.avatar?.startsWith('uploads/')) {
-                <img [src]="'http://localhost:3000/' + authService.currentUser()?.avatar"
-                     [alt]="authService.currentUser()?.name" class="avatar-photo" />
-              } @else {
-                {{ authService.currentUser()?.name?.charAt(0) }}{{ authService.currentUser()?.lastName?.charAt(0) }}
-              }
+        <!-- ─────────── EDITAR CURSO ─────────── -->
+        @case ('curso-edit') {
+          <div class="dashboard-content">
+            <div class="page-header-section">
+              <div class="page-header-title-group">
+                <h1 class="page-main-title">
+                  <lucide-icon [img]="iPencil" [size]="22" class="shrink-0" />
+                  Editar Curso
+                </h1>
+                <p class="page-subtitle">Modifica los datos del curso seleccionado</p>
+              </div>
+              <a routerLink="/admin/cursos" class="btn-back">
+                <lucide-icon [img]="iArrowLeft" [size]="15" class="shrink-0" /> Volver
+              </a>
             </div>
-            <span class="user-chip__name">{{ authService.currentUser()?.name }}</span>
-            <span class="user-chip__caret" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                   stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </span>
-          </div>
 
-          <div class="user-menu" [class.user-menu--open]="isUserMenuOpen" role="menu">
-            <a routerLink="/perfil" class="user-menu-item"
-               (click)="isUserMenuOpen = false" role="menuitem">
-              <span class="user-menu-item__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </span>
-              Mi Perfil
-            </a>
-            <div class="user-menu-divider"></div>
-            <button class="user-menu-item user-menu-item--danger"
-                    (click)="logout()" role="menuitem">
-              <span class="user-menu-item__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-                  <polyline points="16 17 21 12 16 7"/>
-                  <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-              </span>
-              Cerrar sesión
-            </button>
+            @if (cursoFormError) {
+              <div class="alert alert-error">
+                <lucide-icon [img]="iAlertCircle" [size]="16" class="shrink-0" />
+                <span>{{ cursoFormError }}</span>
+              </div>
+            }
+            @if (cursoFormLoading) {
+              <p class="page-subtitle">Cargando curso…</p>
+            } @else {
+              <ng-container *ngTemplateOutlet="cursoFormTpl"></ng-container>
+            }
           </div>
-        </div>
-      </div>
-    </header>
+        }
 
-    <main class="page-main">
-      <router-outlet></router-outlet>
+        <!-- ─────────── MENSAJES ─────────── -->
+        @case ('mensajes') {
+          <div class="dashboard-content">
+
+            <div class="page-header-section">
+              <div class="page-header-title-group">
+                <h1 class="page-main-title">
+                  <lucide-icon [img]="iMensajes" [size]="22" class="shrink-0" />
+                  Mensajes
+                </h1>
+                <p class="page-subtitle">Envía correos masivos a los estudiantes de la plataforma</p>
+              </div>
+            </div>
+
+            @if (msgInfo) {
+              <div class="alert alert-success">
+                <lucide-icon [img]="iCheckCircle" [size]="16" class="shrink-0" />
+                <span>{{ msgInfo }}</span>
+              </div>
+            }
+            @if (msgError) {
+              <div class="alert alert-error">
+                <lucide-icon [img]="iAlertCircle" [size]="16" class="shrink-0" />
+                <span>{{ msgError }}</span>
+              </div>
+            }
+
+            <div class="form-container" style="max-width:800px">
+              <div class="form-wrapper">
+                <div class="form-header">
+                  <div class="form-icon">
+                    <lucide-icon [img]="iSend" [size]="24" class="shrink-0 stroke-[1.5]" />
+                  </div>
+                  <div>
+                    <h2>
+                      <lucide-icon [img]="iSend" [size]="16" class="shrink-0" />
+                      Envío Masivo
+                    </h2>
+                    <p>Selecciona destinatarios y escribe tu mensaje</p>
+                  </div>
+                </div>
+
+                <div style="padding:1.5rem 1.75rem;display:flex;flex-direction:column;gap:1.25rem">
+
+                  <!-- Lista de estudiantes -->
+                  @if (msgLoading) {
+                    <p class="page-subtitle">Cargando estudiantes…</p>
+                  } @else {
+                    <div class="form-group">
+                      <label style="font-size:.8rem;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em">
+                        Destinatarios
+                      </label>
+                      <div class="correos-container">
+                        <label class="checkbox-inline" style="margin-bottom:.5rem;font-weight:700">
+                          <input type="checkbox"
+                            [checked]="msgSelected.size === msgStudents.length && msgStudents.length > 0"
+                            (change)="selectAllMsgs($any($event.target).checked)" />
+                          Seleccionar todos ({{ msgStudents.length }})
+                        </label>
+                        <ul class="usuarios-lista" style="list-style:none;padding:0;margin:0">
+                          @for (s of msgStudents; track s.email) {
+                            <li>
+                              <label class="checkbox-inline">
+                                <input type="checkbox"
+                                  [checked]="isMsgChecked(s.email)"
+                                  (change)="toggleMsgEmail(s.email, $any($event.target).checked)" />
+                                {{ s.name }} {{ s.lastName }} — {{ s.email }}
+                              </label>
+                            </li>
+                          }
+                        </ul>
+                      </div>
+                      <small style="color:var(--muted);font-size:.8rem">
+                        {{ msgSelected.size }} destinatario(s) seleccionado(s)
+                      </small>
+                    </div>
+                  }
+
+                  <!-- Mensaje -->
+                  <div class="form-group">
+                    <label style="font-size:.8rem;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.05em">
+                      Mensaje
+                    </label>
+                    <textarea
+                      class="mensaje-textarea"
+                      rows="6"
+                      placeholder="Escribe tu mensaje para los estudiantes…"
+                      [(ngModel)]="msgBody"
+                      style="resize:vertical;width:100%;border-radius:10px;padding:.7rem .95rem;font-size:.9rem">
+                    </textarea>
+                  </div>
+
+                  <div class="form-actions" style="border-top:none;padding:0">
+                    <button type="button" class="btn-primary"
+                      [disabled]="msgSending || !msgSelected.size || !msgBody.trim()"
+                      (click)="sendMsgs()">
+                      <lucide-icon [img]="iSend" [size]="15" class="shrink-0" />
+                      {{ msgSending ? 'Enviando…' : 'Enviar Mensaje' }}
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+        }
+
+        @default {
+          <div class="dashboard-content">
+            <p class="page-subtitle">Cargando vista…</p>
+          </div>
+        }
+
+      }
     </main>
 
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </app-dashboard-layout>
+</div>
+
+<!-- ─── Template compartido para formulario de curso ─── -->
+<ng-template #cursoFormTpl>
+  <div class="form-container" style="max-width:700px">
+    <div class="form-wrapper">
+      <form class="course-form" (ngSubmit)="submitCurso()">
+        <div style="padding:1.5rem 1.75rem;display:flex;flex-direction:column;gap:1rem">
+
+          <div class="form-group">
+            <label>Nombre del curso *</label>
+            <input type="text" [(ngModel)]="cursoModel.nombre" name="nombre" placeholder="Nombre del curso" required />
+          </div>
+
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea [(ngModel)]="cursoModel.descripcion" name="descripcion" rows="3"
+              placeholder="Describe el contenido del curso…"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Dirigido a</label>
+            <input type="text" [(ngModel)]="cursoDirigido" name="cursoDirigido"
+              placeholder="Ej: Estudiantes de programación" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Dificultad</label>
+              <select [(ngModel)]="cursoModel.dificultad" name="dificultad">
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Precio ($)</label>
+              <input type="number" [(ngModel)]="cursoModel.precio" name="precio" min="0" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Docente</label>
+            <select [(ngModel)]="cursoModel.docenteId" name="docenteId">
+              <option [ngValue]="0" disabled>Selecciona un docente</option>
+              @for (d of cursoDocentes; track d.id) {
+                <option [ngValue]="d.id">{{ d.user?.name }} {{ d.user?.lastName }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="row-inline">
+            <label class="checkbox-inline">
+              <input type="checkbox" [(ngModel)]="cursoModel.estado" name="estado" />
+              Curso activo
+            </label>
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <a routerLink="/admin/cursos" class="action-btn toggle-btn">Cancelar</a>
+          <button type="submit" class="btn-primary" [disabled]="cursoFormSaving">
+            <lucide-icon [img]="iSave" [size]="15" class="shrink-0" />
+            {{ cursoFormSaving ? 'Guardando…' : (cursoFormMode === 'create' ? 'Crear Curso' : 'Guardar Cambios') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-template>

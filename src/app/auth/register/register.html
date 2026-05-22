@@ -1,0 +1,110 @@
+<div class="logo-corner">
+  <a routerLink="/">
+    <img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
+  </a>
+</div>
+
+<main class="main-form-bg">
+  <div class="form">
+
+    <div class="bg-stars">
+      @for (s of stars; track $index) {
+        <div class="star"></div>
+      }
+    </div>
+
+    <div class="form-title"><span></span> Crear cuenta</div>
+    <div class="title-2"><span>CodiPlayCo</span></div>
+
+    @if (errorMessage) {
+      <p class="error-msg">{{ errorMessage }}</p>
+    }
+
+    <form (ngSubmit)="onSubmit()" #f="ngForm" novalidate>
+
+      <div class="form-row">
+        <div class="input-container">
+          <label>Nombre</label>
+          <input type="text" name="name" [(ngModel)]="form.name" required placeholder="Tu nombre" />
+        </div>
+        <div class="input-container">
+          <label>Apellido</label>
+          <input type="text" name="lastName" [(ngModel)]="form.lastName" required placeholder="Tu apellido" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="input-container">
+          <label>Tipo de Documento</label>
+          <select name="docType" [(ngModel)]="form.docType" required>
+            <option value="" disabled>Selecciona</option>
+            <option value="CC">Cédula de Ciudadanía</option>
+            <option value="TI">Tarjeta de Identidad</option>
+            <option value="CE">Cédula Extranjera</option>
+            <option value="PA">Pasaporte</option>
+          </select>
+        </div>
+        <div class="input-container">
+          <label>Número de Documento</label>
+          <input type="text" name="docNumber" [(ngModel)]="form.docNumber" required placeholder="Número de documento" />
+        </div>
+      </div>
+
+      <div class="input-container full-width">
+        <label>Correo electrónico</label>
+        <input type="email" name="email" [(ngModel)]="form.email" required placeholder="correo@ejemplo.com" />
+      </div>
+
+      <div class="form-row">
+        <div class="input-container">
+          <label>Fecha de Nacimiento</label>
+          <input
+            type="date"
+            name="fechanacimiento"
+            [(ngModel)]="form.fechanacimiento"
+            required
+            (change)="onFechaNacimientoChange()"
+          />
+        </div>
+        <div class="input-container">
+          <label>Edad</label>
+          <input
+            type="number"
+            name="edad"
+            [(ngModel)]="form.edad"
+            required
+            min="1"
+            max="120"
+            placeholder="Años"
+            readonly
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="input-container">
+          <label>Contraseña</label>
+          <input type="password" name="password" [(ngModel)]="form.password" required minlength="6" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <div class="input-container">
+          <label>Confirmar Contraseña</label>
+          <input type="password" name="confirmPassword" [(ngModel)]="form.confirmPassword" required placeholder="Repite la contraseña" />
+        </div>
+      </div>
+
+      <button type="submit" class="submit" [disabled]="loading">
+        {{ loading ? 'Registrando…' : 'Crear cuenta' }}
+      </button>
+
+      <p class="signup-link">
+        ¿Ya tienes cuenta?
+        <a routerLink="/auth/login" class="up">Inicia sesión aquí</a>
+      </p>
+
+    </form>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+</footer>

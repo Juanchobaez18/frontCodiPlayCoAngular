@@ -1,0 +1,684 @@
+@if (panelView() === 'modulo') {
+  <div class="estudiante-modulo-page">
+    <a href="javascript:void(0)" (click)="goBack()" class="btn-volver">← Volver</a>
+    @if (moduloLoading) {
+      <div class="modulo-loading">
+        <div class="modulo-loader"></div>
+        <p>Cargando módulo…</p>
+      </div>
+    } @else if (moduloActivoBE(); as mod) {
+      <div class="layout">
+        <!-- Columna izquierda: imagen flotante -->
+        <div class="left-panel">
+          @if (mod.orden === 2) {
+            <img src="/assetsPanelUsuaario/generated-image__7_-removebg-preview.png" [alt]="mod.titulo" />
+          } @else {
+            <img src="/assetsPanelUsuaario/Codiplay Html-Photoroom.png" [alt]="mod.titulo" />
+          }
+        </div>
+        <!-- Columna derecha: lecciones -->
+        <div class="right-panel">
+          <h1>{{ mod.titulo }}</h1>
+          <p class="lessons-info">
+            Este módulo tiene <strong>{{ mod.lecciones.length }} lecciones</strong>.
+          </p>
+          <p class="subtitulo">{{ mod.descripcion }}</p>
+
+          @for (lec of mod.lecciones; track lec.id; let i = $index) {
+            <div class="card" (mouseenter)="hoveredLeccion = lec.id" (mouseleave)="hoveredLeccion = 0">
+              <div class="card-content">
+                <span class="card-num">{{ i + 1 }}</span>
+                <div>
+                  <h3>{{ lec.titulo }}</h3>
+                  <p>{{ lec.descripcion }}</p>
+                </div>
+              </div>
+              <a [routerLink]="['/estudiante/leccion', lec.id]" class="card-button lesson-btn">Vamos</a>
+            </div>
+          }
+
+          @if (mod.lecciones.length === 0) {
+            <div class="no-lecciones">
+              <i class="fa-solid fa-book-open"></i>
+              <p>Este módulo aún no tiene lecciones disponibles.</p>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="modulo-loading"><p>Módulo no encontrado.</p></div>
+    }
+  </div>
+} @else if (panelView() === 'leccion') {
+  <div class="estudiante-leccion-page">
+    <a href="javascript:void(0)" (click)="goBack()" class="btn-volver-leccion">← Volver al módulo</a>
+    <div class="leccion-stars"></div>
+
+    @if (leccionLoading) {
+      <div class="leccion-spinner">
+        <div class="leccion-loader"></div>
+        <p>Cargando lección…</p>
+      </div>
+    } @else if (leccionActiva(); as lec) {
+      @let content = leccionStaticContent();
+      @let paso = leccionPasoActual();
+
+      <div class="leccion-container">
+        <!-- Header -->
+        <div class="leccion-header"
+             [style.--lec-gradient]="content?.gradient ?? 'linear-gradient(90deg,#4dfff6,#63a0ff)'">
+          <h1>{{ lec.titulo }}</h1>
+          <p>{{ lec.descripcion }}</p>
+          @if (content && content.pasos.length > 1) {
+            <div class="leccion-pasos-indicator">
+              @for (p of content.pasos; track $index) {
+                <span class="leccion-dot" [class.active]="$index === paso"></span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Card con contenido -->
+        <div class="leccion-card"
+             [style.--blob1]="content?.blobColor1 ?? 'radial-gradient(circle,#00ffe7,#006d6c)'"
+             [style.--blob2]="content?.blobColor2 ?? 'radial-gradient(circle,#ff00ff,#1c3aff)'">
+          <div class="leccion-blob-top"></div>
+          <div class="leccion-blob-bot"></div>
+
+          <div class="leccion-content">
+            @if (content) {
+              @let pasoActual = content.pasos[paso];
+              <h2 class="leccion-paso-titulo">{{ pasoActual.titulo }}</h2>
+              <div [innerHTML]="safeHtml(pasoActual.html)"></div>
+            } @else {
+              <div [innerHTML]="safeHtml(lec.contenido || '<p style=\'color:#a0b0d0\'>Contenido próximamente.</p>')"></div>
+            }
+          </div>
+
+          <!-- Nav buttons -->
+          <div class="leccion-nav">
+            @if (content && paso > 0) {
+              <button type="button" class="btn-lec btn-lec--prev" (click)="anteriorPaso()">
+                <i class="fas fa-arrow-left"></i> Anterior
+              </button>
+            } @else {
+              <button type="button" class="btn-lec btn-lec--back" (click)="goBack()">
+                ← Volver al módulo
+              </button>
+            }
+
+            @if (content && paso < content.pasos.length - 1) {
+              <button type="button" class="btn-lec btn-lec--next" (click)="siguientePaso()">
+                Siguiente <i class="fas fa-arrow-right"></i>
+              </button>
+            } @else {
+              <button type="button" class="btn-lec btn-lec--finish" (click)="goBack()">
+                <i class="fas fa-check"></i> Completar lección
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="leccion-container" style="text-align:center;padding-top:100px;">
+        <p style="color:#a0b0d0;font-size:1.1rem;">Lección no encontrada.</p>
+        <button type="button" class="btn-lec btn-lec--back" (click)="goBack()" style="margin-top:1.5rem;">← Volver</button>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="dashboard-container" (click)="closeSidebarOnOutside($event); closeUserMenu()">
+    <aside class="sidebar" [class.sidebar--open]="sidebarOpen">
+      <div class="logo-container">
+        <div class="logo-icon"><i class="fa-solid fa-robot"></i></div>
+        <span class="logo-text">CodiPlay</span>
+      </div>
+      <nav class="sidebar-menu">
+        <ul>
+          <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <a routerLink="/estudiante/inicio"><i class="fa-solid fa-house"></i><span>Inicio</span></a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/estudiante/mis-cursos"><i class="fa-solid fa-book-open"></i><span>Mis cursos</span></a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/estudiante/mis-logros"><i class="fa-solid fa-trophy"></i><span>Mis logros</span></a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/estudiante/bandeja"><i class="fa-solid fa-box"></i><span>Bandeja</span></a>
+          </li>
+          <li routerLinkActive="active">
+            <a routerLink="/estudiante/foros"><i class="fa-solid fa-users"></i><span>Foros</span></a>
+          </li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <a routerLink="/estudiante/soporte" class="support-link" routerLinkActive="active">
+          <i class="fa-solid fa-headset"></i><span>Soporte</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-header">
+        <button class="mobile-nav-toggle" type="button" (click)="toggleSidebar()">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        @switch (panelView()) {
+          @case ('inicio') {
+            <div class="welcome-section">
+              <h1>
+                Bienvenido
+                <span class="highlight">{{ userDisplayName() }}</span><span class="wave-emoji">👋</span>
+              </h1>
+              <p>¡Continúa tu aventura de aprendizaje!</p>
+            </div>
+          }
+          @case ('mis-cursos') {
+            <div class="page-header"><div class="header-text"><h1>Mis Cursos</h1></div></div>
+          }
+          @case ('mis-logros') {
+            <div class="header-text">
+              <h1>Mis Logros</h1>
+              <p>Aquí se mostrarán los logros obtenidos por el usuario.</p>
+            </div>
+          }
+          @case ('bandeja') {
+            <div class="page-header">
+              <div class="header-text">
+                <h1>Bandeja</h1>
+                <p>Gestiona tus mensajes y notificaciones.</p>
+              </div>
+              <div class="header-watermark">CodiPlayCo</div>
+            </div>
+          }
+          @case ('foros') {
+            <div class="forums-page-title">
+              <i class="fa-solid fa-comments"></i>
+              <h1>Foros</h1>
+            </div>
+          }
+          @case ('foro-detalle') {
+            <div class="forums-page-title">
+              <a routerLink="/estudiante/foros" class="back-link" style="margin-right: 12px;">
+                <i class="fa-solid fa-arrow-left"></i>
+              </a>
+              <h1>Detalle del foro</h1>
+            </div>
+          }
+          @case ('editar-perfil') {
+            <div class="header-title-inline">
+              <h1>Editar Perfil</h1>
+              <p style="margin-top: 4px; font-size: 14px; color: var(--text-secondary);">
+                Actualiza tu información personal y foto de perfil.
+              </p>
+            </div>
+          }
+          @case ('soporte') {
+            <div class="header-text"><h1>Soporte</h1><p>¿Necesitas ayuda? Escríbenos.</p></div>
+          }
+          @case ('curso-modulos') {
+            <div class="page-header">
+              <div class="header-text">
+                <a [routerLink]="['/estudiante/mis-cursos']" class="back-link" style="margin-right:12px;"><i class="fa-solid fa-arrow-left"></i></a>
+                <h1>Módulos del curso</h1>
+              </div>
+            </div>
+          }
+        }
+
+        <div class="user-actions" style="display: flex; align-items: center; gap: 20px;">
+          <div class="icon-btn theme-btn" title="Cambiar tema" (click)="toggleTheme()">
+            <i class="fa-solid" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
+          </div>
+          <div class="user-profile" (click)="toggleUserMenu($event)">
+            <div class="avatar">
+              @if (useAvatarImage()) {
+                <img [src]="avatarUrl()" alt="Avatar" class="avatar-img" />
+              } @else {
+                <span class="avatar-initial" aria-hidden="true">{{ userInitial() }}</span>
+              }
+            </div>
+            <span class="username">{{ userDisplayName() }}</span>
+            <i class="fa-solid fa-chevron-down" style="font-size: 12px; margin-left: 4px;"></i>
+          </div>
+          <div class="user-menu" [class.user-menu--open]="userMenuOpen" [style.display]="userMenuOpen ? 'block' : 'none'">
+            <a routerLink="/estudiante/editar-perfil" (click)="closeUserMenu()">
+              <i class="fa-solid fa-user-pen"></i> Editar perfil
+            </a>
+            <a href="#" (click)="$event.preventDefault(); logout()">
+              <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <div
+        class="content-area"
+        [class.full-height-center]="panelView() === 'foros'"
+        [class.content-area--inicio]="panelView() === 'inicio'"
+      >
+        @if (profileError) {
+          <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> {{ profileError }}</div>
+        }
+
+        @switch (panelView()) {
+          @case ('inicio') {
+            <div class="estudiante-inicio">
+              <section class="hero-adventure" aria-label="Nueva aventura">
+                <img class="hero-adventure__bg" [src]="inicioHero" alt="" />
+                <div class="hero-adventure__overlay" aria-hidden="true"></div>
+                <i class="fa-solid fa-star hero-adventure__star" aria-hidden="true"></i>
+                <div class="hero-adventure__content">
+                  <span class="hero-adventure__badge">
+                    <i class="fa-solid fa-bolt"></i>
+                    ¡Nueva aventura disponible!
+                  </span>
+                  <h2 class="hero-adventure__title">Explora el mundo de CodiPlay</h2>
+                  <p class="hero-adventure__desc">
+                    Conquista nuevos retos, gana logros y vuélvete un maestro programador.
+                  </p>
+                  <a [routerLink]="firstCursoId() > 0 ? ['/estudiante/modulo-lista', firstCursoId()] : '/cursos'" class="hero-adventure__cta">
+                    <i class="fa-solid fa-trophy"></i>
+                    ¡Empezar aventura!
+                  </a>
+                </div>
+              </section>
+
+              <section class="modulos-section" aria-labelledby="titulo-modulos">
+                <h2 id="titulo-modulos" class="modulos-section__title">
+                  Tus módulos <span aria-hidden="true">🚀</span>
+                </h2>
+                <div class="modulos-row">
+                  @for (mod of modulosPanel; track mod.numero) {
+                    @let prog = modProgress(mod);
+                    @if (!isModuloLocked(mod)) {
+                      <a
+                        [routerLink]="firstCursoId() > 0 ? ['/estudiante/modulo-lista', firstCursoId()] : ['/estudiante/modulo', mod.numero]"
+                        class="modulo-card-v2"
+                      >
+                        <div class="modulo-card-v2__top">
+                          <span class="modulo-card-v2__progress">{{ prog.done }} / {{ mod.totalLecciones }}</span>
+                          @if (mod.showProximo) {
+                            <span class="modulo-card-v2__proximo">Próximo</span>
+                          }
+                        </div>
+                        <div class="modulo-card-v2__ring" [ngClass]="moduloRingClass(mod.accent)">
+                          <i class="fa-solid fa-rocket modulo-card-v2__rocket"></i>
+                        </div>
+                        <h3 class="modulo-card-v2__name">Módulo {{ mod.numero }}</h3>
+                        <p class="modulo-card-v2__sub">Completado {{ prog.done }} de {{ mod.totalLecciones }} lecciones</p>
+                        <div class="modulo-card-v2__bar">
+                          <div class="modulo-card-v2__bar-fill" [style.width.%]="prog.pct"></div>
+                        </div>
+                        <span class="modulo-card-v2__action modulo-card-v2__action--go">
+                          <i class="fa-solid fa-play-circle"></i> Continuar
+                        </span>
+                      </a>
+                    } @else {
+                      <div class="modulo-card-v2 modulo-card-v2--locked">
+                        <div class="modulo-card-v2__top">
+                          <span class="modulo-card-v2__progress">{{ prog.done }} / {{ mod.totalLecciones }}</span>
+                          <span class="modulo-card-v2__proximo">Próximo</span>
+                        </div>
+                        <div class="modulo-card-v2__ring" [ngClass]="moduloRingClass(mod.accent)">
+                          <i class="fa-solid fa-rocket modulo-card-v2__rocket"></i>
+                          <span class="modulo-card-v2__lock"><i class="fa-solid fa-lock"></i></span>
+                        </div>
+                        <h3 class="modulo-card-v2__name">Módulo {{ mod.numero }}</h3>
+                        <p class="modulo-card-v2__sub">Completado {{ prog.done }} de {{ mod.totalLecciones }} lecciones</p>
+                        <span class="modulo-card-v2__action modulo-card-v2__action--locked">
+                          <i class="fa-solid fa-lock"></i> Bloqueado
+                        </span>
+                      </div>
+                    }
+                  }
+                </div>
+              </section>
+            </div>
+          }
+
+          @case ('mis-cursos') {
+            @if (loadingProfile) {
+              <p>Cargando cursos…</p>
+            } @else if (cursosInscritos().length === 0) {
+              <div class="no-cursos"><p>No estás inscrito en ningún curso todavía.</p></div>
+            } @else {
+              <div class="courses-list">
+                @for (c of cursosInscritos(); track c.id) {
+                  <div class="course-list-card">
+                    <div class="course-image-container java-bg">
+                      <i class="fa-solid fa-code"></i>
+                    </div>
+                    <div class="course-details">
+                      <div class="course-top-row">
+                        <h2 class="course-title">{{ c.nombre }}</h2>
+                        <span class="course-price">{{ precioLabel(c.precio) }}</span>
+                      </div>
+                      <p class="course-description">{{ c.descripcion }}</p>
+                      <div class="course-meta">
+                        <div class="meta-item">
+                          <i class="fa-solid fa-layer-group"></i>
+                          <span>Nivel: <strong>{{ dificultadLabel(c.dificultad) }}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="course-actions">
+                      <a [routerLink]="['/estudiante/modulo-lista', c.id]" class="btn-continue">
+                        <i class="fa-solid fa-play"></i> Ver módulos
+                      </a>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+            <div class="floating-help" title="Ayuda"><i class="fa-solid fa-question"></i></div>
+          }
+
+          @case ('curso-modulos') {
+            @if (moduloLoading) {
+              <div style="display:flex;align-items:center;justify-content:center;padding:60px 0;">
+                <p style="opacity:0.7;">Cargando módulos…</p>
+              </div>
+            } @else if (modulosBE().length === 0) {
+              <div class="no-cursos">
+                <p>Este curso aún no tiene módulos disponibles.</p>
+                <a routerLink="/estudiante/mis-cursos" class="btn-continue" style="margin-top:1rem;display:inline-block;">← Volver a mis cursos</a>
+              </div>
+            } @else {
+              <div class="modulos-be-list">
+                @for (mod of modulosBE(); track mod.id) {
+                  <a [routerLink]="['/estudiante/modulo', mod.id]" class="modulo-be-card">
+                    <div class="modulo-be-card__icon">
+                      <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div class="modulo-be-card__info">
+                      <h3>{{ mod.titulo }}</h3>
+                      <p>{{ mod.descripcion }}</p>
+                      <span class="modulo-be-card__meta">{{ mod.lecciones.length }} lecciones</span>
+                    </div>
+                    <span class="modulo-be-card__arrow"><i class="fa-solid fa-chevron-right"></i></span>
+                  </a>
+                }
+              </div>
+            }
+          }
+
+          @case ('mis-logros') {
+            <div class="achievements-wrapper">
+              <div class="page-header">
+                <div class="header-watermark">CodiPlayCo</div>
+              </div>
+              <p style="color: var(--text-secondary); margin-top: 24px;">
+                Próximamente podrás ver tus insignias y logros aquí.
+              </p>
+            </div>
+          }
+
+          @case ('bandeja') {
+            <div class="inbox-container">
+              <div class="inbox-tabs">
+                <button
+                  type="button"
+                  class="tab-btn"
+                  [class.active]="bandejaTab === 'recibidos'"
+                  (click)="bandejaTab = 'recibidos'"
+                >
+                  Mensajes recibidos
+                  <span class="badge-mini">{{ mensajesRecibidos().length }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="tab-btn"
+                  [class.active]="bandejaTab === 'enviados'"
+                  (click)="bandejaTab = 'enviados'"
+                >
+                  Mensajes enviados
+                  <span class="badge-mini">{{ mensajesEnviados().length }}</span>
+                </button>
+              </div>
+
+              @if (bandejaTab === 'recibidos') {
+                <div id="recibidos" class="inbox-panel active-panel">
+                  @if (mensajesRecibidos().length === 0) {
+                    <div class="empty-state">
+                      <div class="empty-icon-bg"><i class="fa-regular fa-envelope-open"></i></div>
+                      <h3>¡Todo al día!</h3>
+                      <p>No tienes mensajes nuevos en tu bandeja de entrada.</p>
+                      <button type="button" class="btn-ghost" (click)="loadProfile()">
+                        <i class="fa-solid fa-rotate-right"></i> Actualizar
+                      </button>
+                    </div>
+                  } @else {
+                    <ul class="message-list">
+                      @for (m of mensajesRecibidos(); track m.id) {
+                        <li class="message-card">
+                          <div class="message-header">
+                            <strong>Docente</strong>
+                            <span class="message-date">{{ formatFecha(m.fecha_envio) }}</span>
+                          </div>
+                          <p class="message-content">{{ m.contenido }}</p>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </div>
+              } @else {
+                <div id="enviados" class="inbox-panel active-panel">
+                  @if (mensajesEnviados().length === 0) {
+                    <div class="empty-state">
+                      <div class="empty-icon-bg"><i class="fa-regular fa-paper-plane"></i></div>
+                      <h3>Bandeja de salida vacía</h3>
+                      <p>No has enviado mensajes todavía.</p>
+                    </div>
+                  } @else {
+                    <ul class="message-list">
+                      @for (m of mensajesEnviados(); track m.id) {
+                        <li class="message-card">
+                          <div class="message-header">
+                            <strong>Tú</strong>
+                            <span class="message-date">{{ formatFecha(m.fecha_envio) }}</span>
+                          </div>
+                          <p class="message-content">{{ m.contenido }}</p>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @case ('foros') {
+            @if (forosError) {
+              <div class="alert alert-danger">{{ forosError }}</div>
+            }
+            @if (forosLoading) {
+              <p>Cargando foros…</p>
+            } @else if (foros().length === 0) {
+              <div class="empty-forum-state">
+                <div class="empty-icon-simple"><i class="fa-regular fa-comments"></i></div>
+                <h2>Foros</h2>
+                <p>No hay foros disponibles en este momento.</p>
+              </div>
+            } @else {
+              <div class="forums-panel">
+                <h2 class="forums-panel-title">Foros de Discusión</h2>
+                @for (grupo of forosAgrupadosPorCurso(); track grupo.curso) {
+                  <div class="foro-curso-bloque">
+                    <h3 class="foro-curso-titulo">
+                      <i class="fas fa-book"></i>
+                      <span>{{ grupo.curso }}</span>
+                    </h3>
+                    <div class="foro-list">
+                      @for (f of grupo.items; track f.id) {
+                        <div class="foro-item">
+                          <div class="foro-icon"><i class="far fa-comment-dots"></i></div>
+                          <div class="foro-content">
+                            <h4 class="foro-title">{{ f.titulo }}</h4>
+                            <p class="foro-desc">{{ f.descripcion }}</p>
+                            <div class="foro-meta">
+                              <i class="far fa-clock"></i>
+                              <span>{{ formatFecha(f.fecha_creacion) }}</span>
+                            </div>
+                          </div>
+                          <div class="foro-actions">
+                            <a [routerLink]="['/estudiante/foros', f.id]" class="btn-action" title="Ver foro">
+                              <i class="far fa-comment"></i>
+                            </a>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          }
+
+          @case ('foro-detalle') {
+            @if (foroDetalle(); as f) {
+              <div class="forum-detail-content">
+                <div class="forum-card">
+                  <div class="post-header">
+                    <div class="author-info">
+                      <h2>{{ f.titulo }}</h2>
+                      @if (f.curso?.nombre; as cursoNombre) {
+                        <div class="forum-meta">
+                          <span><i class="fa-solid fa-book"></i> {{ cursoNombre }}</span>
+                        </div>
+                      }
+                    </div>
+                    <span class="post-date"><i class="fa-regular fa-clock"></i> {{ formatFecha(f.fecha_creacion) }}</span>
+                  </div>
+                  <div class="post-content"><p>{{ f.descripcion }}</p></div>
+                </div>
+              </div>
+            } @else {
+              <p>Foro no encontrado.</p>
+            }
+          }
+
+          @case ('editar-perfil') {
+            <div class="profile-layout">
+              <div class="profile-card-left">
+                <div class="profile-avatar-large">
+                  <img [src]="avatarUrl()" alt="Avatar" class="avatar-img" />
+                  <div class="edit-avatar-badge"><i class="fa-solid fa-camera"></i></div>
+                </div>
+                <h2 class="profile-name-large">{{ userDisplayName() }}</h2>
+                <span class="profile-role">Estudiante</span>
+                <div class="profile-actions-list">
+                  <label for="avatar-upload" class="btn-action-outline" style="cursor: pointer">
+                    <i class="fa-solid fa-upload"></i> Cambiar foto
+                  </label>
+                  <input id="avatar-upload" type="file" accept="image/*" hidden (change)="onAvatarSelected($event)" />
+                  <button type="button" class="btn-action-text danger" (click)="logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                  </button>
+                </div>
+              </div>
+              <div class="profile-card-right">
+                <div class="card-title-row"><h3>Información personal</h3></div>
+                @if (perfilInfo) {
+                  <div class="alert alert-success"><span>{{ perfilInfo }}</span></div>
+                }
+                @if (perfilErrorForm) {
+                  <div class="alert alert-danger"><span>{{ perfilErrorForm }}</span></div>
+                }
+                <form class="edit-profile-form" (ngSubmit)="guardarPerfil()">
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>Nombre</label>
+                      <div class="input-with-icon">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" name="name" [(ngModel)]="perfilForm.name" required />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Apellido</label>
+                      <div class="input-with-icon">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" name="lastName" [(ngModel)]="perfilForm.lastName" required />
+                      </div>
+                    </div>
+                    <div class="form-group full-width">
+                      <label>Correo</label>
+                      <div class="input-with-icon">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" name="email" [(ngModel)]="perfilForm.email" required />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Tipo de documento</label>
+                      <input type="text" name="docType" [(ngModel)]="perfilForm.docType" />
+                    </div>
+                    <div class="form-group">
+                      <label>Número de documento</label>
+                      <input type="text" name="docNumber" [(ngModel)]="perfilForm.docNumber" />
+                    </div>
+                    <div class="form-group">
+                      <label>Fecha de nacimiento</label>
+                      <input type="date" name="fechanacimiento" [(ngModel)]="perfilForm.fechanacimiento" />
+                    </div>
+                    <div class="form-group">
+                      <label>Edad</label>
+                      <input type="number" name="edad" [(ngModel)]="perfilForm.edad" min="1" />
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <a routerLink="/estudiante/inicio" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary" [disabled]="perfilSaving">
+                      {{ perfilSaving ? 'Guardando…' : 'Guardar cambios' }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          }
+
+          @case ('soporte') {
+            <div class="support-layout" style="display: flex; gap: 30px; flex-wrap: wrap">
+              <div class="support-card-form" style="flex: 2; min-width: 280px">
+                <div class="form-title">
+                  <i class="fa-solid fa-headset"></i>
+                  <h3>Contacto de soporte</h3>
+                </div>
+                @if (soporteInfo) {
+                  <div class="alert alert-success">{{ soporteInfo }}</div>
+                }
+                @if (soporteError) {
+                  <div class="alert alert-danger">{{ soporteError }}</div>
+                }
+                <form (ngSubmit)="enviarSoporte()">
+                  <div class="form-group">
+                    <label>Nombre</label>
+                    <div class="input-with-icon">
+                      <i class="fa-solid fa-user"></i>
+                      <input type="text" [(ngModel)]="soporteName" name="soporteName" required />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Correo</label>
+                    <div class="input-with-icon">
+                      <i class="fa-solid fa-envelope"></i>
+                      <input type="email" [(ngModel)]="soporteEmail" name="soporteEmail" required />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Mensaje</label>
+                    <textarea rows="5" [(ngModel)]="soporteMessage" name="soporteMessage"></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary" [disabled]="soporteSending">
+                    {{ soporteSending ? 'Enviando…' : 'Enviar mensaje' }}
+                  </button>
+                </form>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </main>
+  </div>
+}

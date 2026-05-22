@@ -84,7 +84,7 @@
             </svg>
           </div>
           <div class="prog-card__body">
-            <p class="prog-card__title">{{ curso.titulo }}</p>
+            <p class="prog-card__title">{{ curso.nombre }}</p>
             <p class="prog-card__pct">{{ estudiante.progreso || 0 }}% completado</p>
             <div class="thin-bar">
               <div class="thin-bar__fill" [style.width.%]="estudiante.progreso || 0"></div>
@@ -171,7 +171,7 @@
           </div>
           <div class="course-card__body">
             <p class="course-card__cat">Desarrollo de Software</p>
-            <h3 class="course-card__title">{{ curso.titulo }}</h3>
+            <h3 class="course-card__title">{{ curso.nombre }}</h3>
             <p class="course-card__desc">{{ curso.descripcion }}</p>
             <p class="course-card__instructor">Instructor CodiPlay</p>
             <div class="course-card__foot">
