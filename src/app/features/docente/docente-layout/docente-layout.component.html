@@ -1,120 +1,38 @@
-<div class="docente-container" (click)="closeMenu()">
-    <nav class="top-nav">
-      <div class="top-nav-container">
-        <div class="top-nav-brand">
-          <div class="top-nav-logo">
-            <img
-              src="/assetsDocente/img/ChatGPT Image 4 jul 2025, 02_22_14 p.m..png"
-              alt="CodiPlayCo"
-              class="top-nav-logo-img"
-            />
-          </div>
-          <div class="top-nav-brand-text">
-            <h1 class="top-nav-brand-title">CodiPlayCo</h1>
-            <p class="top-nav-brand-subtitle">Aprende programando</p>
-          </div>
-        </div>
-        <div class="top-nav-links">
-          <a
-            routerLink="/docente/dashboard"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ paths: 'exact' }"
-            class="top-nav-link"
-          >
-            <i class="fa-solid fa-house"></i>
-            <span>Inicio</span>
-          </a>
-          <a routerLink="/docente/mis-cursos" routerLinkActive="active" class="top-nav-link">
-            <i class="fa-solid fa-book"></i>
-            <span>Mis Cursos</span>
-          </a>
-          <a routerLink="/docente/estudiantes" routerLinkActive="active" class="top-nav-link">
-            <i class="fa-solid fa-user-graduate"></i>
-            <span>Estudiantes</span>
-          </a>
-          <a routerLink="/docente/tareas" routerLinkActive="active" class="top-nav-link">
-            <i class="fa-solid fa-clipboard-list"></i>
-            <span>Tareas</span>
-          </a>
-          <a routerLink="/docente/foros" routerLinkActive="active" class="top-nav-link">
-            <i class="fa-solid fa-comments"></i>
-            <span>Foros</span>
-          </a>
-          <a routerLink="/docente/mensajes" routerLinkActive="active" class="top-nav-link">
-            <i class="fa-solid fa-envelope"></i>
-            <span>Mensajes</span>
-          </a>
-        </div>
-        <div class="top-nav-actions">
-          <label
-            [attr.aria-checked]="isDarkTheme() ? 'true' : 'false'"
-            role="switch"
-            class="switch"
-            title="Cambiar modo claro/oscuro"
-            (click)="$event.stopPropagation()"
-          >
-            <input type="checkbox" [checked]="isDarkTheme()" (change)="toggleTheme($event)" />
-            <span class="slider"><span class="slider-inner"></span></span>
-          </label>
-          <div class="top-nav-profile" (click)="toggleMenu($event)">
-            <div class="top-nav-profile-info">
-              <span class="top-nav-profile-name">{{ authService.currentUser()?.name || "Docente" }} {{ authService.currentUser()?.lastName || "" }}</span>
-              <span class="top-nav-profile-role">{{ authService.currentUser()?.roles?.[0]?.name || "Docente" }}</span>
-            </div>
-            <div class="top-nav-profile-avatar"><i class="fa-solid fa-user"></i></div>
-            <div class="top-nav-submenu" [class.show]="isMenuOpen()" (click)="$event.stopPropagation()">
-              <div class="submenu-header">
-                <p>
-                  <strong>Nombre:</strong>
-                  <span>{{ authService.currentUser()?.name }} {{ authService.currentUser()?.lastName }}</span>
-                </p>
-                <p>
-                  <strong>Email:</strong>
-                  <span>{{ authService.currentUser()?.email }}</span>
-                </p>
-                <p>
-                  <strong>Rol:</strong>
-                  <span>{{ authService.currentUser()?.roles?.[0]?.name || "Docente" }}</span>
-                </p>
-              </div>
-              <div class="submenu-divider"></div>
-              <a href="#" class="submenu-logout-btn" (click)="logout(); $event.preventDefault()">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Cerrar Sesión</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
+<div class="app-admin-root" [class.dark]="isDarkMode()">
+  <app-dashboard-layout>
+    <app-docente-sidebar
+      sidebar
+      [userName]="userDisplayName()"
+      [userEmail]="userEmail()"
+      [isDark]="isDarkMode()"
+      (darkModeToggle)="toggleDarkMode()"
+      (logout)="logout()"
+    />
 
-    <div class="main-layout">
-      <div class="container">
-        <main class="main-content">
-          @switch (docentePanelView()) {
-            @case ('dashboard') {
-              <app-docente-dashboard></app-docente-dashboard>
-            }
-            @case ('mis-cursos') {
-              <app-mis-cursos></app-mis-cursos>
-            }
-            @case ('estudiantes') {
-              <app-estudiantes></app-estudiantes>
-            }
-            @case ('tareas') {
-              <app-tareas></app-tareas>
-            }
-            @case ('mensajes') {
-              <app-mensajes></app-mensajes>
-            }
-            @case ('foros') {
-              <app-foros></app-foros>
-            }
-            @case ('foro-detalle') {
-              <app-foro-detalle></app-foro-detalle>
-            }
-          }
-        </main>
-      </div>
-    </div>
-  </div>
+    <main class="admin-main-content flex-1 px-4 pt-8 pb-6 lg:px-8 lg:pt-10">
+      @switch (docentePanelView()) {
+        @case ('dashboard') {
+          <app-docente-dashboard />
+        }
+        @case ('mis-cursos') {
+          <app-mis-cursos />
+        }
+        @case ('estudiantes') {
+          <app-estudiantes />
+        }
+        @case ('tareas') {
+          <app-tareas />
+        }
+        @case ('mensajes') {
+          <app-mensajes />
+        }
+        @case ('foros') {
+          <app-foros />
+        }
+        @case ('foro-detalle') {
+          <app-foro-detalle />
+        }
+      }
+    </main>
+  </app-dashboard-layout>
+</div>

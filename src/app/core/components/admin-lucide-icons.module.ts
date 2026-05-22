@@ -9,6 +9,8 @@ import {
   LogOut,
   Moon,
   Sun,
+  ClipboardList,
+  MessageSquare,
 } from 'lucide-angular';
 
 @NgModule({
@@ -22,6 +24,8 @@ import {
       LogOut,
       Moon,
       Sun,
+      ClipboardList,
+      MessageSquare,
     }),
   ],
   exports: [LucideAngularModule],

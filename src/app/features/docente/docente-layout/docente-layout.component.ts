@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { Observable } from 'rxjs';
-import { filter, map, shareReplay } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { Auth } from '../../../core/services/auth';
 import { userHasDocentePanelAccess } from '../../../core/config/docente-panel-access.config';
+import { DashboardLayoutComponent } from '../../../core/components/dashboard-layout/dashboard-layout.component';
+import { DocenteSidebarComponent } from './docente-sidebar.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { MisCursosComponent } from '../mis-cursos/mis-cursos.component';
 import { EstudiantesComponent } from '../estudiantes/estudiantes.component';
@@ -25,24 +25,17 @@ export type DocentePanelView =
   | 'foro-detalle'
   | null;
 
-const DOCENTE_BODY_CLASS = 'docente-panel-active';
-
-const DOCENTE_ASSET_STYLESHEETS: ReadonlyArray<readonly [string, string]> = [
-  ['docente-asset-stylespanel', '/assetsDocente/stylespanel.css'],
-  ['docente-asset-miscursos', '/assetsDocente/miscursos.css'],
-  ['docente-asset-tareas', '/assetsDocente/tareas.css'],
-  ['docente-asset-foros', '/assetsDocente/foros.css'],
-  ['docente-asset-mensajes', '/assetsDocente/css/mensajes.css'],
-  ['docente-asset-forodetalle', '/assetsDocente/css/forodetalle.css'],
-];
+const THEME_STORAGE_KEY = 'codipayco-docente-theme';
 
 @Component({
   selector: 'app-docente-layout',
   standalone: true,
   imports: [
+    CommonModule,
     RouterLink,
     RouterLinkActive,
-    CommonModule,
+    DashboardLayoutComponent,
+    DocenteSidebarComponent,
     DashboardComponent,
     MisCursosComponent,
     EstudiantesComponent,
@@ -54,76 +47,61 @@ const DOCENTE_ASSET_STYLESHEETS: ReadonlyArray<readonly [string, string]> = [
   templateUrl: './docente-layout.component.html',
   styleUrl: './docente-layout.component.scss',
 })
-export class DocenteLayoutComponent implements OnInit, OnDestroy {
-  private readonly document = inject(DOCUMENT);
-  private readonly breakpointObserver = inject(BreakpointObserver);
+export class DocenteLayoutComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   public authService = inject(Auth);
 
-  isMenuOpen = signal(false);
-  isDarkTheme = signal(true);
   docentePanelView = signal<DocentePanelView>('dashboard');
+  readonly isDarkMode = signal(false);
 
-  isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(result => result.matches),
-    shareReplay(),
-  );
+  readonly userDisplayName = computed(() => {
+    const u = this.authService.currentUser();
+    const full = [u?.name, u?.lastName]
+      .map((s) => s?.trim())
+      .filter((s): s is string => !!s && s.length > 0)
+      .join(' ');
+    return full.length > 0 ? full : 'Docente';
+  });
 
-  ngOnInit() {
+  readonly userEmail = computed(() => {
+    return this.authService.currentUser()?.email?.trim() ?? '';
+  });
+
+  constructor() {
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((e) => this.updateViewFromRoute(e.urlAfterRedirects));
+  }
+
+  ngOnInit(): void {
     if (!userHasDocentePanelAccess(this.authService.currentUser())) {
-      this.router.navigateByUrl('/users');
+      this.router.navigateByUrl('/auth/login');
       return;
     }
 
-    this.attachDocenteStylesheets();
-    this.document.body.classList.add(DOCENTE_BODY_CLASS);
-
-    this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationEnd),
-        takeUntilDestroyed(),
-      )
-      .subscribe((event: NavigationEnd) => {
-        this.updateViewFromRoute(event.url);
-      });
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    this.isDarkMode.set(saved === 'dark');
+    document.body.classList.toggle('dark', saved === 'dark');
 
     this.updateViewFromRoute(this.router.url);
-
-    const savedTheme = localStorage.getItem('theme') ?? localStorage.getItem('docenteTheme');
-    const useDark = savedTheme !== 'light-mode' && savedTheme !== 'light';
-    this.isDarkTheme.set(useDark);
-    if (useDark) {
-      this.document.body.classList.add('dark-mode');
-    } else {
-      this.document.body.classList.remove('dark-mode');
-    }
   }
 
-  ngOnDestroy(): void {
-    this.removeDocenteStylesheets();
-    this.document.body.classList.remove(DOCENTE_BODY_CLASS, 'dark-mode', 'light-theme');
+  toggleDarkMode(): void {
+    const next = !this.isDarkMode();
+    this.isDarkMode.set(next);
+    document.body.classList.toggle('dark', next);
+    localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light');
   }
 
-  private attachDocenteStylesheets(): void {
-    const head = this.document.head;
-    for (const [id, href] of DOCENTE_ASSET_STYLESHEETS) {
-      if (this.document.getElementById(id)) continue;
-      const link = this.document.createElement('link');
-      link.id = id;
-      link.rel = 'stylesheet';
-      link.href = href;
-      head.appendChild(link);
-    }
+  logout(): void {
+    this.authService.logout();
   }
 
-  private removeDocenteStylesheets(): void {
-    for (const [id] of DOCENTE_ASSET_STYLESHEETS) {
-      this.document.getElementById(id)?.remove();
-    }
-  }
-
-  private updateViewFromRoute(url: string) {
-    // Check foro-detalle FIRST (more specific: /foros/123)
+  private updateViewFromRoute(url: string): void {
     if (/\/foros\/\d+/.test(url)) {
       this.docentePanelView.set('foro-detalle');
     } else if (url.includes('dashboard')) {
@@ -140,31 +118,4 @@ export class DocenteLayoutComponent implements OnInit, OnDestroy {
       this.docentePanelView.set('foros');
     }
   }
-
-  toggleTheme(event: Event) {
-    const isDark = (event.target as HTMLInputElement).checked;
-    this.isDarkTheme.set(isDark);
-    if (isDark) {
-      this.document.body.classList.add('dark-mode');
-      this.document.body.classList.remove('light-theme');
-      localStorage.setItem('theme', 'dark-mode');
-    } else {
-      this.document.body.classList.remove('dark-mode', 'light-theme');
-      localStorage.setItem('theme', 'light-mode');
-    }
-  }
-
-  toggleMenu(event: Event) {
-    event.stopPropagation();
-    this.isMenuOpen.update(v => !v);
-  }
-
-  closeMenu() {
-    this.isMenuOpen.set(false);
-  }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigateByUrl('/auth/login');
-  }
-} // ← única llave de cierre
+}

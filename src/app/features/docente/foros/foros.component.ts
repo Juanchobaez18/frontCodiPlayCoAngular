@@ -160,7 +160,7 @@ export class ForosComponent {
       cancelButtonColor: '#6b7280',
       allowOutsideClick: false,
       allowEscapeKey: true,
-    }).then((result) => {
+    }).then((result: any) => {
       if (result.isConfirmed) {
         Swal.fire({
           title: 'Eliminando foro...',

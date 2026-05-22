@@ -26,7 +26,7 @@ export const DOCENTE_ROUTES: Routes = [
   {
     path: 'docente/mis-cursos/:id/editar',
     loadComponent: () =>
-      import('../components/docente-layout/docente-layout.component').then(
+      import('../../features/docente/docente-layout/docente-layout.component').then(
         (m) => m.DocenteLayoutComponent,
       ),
     canActivate: [docenteGuard],
@@ -35,7 +35,7 @@ export const DOCENTE_ROUTES: Routes = [
   {
     path: 'docente/mis-cursos',
     loadComponent: () =>
-      import('../components/docente-layout/docente-layout.component').then(
+      import('../../features/docente/docente-layout/docente-layout.component').then(
         (m) => m.DocenteLayoutComponent,
       ),
     canActivate: [docenteGuard],
@@ -43,7 +43,7 @@ export const DOCENTE_ROUTES: Routes = [
   {
     path: 'docente/estudiantes',
     loadComponent: () =>
-      import('../components/docente-layout/docente-layout.component').then(
+      import('../../features/docente/docente-layout/docente-layout.component').then(
         (m) => m.DocenteLayoutComponent,
       ),
     canActivate: [docenteGuard],
@@ -51,7 +51,7 @@ export const DOCENTE_ROUTES: Routes = [
   {
     path: 'docente/tareas',
     loadComponent: () =>
-      import('../components/docente-layout/docente-layout.component').then(
+      import('../../features/docente/docente-layout/docente-layout.component').then(
         (m) => m.DocenteLayoutComponent,
       ),
     canActivate: [docenteGuard],
@@ -59,7 +59,7 @@ export const DOCENTE_ROUTES: Routes = [
   {
     path: 'docente/mensajes',
     loadComponent: () =>
-      import('../components/docente-layout/docente-layout.component').then(
+      import('../../features/docente/docente-layout/docente-layout.component').then(
         (m) => m.DocenteLayoutComponent,
       ),
     canActivate: [docenteGuard],
@@ -67,7 +67,7 @@ export const DOCENTE_ROUTES: Routes = [
   {
     path: 'docente/foros/:id',
     loadComponent: () =>
-      import('../components/docente-layout/docente-layout.component').then(
+      import('../../features/docente/docente-layout/docente-layout.component').then(
         (m) => m.DocenteLayoutComponent,
       ),
     canActivate: [docenteGuard],
@@ -75,7 +75,7 @@ export const DOCENTE_ROUTES: Routes = [
   {
     path: 'docente/foros',
     loadComponent: () =>
-      import('../components/docente-layout/docente-layout.component').then(
+      import('../../features/docente/docente-layout/docente-layout.component').then(
         (m) => m.DocenteLayoutComponent,
       ),
     canActivate: [docenteGuard],
@@ -83,7 +83,7 @@ export const DOCENTE_ROUTES: Routes = [
   {
     path: 'docente/dashboard',
     loadComponent: () =>
-      import('../components/docente-layout/docente-layout.component').then(
+      import('../../features/docente/docente-layout/docente-layout.component').then(
         (m) => m.DocenteLayoutComponent,
       ),
     canActivate: [docenteGuard],

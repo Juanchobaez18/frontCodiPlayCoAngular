@@ -60,6 +60,8 @@ export class LogIn {
     this.authService.login(rawForm).subscribe({
       next: (res) => {
         this.loading = false;
+        console.log('[Login] usuario recibido:', res.user);
+        console.log('[Login] roles:', res.user?.roles);
 
         // Si el backend permite el login pero el usuario está inactivo,
         // cerramos sesión y mostramos el mensaje en la pantalla de login.

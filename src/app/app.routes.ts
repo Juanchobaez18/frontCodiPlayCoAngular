@@ -6,6 +6,9 @@ import { DOCENTE_ROUTES } from './core/routing/docente.routes';
 import { ESTUDIANTE_ROUTES } from './core/routing/estudiante.routes';
 
 export const routes: Routes = [
+    ...ADMIN_ROUTES,
+    ...DOCENTE_ROUTES,
+    ...ESTUDIANTE_ROUTES,
     {
         path: '',
         loadComponent: () => import('./features/landing-page/landing-page').then(m => m.LandingPage)
