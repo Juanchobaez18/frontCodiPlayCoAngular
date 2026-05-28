@@ -860,7 +860,7 @@
             <select [(ngModel)]="cursoModel.docenteId" name="docenteId">
               <option [ngValue]="0" disabled>Selecciona un docente</option>
               @for (d of cursoDocentes; track d.id) {
-                <option [ngValue]="d.id">{{ d.user?.name }} {{ d.user?.lastName }}</option>
+                <option [ngValue]="d.id">{{ d.user.name }} {{ d.user.lastName }}</option>
               }
             </select>
           </div>

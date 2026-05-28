@@ -92,6 +92,15 @@ export class Auth {
     // localStorage.removeItem('token');
   }
 
+  public patchAvatar(url: string): void {
+    const current = this._authStatus();
+    if (!current) return;
+    this._authStatus.set({
+      ...current,
+      user: { ...current.user, avatar: url },
+    });
+  }
+
   public checkAuthStatus(): Observable<boolean> {
     const token = localStorage.getItem('token'); // Asegúrate que la llave sea exactamente 'token'
     if (!token) return of(false);

@@ -24,7 +24,13 @@
           <span class="admin-sidebar-brand__name">CodiPlayCo</span>
         </div>
         <div class="admin-sidebar-user" aria-label="Usuario conectado">
-          <div class="admin-sidebar-user__avatar" aria-hidden="true">{{ userInitial() }}</div>
+          <div class="admin-sidebar-user__avatar" aria-hidden="true">
+            @if (userAvatar()) {
+              <img [src]="userAvatar()!" alt="" class="docente-avatar-img" />
+            } @else {
+              {{ userInitial() }}
+            }
+          </div>
           <p class="admin-sidebar-user__greeting">Hola,</p>
           <p class="admin-sidebar-user__name">{{ userDisplayName() }}</p>
           @if (userEmail()) {
@@ -115,7 +121,13 @@
               <!-- Banner de bienvenida -->
               <div class="docente-welcome-banner">
                 <div class="docente-welcome-banner__left">
-                  <div class="docente-welcome-banner__avatar">{{ userInitial() }}</div>
+                  <div class="docente-welcome-banner__avatar">
+                    @if (userAvatar()) {
+                      <img [src]="userAvatar()!" alt="" class="docente-avatar-img" />
+                    } @else {
+                      {{ userInitial() }}
+                    }
+                  </div>
                   <div class="docente-welcome-banner__text">
                     <p class="docente-welcome-banner__greeting">¡Hola de nuevo!</p>
                     <h1 class="docente-welcome-banner__title">Bienvenido a CodiPlayCo</h1>
@@ -124,20 +136,11 @@
                   </div>
                 </div>
                 <div class="docente-welcome-banner__mascot" aria-hidden="true">
-                  <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" class="docente-mascot-svg">
-                    <rect x="25" y="40" width="70" height="60" rx="12" fill="#4ade80"/>
-                    <rect x="35" y="50" width="20" height="14" rx="4" fill="white"/>
-                    <rect x="65" y="50" width="20" height="14" rx="4" fill="white"/>
-                    <rect x="40" y="54" width="10" height="6" rx="2" fill="#1e3a5f"/>
-                    <rect x="70" y="54" width="10" height="6" rx="2" fill="#1e3a5f"/>
-                    <rect x="42" y="74" width="36" height="8" rx="4" fill="#16a34a"/>
-                    <rect x="10" y="55" width="14" height="30" rx="6" fill="#4ade80"/>
-                    <rect x="96" y="55" width="14" height="30" rx="6" fill="#4ade80"/>
-                    <rect x="38" y="100" width="16" height="28" rx="6" fill="#4ade80"/>
-                    <rect x="66" y="100" width="16" height="28" rx="6" fill="#4ade80"/>
-                    <rect x="20" y="20" width="80" height="24" rx="6" fill="#7c3aed"/>
-                    <polygon points="60,4 72,20 48,20" fill="#7c3aed"/>
-                  </svg>
+                  <img
+                    src="/assetsDocente/img/02baebb1-f087-4bee-bbdf-0af4f44d7563-removebg-preview.png"
+                    alt=""
+                    class="docente-mascot-img"
+                  />
                 </div>
               </div>
 
@@ -230,164 +233,376 @@
 
           @case ('tareas') {
             <div class="dashboard-content">
-              <div class="docente-section-header">
+              
+              <!-- Tarjeta del Título Tareas -->
+              <div class="glass-card page-title-card">
                 <h1 class="page-main-title">
                   <i class="fas fa-clipboard-list"></i>
                   Tareas
                 </h1>
-                <p class="page-subtitle">Actividades de tus cursos asignados</p>
               </div>
 
-              @if (cursosLoading) {
-                <p class="page-subtitle">Cargando…</p>
-              } @else if (!misCursosFiltered.length) {
+              @if (tareasLoading) {
+                <p class="page-subtitle">Cargando tareas…</p>
+              } @else if (tareasError) {
+                <div class="glass-card docente-panel-bloque">
+                  <h2 class="docente-panel-bloque__titulo">
+                    <span class="panel-icon"><i class="fas fa-exclamation-triangle"></i></span>
+                    Error
+                  </h2>
+                  <div class="docente-bloque-body">
+                    <p class="docente-no-cursos-txt" style="color:#c0392b;">{{ tareasError }}</p>
+                    <button type="button" (click)="loadTareas()" style="margin-top:0.75rem;padding:0.5rem 1.25rem;border-radius:8px;background:#7c3aed;color:#fff;border:none;cursor:pointer;">
+                      Reintentar
+                    </button>
+                  </div>
+                </div>
+              } @else if (tareasSig().length === 0) {
                 <div class="glass-card docente-panel-bloque">
                   <h2 class="docente-panel-bloque__titulo">
                     <span class="panel-icon"><i class="fas fa-folder-open"></i></span>
                     Tareas / Actividades
                   </h2>
-                  <p class="page-subtitle">No tienes cursos asignados, por lo tanto no hay tareas para mostrar.</p>
+                  <div class="docente-bloque-body">
+                    <p class="docente-no-cursos-txt">No hay tareas registradas. Si tienes cursos asignados, recarga la página para generarlas automáticamente.</p>
+                    <button type="button" (click)="loadTareas()" style="margin-top:0.75rem;padding:0.5rem 1.25rem;border-radius:8px;background:#7c3aed;color:#fff;border:none;cursor:pointer;">
+                      Recargar tareas
+                    </button>
+                  </div>
                 </div>
               } @else {
-                @for (curso of misCursosFiltered; track curso.id) {
+                
+                <!-- Iteramos sobre los cursos que tienen tareas -->
+                @for (curso of cursosConTareas; track curso.id) {
                   <div class="glass-card docente-panel-bloque">
                     <h2 class="docente-panel-bloque__titulo">
                       <span class="panel-icon"><i class="fas fa-folder-open"></i></span>
                       {{ curso.nombre }}
-                      <span class="docente-tabla-badge">{{ curso.estudiantes?.length ?? 0 }} estudiante(s)</span>
                     </h2>
+                    
                     <div class="docente-bloque-body">
-                      <div class="docente-bloque-meta">
-                        <span><i class="fas fa-layer-group"></i> <strong>Módulo:</strong> N/A</span>
-                        <span><i class="fas fa-book"></i> <strong>Lección:</strong> N/A</span>
-                        <span><i class="fas fa-calendar"></i> <strong>Fecha entrega:</strong> —</span>
-                      </div>
-                      <div class="docente-sub-panel">
-                        <table class="docente-tabla-progreso">
-                          <thead>
-                            <tr>
-                              <th>Estudiante</th>
-                              <th>Estado</th>
-                              <th>Calificación</th>
-                              <th>Acciones</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            @if (!curso.estudiantes?.length) {
-                              <tr>
-                                <td colspan="4" class="docente-tabla-empty">
-                                  <i class="fas fa-user-slash" style="opacity:.35;margin-right:.4rem"></i>
-                                  Sin estudiantes inscritos
-                                </td>
-                              </tr>
-                            } @else {
-                              @for (est of curso.estudiantes ?? []; track est.id) {
+                      @for (tarea of curso.tareas; track tarea.id) {
+                        <div class="docente-tarea-inner-card">
+                          <!-- Meta de Módulo y Lección -->
+                          <div class="docente-tarea-meta-text">
+                            <span class="meta-label">Módulo:</span>
+                            <span class="meta-value">{{ tarea.modulo || 'N/A' }}</span>
+                            <span class="meta-separator">|</span>
+                            <span class="meta-label">Lección:</span>
+                            <span class="meta-value">{{ tarea.leccion || 'N/A' }}</span>
+                          </div>
+                          
+                          <div class="docente-tarea-meta-text" style="margin-bottom: 1rem;">
+                            <span class="meta-label">Fecha:</span>
+                            <span class="meta-value">{{ tarea.fechaCreacion ? (tarea.fechaCreacion | date:'dd/MM/yyyy') : '—' }}</span>
+                            <span class="meta-separator">|</span>
+                            <span class="meta-label">Fecha entrega:</span>
+                            <span class="meta-value">{{ tarea.fechaVencimiento ? (tarea.fechaVencimiento | date:'dd/MM/yyyy') : '—' }}</span>
+                          </div>
+
+                          <!-- Tabla de progreso de la tarea -->
+                          <div class="docente-sub-panel">
+                            <table class="docente-tabla-progreso">
+                              <thead>
                                 <tr>
-                                  <td>Estudiante #{{ est.id }}</td>
-                                  <td><span class="course-status status-active">Pendiente</span></td>
-                                  <td>—</td>
-                                  <td class="docente-tabla-actions">
-                                    <button type="button" class="action-btn edit-btn">Aprobar</button>
-                                    <button type="button" class="action-btn delete-btn">No aprobar</button>
-                                  </td>
+                                  <th>Estudiante</th>
+                                  <th>Estado</th>
+                                  <th>Calificación</th>
+                                  <th>Acciones</th>
                                 </tr>
-                              }
-                            }
-                          </tbody>
-                        </table>
-                      </div>
+                              </thead>
+                              <tbody>
+                                @if (!tarea.entregas || tarea.entregas.length === 0) {
+                                  <tr>
+                                    <td colspan="4" class="docente-tabla-empty">
+                                      Sin entregas registradas para esta tarea
+                                    </td>
+                                  </tr>
+                                } @else {
+                                  @for (entrega of tarea.entregas; track entrega.id) {
+                                    <tr>
+                                      <td class="estudiante-nombre-cell">
+                                        {{ entrega.estudianteNombre }} {{ entrega.estudianteApellido || '' }}
+                                      </td>
+                                      <td>
+                                        <span class="estado-badge" [ngClass]="{
+                                          'estado-entregado': entrega.estado === 'ENTREGADO',
+                                          'estado-no-entregado': entrega.estado === 'NO_ENTREGADO',
+                                          'estado-calificado': entrega.estado === 'CALIFICADO'
+                                        }">
+                                          {{ entrega.estado === 'ENTREGADO' ? 'Entregado' : entrega.estado === 'NO_ENTREGADO' ? 'No entregado' : entrega.estado === 'CALIFICADO' ? 'Calificado' : entrega.estado }}
+                                        </span>
+                                      </td>
+                                      <td>
+                                        <span class="calificacion-cell-text">{{ entrega.calificacion || '—' }}</span>
+                                      </td>
+                                      <td class="docente-tabla-actions">
+                                        @if (entrega.estado !== 'CALIFICADO') {
+                                          <button 
+                                            type="button" 
+                                            class="btn-aprobar" 
+                                            [disabled]="isCalificando(entrega.id)" 
+                                            (click)="calificarTarea(entrega.id, 'APROBADO')">
+                                            Aprobar
+                                          </button>
+                                          <button 
+                                            type="button" 
+                                            class="btn-no-aprobar" 
+                                            [disabled]="isCalificando(entrega.id)" 
+                                            (click)="calificarTarea(entrega.id, 'NO_APROBADO')">
+                                            No aprobar
+                                          </button>
+                                        } @else {
+                                          <span class="calificacion-resultado" [ngClass]="{
+                                            'resultado-aprobado': entrega.resultado === 'APROBADO',
+                                            'resultado-no-aprobado': entrega.resultado === 'NO_APROBADO'
+                                          }">
+                                            {{ entrega.resultado === 'APROBADO' ? '✓ Aprobado' : '✗ No aprobado' }}
+                                          </span>
+                                        }
+                                      </td>
+                                    </tr>
+                                  }
+                                }
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      }
                     </div>
                   </div>
                 }
+                
               }
+
             </div>
           }
 
           @case ('foros') {
             <div class="dashboard-content">
-              <div class="docente-section-header">
-                <h1 class="page-main-title">
-                  <i class="fas fa-comments"></i>
-                  Foros
-                </h1>
-                <p class="page-subtitle">Crea y gestiona los foros de tus cursos</p>
-              </div>
-
-              @if (foroInfo) {
-                <div class="alert alert-success"><i class="fas fa-check-circle"></i> <span>{{ foroInfo }}</span></div>
-              }
-              @if (foroError) {
-                <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <span>{{ foroError }}</span></div>
-              }
-
-              <!-- Crear foro -->
-              <div class="glass-card docente-panel-bloque">
-                <h2 class="docente-panel-bloque__titulo">
-                  <span class="panel-icon"><i class="fas fa-comment-dots"></i></span>
-                  Crear Foro
-                </h2>
-                <form class="docente-foro-form" (ngSubmit)="crearForo()">
-                  <div class="form-group">
-                    <label for="foroTema">Tema:</label>
-                    <input id="foroTema" type="text" class="docente-foro-input" placeholder="Ej: Ideas para nuevos proyectos" [(ngModel)]="foroTitulo" [ngModelOptions]="{standalone: true}" required />
+              @if (selectedForoSig(); as foro) {
+                <!-- Detail View -->
+                <div class="docente-section-header">
+                  <div class="flex items-center gap-3">
+                    <a routerLink="/docente/foros" class="action-btn edit-btn flex items-center gap-1 font-outfit" style="text-decoration: none; padding: 0.5rem 1rem;">
+                      <i class="fas fa-arrow-left"></i> Volver a foros
+                    </a>
                   </div>
-                  <div class="form-group">
-                    <label for="foroCurso">Curso:</label>
-                    <select id="foroCurso" class="docente-foro-input" [(ngModel)]="foroCursoId" [ngModelOptions]="{standalone: true}" required>
-                      <option [ngValue]="0" disabled>Selecciona un curso</option>
-                      @for (curso of misCursosFiltered; track curso.id) {
-                        <option [ngValue]="curso.id">{{ curso.nombre }}</option>
+                  <h1 class="page-main-title mt-4">
+                    <i class="fas fa-comments"></i>
+                    {{ foro.titulo }}
+                  </h1>
+                  @if (foro.cursoNombre) {
+                    <p class="page-subtitle">Curso: <strong>{{ foro.cursoNombre }}</strong></p>
+                  }
+                </div>
+
+                <!-- Foro original post card -->
+                <div class="glass-card docente-panel-bloque">
+                  <div class="docente-bloque-body">
+                    <div class="foro-detalle-principal">
+                      <p class="foro-detalle-descripcion font-poppins">{{ foro.descripcion }}</p>
+                      @if (foro.fechaCreacion) {
+                        <div class="docente-bloque-meta mt-3">
+                          <span><i class="fas fa-calendar"></i> Creado el: {{ foro.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+                        </div>
                       }
-                    </select>
+                    </div>
                   </div>
-                  <div class="form-group">
-                    <label for="foroDesc">Descripción:</label>
-                    <textarea id="foroDesc" class="docente-foro-input" rows="3" [(ngModel)]="foroDescripcion" [ngModelOptions]="{standalone: true}" required></textarea>
-                  </div>
-                  <button type="submit" class="btn-primary" [disabled]="foroSending || !foroTitulo || !foroCursoId || !foroDescripcion">
-                    {{ foroSending ? 'Creando…' : 'Crear Foro' }}
-                  </button>
-                </form>
-              </div>
+                </div>
 
-              <!-- Foros creados -->
-              <div class="glass-card docente-panel-bloque">
-                <h2 class="docente-panel-bloque__titulo">
-                  <span class="panel-icon"><i class="fas fa-list"></i></span>
-                  Foros creados
-                </h2>
-                @if (forosLoading) {
-                  <p class="page-subtitle">Cargando foros…</p>
-                } @else if (!misCursosFiltered.length) {
-                  <p class="page-subtitle">No hay cursos asignados.</p>
-                } @else {
-                  @for (curso of misCursosFiltered; track curso.id) {
-                    <div class="docente-foro-curso-bloque">
-                      <h3>{{ curso.nombre }}</h3>
-                      @if (forosPorCurso(curso.id).length === 0) {
-                        <p class="page-subtitle" style="margin-top:.25rem">No hay foros creados para este curso.</p>
-                      } @else {
-                        <ul class="docente-foro-lista">
-                          @for (foro of forosPorCurso(curso.id); track foro.id) {
-                            <li class="docente-foro-item">
-                              <div class="docente-foro-item__header">
-                                <strong>{{ foro.titulo }}</strong>
-                                <button type="button" class="btn-icon btn-danger-sm" (click)="eliminarForo(foro.id)" title="Eliminar foro">
+                <!-- Responses List Section -->
+                <div class="glass-card docente-panel-bloque">
+                  <h2 class="docente-panel-bloque__titulo">
+                    <span class="panel-icon"><i class="fas fa-reply-all"></i></span>
+                    Respuestas y Discusión
+                    <span class="docente-tabla-badge">{{ foroRespuestasSig().length }} respuesta(s)</span>
+                  </h2>
+
+                  <div class="docente-bloque-body">
+                    @if (foroRespuestasLoading) {
+                      <p class="page-subtitle text-center py-4">Cargando respuestas…</p>
+                    } @else if (foroRespuestasSig().length === 0) {
+                      <div class="text-center py-6 text-muted font-poppins">
+                        <i class="far fa-comments fa-2x mb-2" style="opacity: 0.5;"></i>
+                        <p>Aún no hay respuestas en este foro. ¡Sé el primero en responder!</p>
+                      </div>
+                    } @else {
+                      <div class="foro-respuestas-hilo">
+                        @for (resp of foroRespuestasSig(); track resp.id) {
+                          <div class="foro-respuesta-item" [class.es-docente]="resp.esDocente">
+                            <div class="foro-respuesta-header">
+                              <div class="foro-respuesta-userinfo">
+                                <div class="foro-respuesta-avatar" [class.avatar-docente]="resp.esDocente">
+                                  {{ (resp.estudianteNombre ? resp.estudianteNombre.charAt(0) : 'D').toUpperCase() }}
+                                </div>
+                                <div>
+                                  <span class="foro-respuesta-autor font-outfit">
+                                    {{ resp.estudianteNombre }} {{ resp.estudianteApellido || '' }}
+                                    @if (resp.esDocente) {
+                                      <span class="badge-rol-docente">Docente</span>
+                                    }
+                                  </span>
+                                  <span class="foro-respuesta-fecha font-poppins">
+                                    {{ resp.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div class="foro-respuesta-acciones">
+                                @if (resp.esDocente) {
+                                  @if (editandoRespuestaId === resp.id) {
+                                    <!-- Editing action buttons are inline in the body -->
+                                  } @else {
+                                    <button type="button" class="btn-icon btn-edit-sm" (click)="iniciarEdicion(resp)" title="Editar respuesta">
+                                      <i class="fas fa-edit"></i>
+                                    </button>
+                                  }
+                                }
+                                <!-- Moderation: Docente can delete ANY reply (their own or student's) -->
+                                <button type="button" class="btn-icon btn-danger-sm" (click)="eliminarRespuesta(resp.id)" title="Eliminar respuesta">
                                   <i class="fas fa-trash-alt"></i>
                                 </button>
                               </div>
-                              <p class="docente-foro-item__desc">{{ foro.descripcion }}</p>
-                              @if (foro.fechaCreacion) {
-                                <small class="docente-foro-item__fecha">{{ foro.fechaCreacion | date:'dd/MM/yyyy' }}</small>
+                            </div>
+
+                            <div class="foro-respuesta-body font-poppins">
+                              @if (editandoRespuestaId === resp.id) {
+                                <div class="foro-edicion-inline">
+                                  <textarea class="docente-foro-input" rows="3" [(ngModel)]="editandoRespuestaContenido" [ngModelOptions]="{standalone: true}"></textarea>
+                                  <div class="flex gap-2 mt-2">
+                                    <button type="button" class="action-btn edit-btn" (click)="guardarEdicion()">Guardar</button>
+                                    <button type="button" class="action-btn delete-btn" (click)="cancelarEdicion()">Cancelar</button>
+                                  </div>
+                                </div>
+                              } @else {
+                                <p class="foro-respuesta-mensaje">{{ resp.mensaje }}</p>
                               }
-                            </li>
-                          }
-                        </ul>
-                      }
-                    </div>
-                  }
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Tu Respuesta Form (Teacher can reply or post follow-up) -->
+                <div class="glass-card docente-panel-bloque">
+                  <h2 class="docente-panel-bloque__titulo">
+                    <span class="panel-icon"><i class="fas fa-pen"></i></span>
+                    Responder al foro
+                  </h2>
+                  <div class="docente-bloque-body">
+                    <form (ngSubmit)="publicarRespuesta()" class="docente-foro-form">
+                      <div class="form-group">
+                        <textarea 
+                          class="docente-foro-input" 
+                          rows="4" 
+                          placeholder="Escribe tu respuesta como docente..." 
+                          [(ngModel)]="nuevaRespuestaContenido" 
+                          [ngModelOptions]="{standalone: true}" 
+                          required></textarea>
+                      </div>
+                      <button type="submit" class="btn-primary mt-2" [disabled]="!nuevaRespuestaContenido.trim()">
+                        <i class="fas fa-paper-plane mr-1"></i> Publicar Respuesta
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+              } @else {
+                <!-- List View (Default) -->
+                <div class="docente-section-header">
+                  <h1 class="page-main-title">
+                    <i class="fas fa-comments"></i>
+                    Foros
+                  </h1>
+                  <p class="page-subtitle">Crea y gestiona los foros de tus cursos</p>
+                </div>
+
+                @if (foroInfo) {
+                  <div class="alert alert-success"><i class="fas fa-check-circle"></i> <span>{{ foroInfo }}</span></div>
                 }
-              </div>
+                @if (foroError) {
+                  <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <span>{{ foroError }}</span></div>
+                }
+
+                <!-- Crear foro -->
+                <div class="glass-card docente-panel-bloque">
+                  <h2 class="docente-panel-bloque__titulo">
+                    <span class="panel-icon"><i class="fas fa-comment-dots"></i></span>
+                    Crear Foro
+                  </h2>
+                  <form class="docente-foro-form" (ngSubmit)="crearForo()">
+                    <div class="form-group">
+                      <label for="foroTema">Tema:</label>
+                      <input id="foroTema" type="text" class="docente-foro-input" placeholder="Ej: Ideas para nuevos proyectos" [(ngModel)]="foroTitulo" [ngModelOptions]="{standalone: true}" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="foroCurso">Curso:</label>
+                      <select id="foroCurso" class="docente-foro-input" [(ngModel)]="foroCursoId" [ngModelOptions]="{standalone: true}" required>
+                        <option [ngValue]="0" disabled>Selecciona un curso</option>
+                        @for (curso of misCursosFiltered; track curso.id) {
+                          <option [ngValue]="curso.id">{{ curso.nombre }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="foroDesc">Descripción:</label>
+                      <textarea id="foroDesc" class="docente-foro-input" rows="3" [(ngModel)]="foroDescripcion" [ngModelOptions]="{standalone: true}" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" [disabled]="foroSending || !foroTitulo || !foroCursoId || !foroDescripcion">
+                      {{ foroSending ? 'Creando…' : 'Crear Foro' }}
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Foros creados -->
+                <div class="glass-card docente-panel-bloque">
+                  <h2 class="docente-panel-bloque__titulo">
+                    <span class="panel-icon"><i class="fas fa-list"></i></span>
+                    Foros creados
+                  </h2>
+                  @if (forosLoading) {
+                    <p class="page-subtitle">Cargando foros…</p>
+                  } @else if (!misCursosFiltered.length) {
+                    <p class="page-subtitle">No hay cursos asignados.</p>
+                  } @else {
+                    @for (curso of misCursosFiltered; track curso.id) {
+                      <div class="docente-foro-curso-bloque">
+                        <h3>{{ curso.nombre }}</h3>
+                        @if (forosPorCurso(curso.id).length === 0) {
+                          <p class="page-subtitle" style="margin-top:.25rem">No hay foros creados para este curso.</p>
+                        } @else {
+                          <ul class="docente-foro-lista">
+                            @for (foro of forosPorCurso(curso.id); track foro.id) {
+                              <li class="docente-foro-item">
+                                <div class="docente-foro-item__header">
+                                  <a [routerLink]="['/docente/foros', foro.id]" class="docente-foro-link">
+                                    <strong>{{ foro.titulo }}</strong>
+                                  </a>
+                                  <div class="docente-foro-item__actions">
+                                    <a [routerLink]="['/docente/foros', foro.id]" class="action-btn edit-btn font-outfit" style="margin-right: 0.5rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                      <i class="fas fa-eye"></i> Ver foro
+                                    </a>
+                                    <button type="button" class="btn-icon btn-danger-sm" (click)="eliminarForo(foro.id)" title="Eliminar foro">
+                                      <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                                <p class="docente-foro-item__desc">{{ foro.descripcion }}</p>
+                                @if (foro.fechaCreacion) {
+                                  <small class="docente-foro-item__fecha">{{ foro.fechaCreacion | date:'dd/MM/yyyy' }}</small>
+                                }
+                              </li>
+                            }
+                          </ul>
+                        }
+                      </div>
+                    }
+                  }
+                </div>
+              }
             </div>
           }
 

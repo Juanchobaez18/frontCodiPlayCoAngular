@@ -25,19 +25,48 @@ export const MODULOS_PANEL: ModuloPanelConfig[] = [
     titulo: 'Módulo 1 - HTML',
     totalLecciones: 9,
     imagen: '/assetsPanelUsuaario/Codiplay Html-Photoroom.png',
-    subtitulo: 'Plan de clases — fundamentos web',
+    subtitulo: 'Plan de Clases — Clase, tema, descripción y actividad en casa',
     locked: false,
     accent: 'cyan',
     lecciones: [
-      { titulo: '¿Qué es Internet y las Páginas Web?', descripcion: 'Qué es una página web y cómo funciona Internet.', href: '/dashboard/lecciones' },
-      { titulo: 'Introducción a HTML', descripcion: 'Primera estructura básica HTML.', href: '/dashboard/lecciones' },
-      { titulo: 'Etiquetas de Título y Texto', descripcion: 'Etiquetas básicas de HTML.', href: '/dashboard/lecciones' },
-      { titulo: 'Agregar Imágenes', descripcion: 'Etiqueta img y rutas.', href: '/dashboard/lecciones' },
-      { titulo: 'Listas en HTML', descripcion: 'Listas ordenadas y desordenadas.', href: '/dashboard/lecciones' },
-      { titulo: 'Enlaces', descripcion: 'Etiqueta anchor y navegación.', href: '/dashboard/lecciones' },
-      { titulo: 'Tablas', descripcion: 'Organizar datos en tablas.', href: '/dashboard/lecciones' },
-      { titulo: 'Formularios', descripcion: 'Inputs y formularios básicos.', href: '/dashboard/lecciones' },
-      { titulo: 'Proyecto final Módulo 1', descripcion: 'Integra lo aprendido en una mini página.', href: '/dashboard/lecciones' },
+      {
+        titulo: '¿Qué es Internet y las Páginas Web?',
+        descripcion:
+          'Explicación con dibujos y ejemplos de qué es una página web y cómo funciona Internet. Dibujar cómo se imagina su propia web.',
+      },
+      {
+        titulo: 'Introducción a HTML',
+        descripcion:
+          'Explicar qué es HTML, para qué sirve y crear su primera estructura básica. Escribir una página con su nombre.',
+      },
+      {
+        titulo: 'Etiquetas de Título y Texto',
+        descripcion: 'Aprender etiquetas básicas de HTML. Crear una hoja con 3 títulos y 3 párrafos.',
+      },
+      {
+        titulo: 'Agregar Imágenes — etiqueta img',
+        descripcion: 'Etiqueta img y rutas de imagen. Colocar 3 imágenes favoritas.',
+      },
+      {
+        titulo: 'Listas en HTML',
+        descripcion: 'Listas ordenadas y desordenadas (ul, ol, li). Crear lista de juguetes o películas favoritas.',
+      },
+      {
+        titulo: 'Enlaces y Navegación',
+        descripcion: 'Etiquetas a y href para crear enlaces. Crear un menú con enlaces ficticios.',
+      },
+      {
+        titulo: 'Tablas Básicas',
+        descripcion: 'Crear tablas sencillas con table, tr, td. Tabla de calificaciones ficticias.',
+      },
+      {
+        titulo: 'Formularios Simples',
+        descripcion: 'Etiquetas input, label y button. Crear un formulario con nombre y edad.',
+      },
+      {
+        titulo: 'Proyecto Mini Página Personal',
+        descripcion: 'Integrar imágenes, texto y enlaces en una sola página. Personalizar su página.',
+      },
     ],
   },
   {

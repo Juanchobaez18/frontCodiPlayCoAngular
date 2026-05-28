@@ -45,6 +45,7 @@ export interface EstudianteProfile {
     curso?: { id: number; nombre: string };
   }[];
   mensajes: MensajeEstudiante[];
+  leccionesCompletadas?: { id: number }[];
 }
 
 export interface ForoListItem {
@@ -108,6 +109,14 @@ export class EstudianteApiService {
     remitenteTipo: 'estudiante';
   }) {
     return this.http.post(`${API_BASE}/mensajes`, body);
+  }
+
+  responderForo(foroId: number, body: { contenido: string; estudianteId: number }) {
+    return this.http.post(`${API_BASE}/foros/${foroId}/respuestas`, body);
+  }
+
+  marcarLeccionCompletada(leccionId: number) {
+    return this.http.post(`${API_BASE}/estudiantes/mis-lecciones/${leccionId}/completar`, {});
   }
 
   enviarSoporte(body: { name: string; email: string; message: string }) {

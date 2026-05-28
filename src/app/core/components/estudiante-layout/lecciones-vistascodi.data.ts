@@ -2,11 +2,20 @@
  * Contenido estático de lecciones extraído de vistascodi.
  * Estructura: clave = `${moduloOrden}-${leccionOrden}`
  */
+export interface EditorConfig {
+  placeholder: string;
+  startCode: string;
+  validator: 'basic-html' | 'titles-paragraphs' | 'images' | 'lists' | 'links' | 'table' | 'form' | 'full-page'
+          | 'css-basic' | 'css-gradient' | 'css-typography' | 'css-box-model' | 'css-lists-tables';
+  validMsg: string;
+  errorMsg: string;
+}
+
 export interface LeccionVistaCodiContent {
   gradient: string;
   blobColor1: string;
   blobColor2: string;
-  pasos: { titulo: string; html: string }[];
+  pasos: { titulo: string; html: string; editor?: EditorConfig; paint?: true }[];
 }
 
 export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
@@ -62,18 +71,22 @@ export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
 </div>`
       },
       {
-        titulo: '🎨 Parte 3: Actividad',
+        titulo: '🎨 Parte 3: Diseña tu Propia Web',
         html: `
 <div class="activity-box">
-  <p style="font-size:1rem; margin-bottom:16px; color:#e9f5ff;">¡Ahora te toca a ti! Dibuja o describe cómo imaginas <strong>tu propia página web</strong>.</p>
-  <ul class="checklist">
-    <li><i class="fas fa-check-circle"></i> Un nombre genial (Ej: "El Castillo de Ana").</li>
-    <li><i class="fas fa-check-circle"></i> Un fondo de tu color favorito.</li>
-    <li><i class="fas fa-check-circle"></i> Botones grandes para jugar o leer.</li>
-    <li><i class="fas fa-check-circle"></i> ¡Dibujos de lo que más te guste!</li>
-  </ul>
-  <p style="font-size:0.9rem; color:#a0b0d0; margin-top:16px;">Comparte tu idea con tu docente y sigue a la siguiente lección.</p>
-</div>`
+  <p style="font-size:1rem; margin-bottom:16px; color:#e9f5ff;">¡Ahora te toca a ti! Usa las herramientas de dibujo para crear <strong>tu página web soñada</strong>.</p>
+  <div style="background:rgba(0,0,0,0.3); padding:16px 20px; border-radius:12px; margin-bottom:16px;">
+    <strong style="color:#4dfff6; display:block; margin-bottom:10px;">Ideas para tu dibujo:</strong>
+    <ul class="checklist">
+      <li><i class="fas fa-check-circle"></i> Un nombre genial (Ej: "El Castillo de Ana").</li>
+      <li><i class="fas fa-check-circle"></i> Un fondo de tu color favorito.</li>
+      <li><i class="fas fa-check-circle"></i> Botones grandes para jugar o leer.</li>
+      <li><i class="fas fa-check-circle"></i> ¡Dibujos de lo que más te guste!</li>
+    </ul>
+  </div>
+  <p style="font-size:0.85rem; color:#a0b0d0;">Cuando estés feliz con tu dibujo, guárdalo con el botón "Descargar".</p>
+</div>`,
+        paint: true
       }
     ]
   },
@@ -118,10 +131,23 @@ export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
     <li>Un <strong>&lt;h1&gt;</strong> con tu nombre.</li>
     <li>Al menos un <strong>&lt;p&gt;</strong> donde cuentes algo sobre ti.</li>
   </ul>
-</div>
-<div class="activity-box">
-  <p>📝 Escribe tu código en un editor de texto (Notepad, VS Code) y guárdalo como <code>index.html</code>. Luego ábrelo en tu navegador y comparte el resultado con tu docente.</p>
-</div>`
+</div>`,
+        editor: {
+          placeholder: 'Escribe aquí tu código HTML desde cero...',
+          startCode: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mi primera página</title>
+  </head>
+  <body>
+    <h1>¡Hola, soy [TU NOMBRE]!</h1>
+    <p>Esta es mi primera página en HTML.</p>
+  </body>
+</html>`,
+          validator: 'basic-html',
+          validMsg: '¡Completado ✅! Tu página tiene la estructura básica correcta.',
+          errorMsg: 'Revisa tu código: debe tener <!DOCTYPE html>, <html>, <head>, <body>, al menos un <h1> y un <p>.',
+        }
       }
     ]
   },
@@ -160,10 +186,22 @@ export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
         html: `
 <div class="info-block">
   <p>Crea una hoja HTML con <strong>3 títulos</strong> y <strong>3 párrafos</strong> sobre tu galaxia, planetas o naves espaciales favoritas.</p>
-</div>
-<div class="activity-box">
-  <p>🚀 Recuerda que puedes usar <code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>, <code>&lt;h3&gt;</code> y <code>&lt;p&gt;</code> para estructurar tu historia. ¡Guárdala como <strong>historia.html</strong> y ábrela en el navegador!</p>
-</div>`
+  <p>Puedes usar <code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>, <code>&lt;h3&gt;</code> y <code>&lt;p&gt;</code> para estructurar tu historia.</p>
+</div>`,
+        editor: {
+          placeholder: 'Escribe aquí tu historia galáctica con títulos y párrafos...',
+          startCode: `<h1>Mi galaxia favorita</h1>
+<p>Mi galaxia está llena de planetas increíbles...</p>
+
+<h2>Planetas de colores</h2>
+<p>Tengo planetas azules, verdes y morados que brillan mucho.</p>
+
+<h3>Estrellas bailarinas</h3>
+<p>Las estrellas de mi galaxia se mueven como si bailaran en el cielo.</p>`,
+          validator: 'titles-paragraphs',
+          validMsg: '¡Completado ✅! Tienes 3 títulos y 3 párrafos en tu historia.',
+          errorMsg: 'Revisa tu historia: debe tener al menos 3 títulos (h1/h2/h3) y 3 párrafos (<p>).',
+        }
       }
     ]
   },
@@ -196,15 +234,26 @@ export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
         titulo: '✍️ Misión: 3 imágenes favoritas',
         html: `
 <div class="info-block">
-  <p>Crea una página HTML con <strong>3 imágenes</strong> de tus cosas favoritas (animales, deportes, personajes, etc.).</p>
-  <ul>
-    <li>Usa el atributo <strong>src</strong> para apuntar a imágenes de internet.</li>
-    <li>Siempre agrega el atributo <strong>alt</strong> con una descripción.</li>
-    <li>Añade un <strong>&lt;h2&gt;</strong> o <strong>&lt;p&gt;</strong> debajo de cada imagen explicando qué es.</li>
-  </ul>
+  <p>Crea una página HTML con <strong>3 imágenes</strong> de tus cosas favoritas. Usa el atributo <strong>src</strong> con URLs de internet y siempre agrega <strong>alt</strong>.</p>
 </div>
 <pre class="code-sample">&lt;img src="URL_DE_TU_IMAGEN" alt="descripción" width="200" /&gt;
-&lt;p&gt;Mi animal favorito es el delfín.&lt;/p&gt;</pre>`
+&lt;p&gt;Mi animal favorito es el delfín.&lt;/p&gt;</pre>`,
+        editor: {
+          placeholder: 'Escribe tu galería con al menos 3 etiquetas <img>...',
+          startCode: `<h1>Mi galería favorita</h1>
+
+<img src="https://picsum.photos/200/150?random=1" alt="Mi primera imagen" width="200" />
+<p>Mi primera imagen favorita.</p>
+
+<img src="https://picsum.photos/200/150?random=2" alt="Segunda imagen" width="200" />
+<p>Mi segunda imagen.</p>
+
+<img src="https://picsum.photos/200/150?random=3" alt="Tercera imagen" width="200" />
+<p>Mi tercera imagen.</p>`,
+          validator: 'images',
+          validMsg: '¡Completado ✅! Has creado tu galería con 3 imágenes.',
+          errorMsg: 'Revisa tu código: debe tener al menos 3 etiquetas <img> correctamente escritas.',
+        }
       }
     ]
   },
@@ -246,12 +295,29 @@ export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
         titulo: '✍️ Misión: tu lista favorita',
         html: `
 <div class="activity-box">
-  <p>Crea una página con <strong>2 listas</strong>:</p>
-  <ul class="checklist">
-    <li><i class="fas fa-check-circle"></i> Una lista <strong>desordenada</strong> con tus juguetes o películas favoritas (mínimo 4 elementos).</li>
-    <li><i class="fas fa-check-circle"></i> Una lista <strong>ordenada</strong> con los pasos de tu actividad favorita.</li>
-  </ul>
-</div>`
+  <p>Crea una página con <strong>2 listas</strong>: una <code>&lt;ul&gt;</code> y una <code>&lt;ol&gt;</code>, cada una con al menos 3 elementos <code>&lt;li&gt;</code>.</p>
+</div>`,
+        editor: {
+          placeholder: 'Escribe aquí tu página con <ul> y <ol>...',
+          startCode: `<h1>Mis listas favoritas</h1>
+
+<h2>Mis cosas favoritas</h2>
+<ul>
+  <li>Mi cosa favorita 1</li>
+  <li>Mi cosa favorita 2</li>
+  <li>Mi cosa favorita 3</li>
+</ul>
+
+<h2>Mi top 3</h2>
+<ol>
+  <li>El número 1</li>
+  <li>El número 2</li>
+  <li>El número 3</li>
+</ol>`,
+          validator: 'lists',
+          validMsg: '¡Completado ✅! Tienes listas ul y ol con al menos 3 elementos cada una.',
+          errorMsg: 'Revisa tu código: debe tener al menos un <ul>, un <ol> y 3 <li> dentro de cada una.',
+        }
       }
     ]
   },
@@ -287,16 +353,30 @@ export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
         titulo: '✍️ Misión: menú con enlaces',
         html: `
 <div class="info-block">
-  <p>Crea un menú de navegación con al menos <strong>3 enlaces</strong>. Pueden ser ficticios (que digan "próximamente") o que lleven a páginas reales.</p>
+  <p>Crea un menú de navegación con al menos <strong>4 enlaces <code>&lt;a&gt;</code></strong> con atributo <code>href</code>. Pueden ser ficticios o reales.</p>
 </div>
 <pre class="code-sample">&lt;nav&gt;
   &lt;a href="index.html"&gt;Inicio&lt;/a&gt; |
   &lt;a href="about.html"&gt;Sobre mí&lt;/a&gt; |
-  &lt;a href="galeria.html"&gt;Galería&lt;/a&gt;
-&lt;/nav&gt;</pre>
-<div class="activity-box">
-  <p>💡 Tip: La etiqueta <code>&lt;nav&gt;</code> es un contenedor semántico especialmente diseñado para menús de navegación.</p>
-</div>`
+  &lt;a href="galeria.html"&gt;Galería&lt;/a&gt; |
+  &lt;a href="contacto.html"&gt;Contacto&lt;/a&gt;
+&lt;/nav&gt;</pre>`,
+        editor: {
+          placeholder: 'Escribe tu menú con al menos 4 enlaces <a href="...">...',
+          startCode: `<h1>Mi sitio web</h1>
+<nav>
+  <a href="index.html">Inicio</a> |
+  <a href="about.html">Sobre mí</a> |
+  <a href="galeria.html">Galería</a> |
+  <a href="contacto.html">Contacto</a>
+</nav>
+
+<h2>Bienvenido</h2>
+<p>Navega por las secciones usando el menú de arriba.</p>`,
+          validator: 'links',
+          validMsg: '¡Completado ✅! Tu menú tiene suficientes enlaces galácticos.',
+          errorMsg: 'Revisa tu código: debe tener al menos 4 enlaces <a> con atributo href.',
+        }
       }
     ]
   },
@@ -338,13 +418,33 @@ export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
         titulo: '✍️ Misión: tu tabla personal',
         html: `
 <div class="activity-box">
-  <p>Crea una tabla con tus calificaciones ficticias o una lista de tus datos personales con 2 columnas y al menos 4 filas.</p>
-  <ul class="checklist">
-    <li><i class="fas fa-check-circle"></i> Usa <code>&lt;th&gt;</code> para los encabezados.</li>
-    <li><i class="fas fa-check-circle"></i> Usa <code>&lt;td&gt;</code> para los datos.</li>
-    <li><i class="fas fa-check-circle"></i> Agrega el atributo <code>border="1"</code> a <code>&lt;table&gt;</code>.</li>
-  </ul>
-</div>`
+  <p>Crea una tabla con <code>&lt;table&gt;</code>, encabezados <code>&lt;th&gt;</code> y al menos <strong>4 filas</strong> <code>&lt;tr&gt;</code> con datos.</p>
+</div>`,
+        editor: {
+          placeholder: 'Escribe aquí tu tabla con <table>, <tr>, <th> y <td>...',
+          startCode: `<h1>Mi tabla personal</h1>
+<table border="1">
+  <tr>
+    <th>Columna 1</th>
+    <th>Columna 2</th>
+  </tr>
+  <tr>
+    <td>Dato 1</td>
+    <td>Valor 1</td>
+  </tr>
+  <tr>
+    <td>Dato 2</td>
+    <td>Valor 2</td>
+  </tr>
+  <tr>
+    <td>Dato 3</td>
+    <td>Valor 3</td>
+  </tr>
+</table>`,
+          validator: 'table',
+          validMsg: '¡Completado ✅! Tu tabla de calificaciones tiene suficientes filas.',
+          errorMsg: 'Revisa tu código: debe tener <table> y al menos 4 filas (<tr>).',
+        }
       }
     ]
   },
@@ -386,24 +486,31 @@ export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
         titulo: '✍️ Misión: formulario de registro',
         html: `
 <div class="info-block">
-  <p>Crea un formulario de registro con los siguientes campos:</p>
-  <ul>
-    <li>Nombre completo (<code>text</code>)</li>
-    <li>Correo electrónico (<code>email</code>)</li>
-    <li>Contraseña (<code>password</code>)</li>
-    <li>Fecha de nacimiento (<code>date</code>)</li>
-    <li>Botón "Registrarme"</li>
-  </ul>
+  <p>Crea un formulario con <code>&lt;form&gt;</code>, al menos <strong>2 labels</strong>, <strong>2 inputs</strong> y un <strong>botón</strong>.</p>
 </div>
 <pre class="code-sample">&lt;form&gt;
   &lt;label&gt;Nombre:&lt;/label&gt;
   &lt;input type="text" name="nombre" /&gt;
-
   &lt;label&gt;Email:&lt;/label&gt;
   &lt;input type="email" name="email" /&gt;
-
   &lt;button type="submit"&gt;Registrarme&lt;/button&gt;
-&lt;/form&gt;</pre>`
+&lt;/form&gt;</pre>`,
+        editor: {
+          placeholder: 'Escribe aquí tu formulario con <form>, <label>, <input> y <button>...',
+          startCode: `<h1>Formulario de registro</h1>
+<form>
+  <label>Nombre:</label>
+  <input type="text" name="nombre" placeholder="Tu nombre" />
+
+  <label>Email:</label>
+  <input type="email" name="email" placeholder="correo@ejemplo.com" />
+
+  <button type="submit">Registrarme</button>
+</form>`,
+          validator: 'form',
+          validMsg: '¡Completado ✅! Tu formulario tiene nombre, email y botón.',
+          errorMsg: 'Revisa tu código: debe tener <form>, al menos dos <label>, dos <input> y un <button>.',
+        }
       }
     ]
   },
@@ -428,17 +535,35 @@ export const LECCIONES_CONTENT: Record<string, LeccionVistaCodiContent> = {
 </div>`
       },
       {
-        titulo: '✅ Criterios de evaluación',
+        titulo: '✅ Proyecto Final: escribe tu página',
         html: `
-<div class="tags-grid">
-  <div class="tag-card"><strong>🏗️ Estructura</strong><br/>¿Tiene DOCTYPE, html, head y body?</div>
-  <div class="tag-card"><strong>📑 Contenido</strong><br/>¿Usa al menos 5 etiquetas diferentes?</div>
-  <div class="tag-card"><strong>🔗 Navegación</strong><br/>¿Tiene enlaces funcionales?</div>
-  <div class="tag-card"><strong>🎨 Creatividad</strong><br/>¿El tema y diseño son originales?</div>
+<div class="info-block">
+  <p>Escribe tu mini página web completa. Debe incluir al menos: <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;img src="..." alt="..."&gt;</code> y <code>&lt;a href="..."&gt;</code>.</p>
 </div>
-<div class="activity-box" style="margin-top:20px;">
-  <p>🎉 ¡Felicitaciones por completar el Módulo 1 de HTML! En el Módulo 2 aprenderás a darle <strong>estilos</strong> a tu página con <strong>CSS</strong>.</p>
-</div>`
+<div class="activity-box" style="margin-top:16px;">
+  <p>🎉 ¡Cuando pase la validación habrás completado el Módulo 1 de HTML!</p>
+</div>`,
+        editor: {
+          placeholder: 'Escribe tu página completa con h1, p, img y enlace...',
+          startCode: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mi página web completa</title>
+  </head>
+  <body>
+    <h1>Mi página web sobre [TU TEMA]</h1>
+
+    <p>Bienvenido a mi página web. Aquí encontrarás información sobre...</p>
+
+    <img src="https://picsum.photos/300/200" alt="Imagen de mi tema" width="300" />
+
+    <a href="https://www.google.com">Visita Google</a>
+  </body>
+</html>`,
+          validator: 'full-page',
+          validMsg: '¡Proyecto completado ✅! Tu página tiene título, texto, imagen y enlace.',
+          errorMsg: 'Revisa tu código: necesitas al menos un <h1>, un <p>, una <img> con src y alt, y un <a> con href.',
+        }
       }
     ]
   },
@@ -486,20 +611,36 @@ p {
     <li>Un <strong>color diferente</strong> para h1, h2 y p.</li>
     <li>Una <strong>fuente personalizada</strong> con font-family.</li>
   </ul>
-</div>
-<pre class="code-sample">body {
-  background-color: #1a1a2e;
-  color: #e0e0e0;
-  font-family: 'Arial', sans-serif;
-}
-
-h1 {
-  color: #00eaff;
-}
-
-p {
-  color: #a0aec0;
-}</pre>`
+</div>`,
+        editor: {
+          placeholder: 'Escribe tu HTML con una etiqueta <style> que tenga background-color, color y font-family...',
+          startCode: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mi página con estilos</title>
+    <style>
+      body {
+        background-color: #1a1a2e;
+        color: #e0e0e0;
+        font-family: 'Arial', sans-serif;
+      }
+      h1 {
+        color: #00eaff;
+      }
+      p {
+        color: #a0aec0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mi página estilizada</h1>
+    <p>Aquí puedes cambiar los colores y la fuente a tu gusto.</p>
+  </body>
+</html>`,
+          validator: 'css-basic',
+          validMsg: '¡Completado ✅! Tu página tiene fondo, colores y fuente personalizados.',
+          errorMsg: 'Revisa tu código: necesitas <style> con background-color, color y font-family.',
+        }
       }
     ]
   },
@@ -541,7 +682,45 @@ background: radial-gradient(circle, #ff00ff, #1c3aff);</pre>`
     <li><i class="fas fa-check-circle"></i> Colores diferentes para títulos y párrafos.</li>
     <li><i class="fas fa-check-circle"></i> Una imagen de fondo en alguna sección.</li>
   </ul>
-</div>`
+</div>`,
+        editor: {
+          placeholder: 'Escribe una página con <style> que use degradados y varios colores...',
+          startCode: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mi página colorida</title>
+    <style>
+      body {
+        background: linear-gradient(135deg, #1a1a2e, #0f3460);
+        color: #e0e0e0;
+        font-family: 'Arial', sans-serif;
+      }
+      h1 {
+        color: #4dfff6;
+        text-align: center;
+      }
+      p {
+        color: #a0b4c8;
+      }
+      .seccion {
+        background: radial-gradient(circle, #16213e, #0a0a2e);
+        padding: 20px;
+        border-radius: 12px;
+        margin: 16px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mi página colorida</h1>
+    <div class="seccion">
+      <p>Esta sección tiene un fondo degradado. ¡Personaliza los colores!</p>
+    </div>
+  </body>
+</html>`,
+          validator: 'css-gradient',
+          validMsg: '¡Completado ✅! Tu página usa degradados y colores variados.',
+          errorMsg: 'Revisa tu código: necesitas <style> con linear-gradient o radial-gradient y al menos 2 propiedades color.',
+        }
       }
     ]
   },
@@ -584,7 +763,50 @@ h1 {
         html: `
 <div class="activity-box">
   <p>Importa una fuente de Google Fonts (por ejemplo <strong>Orbitron</strong> o <strong>Poppins</strong>) y aplícala a tu página con diferentes tamaños y pesos para títulos, subtítulos y párrafos.</p>
-</div>`
+</div>`,
+        editor: {
+          placeholder: 'Escribe tu página con <style> que use font-size, font-family, font-weight y text-align...',
+          startCode: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tipografía galáctica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        background-color: #0a0a1a;
+        font-family: 'Orbitron', sans-serif;
+        color: #e0e0e0;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        color: #4dfff6;
+      }
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 400;
+        text-align: left;
+        color: #a78bfa;
+      }
+      p {
+        font-size: 1rem;
+        font-weight: 400;
+        text-align: justify;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mi Galaxia</h1>
+    <h2>Planetas lejanos</h2>
+    <p>Explora la tipografía cambiando tamaños, pesos y alineaciones.</p>
+  </body>
+</html>`,
+          validator: 'css-typography',
+          validMsg: '¡Completado ✅! Tu tipografía tiene font-size, font-family, font-weight y text-align.',
+          errorMsg: 'Revisa tu código: necesitas <style> con font-size, font-family y font-weight o text-align.',
+        }
       }
     ]
   },
@@ -625,7 +847,50 @@ h1 {
     <li><i class="fas fa-check-circle"></i> Padding interno para que el texto no esté pegado al borde.</li>
     <li><i class="fas fa-check-circle"></i> Un <code>box-shadow</code> para darle profundidad.</li>
   </ul>
-</div>`
+</div>`,
+        editor: {
+          placeholder: 'Escribe tu página con un <div> que use border, border-radius, padding y box-shadow...',
+          startCode: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mi recuadro estilizado</title>
+    <style>
+      body {
+        background-color: #0f172a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+      }
+      .tarjeta {
+        width: 280px;
+        padding: 28px 24px;
+        border: 2px solid #4dfff6;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(77, 255, 246, 0.3);
+        background: rgba(255, 255, 255, 0.05);
+        color: #e2e8f0;
+        text-align: center;
+      }
+      h2 {
+        color: #4dfff6;
+        margin: 0 0 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tarjeta">
+      <h2>Mi Tarjeta</h2>
+      <p>Personaliza el borde, el radio, el padding y la sombra.</p>
+    </div>
+  </body>
+</html>`,
+          validator: 'css-box-model',
+          validMsg: '¡Completado ✅! Tu recuadro tiene borde, esquinas redondeadas, padding y sombra.',
+          errorMsg: 'Revisa tu código: necesitas <style> con border, border-radius, padding y box-shadow.',
+        }
       }
     ]
   },
@@ -685,7 +950,72 @@ tr:hover {
     <li><i class="fas fa-check-circle"></i> Dale zebra striping a la tabla (filas alternadas).</li>
     <li><i class="fas fa-check-circle"></i> Agrega <code>hover</code> effects a los elementos.</li>
   </ul>
-</div>`
+</div>`,
+        editor: {
+          placeholder: 'Escribe tu HTML con listas y tablas estilizadas con CSS (list-style, border-collapse, hover...)...',
+          startCode: `<!DOCTYPE html>
+<html>
+  <head>
+    <title>Listas y tablas con estilo</title>
+    <style>
+      body {
+        background-color: #0f172a;
+        color: #e2e8f0;
+        font-family: 'Arial', sans-serif;
+        padding: 24px;
+      }
+      h2 { color: #818cf8; }
+
+      /* Estilos para la lista */
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      ul li {
+        background: rgba(129, 140, 248, 0.1);
+        border-left: 4px solid #818cf8;
+        padding: 10px 16px;
+        margin-bottom: 6px;
+        border-radius: 0 8px 8px 0;
+      }
+      ul li:hover { background: rgba(129, 140, 248, 0.2); }
+
+      /* Estilos para la tabla */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+      }
+      th, td {
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        text-align: left;
+      }
+      th { background: rgba(129,140,248,0.2); color: #818cf8; }
+      tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+      tr:hover { background: rgba(255,255,255,0.07); }
+    </style>
+  </head>
+  <body>
+    <h2>Mis películas favoritas</h2>
+    <ul>
+      <li>Spider-Man</li>
+      <li>Moana</li>
+      <li>Toy Story</li>
+    </ul>
+    <h2>Calificaciones</h2>
+    <table>
+      <tr><th>Materia</th><th>Nota</th></tr>
+      <tr><td>Matemáticas</td><td>9.5</td></tr>
+      <tr><td>Español</td><td>8.0</td></tr>
+      <tr><td>Ciencias</td><td>9.0</td></tr>
+    </table>
+  </body>
+</html>`,
+          validator: 'css-lists-tables',
+          validMsg: '¡Completado ✅! Tus listas y tablas tienen estilos CSS profesionales.',
+          errorMsg: 'Revisa tu código: necesitas <style> con list-style o border-collapse y selectores li o table.',
+        }
       }
     ]
   }

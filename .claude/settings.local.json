@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx ng *)"
+      "Bash(npx ng *)",
+      "Bash(Get-ChildItem -Path 'C:\\\\Users\\\\river\\\\OneDrive\\\\Videos\\\\Proyectossena\\\\fronted\\\\frontCodiPlayCoAngular\\\\src\\\\app' -Directory)",
+      "Bash(Select-Object Name)",
+      "Read(//c/Users/river/OneDrive/Desktop/vistascodi/**)",
+      "Read(//c/Users/river/OneDrive/Videos/Proyectossena/**)",
+      "Bash(grep -c 'textarea\\\\|btn-run\\\\|verPagina\\\\|preview-box\\\\|iframe' 'C:\\\\Users\\\\river\\\\OneDrive\\\\Desktop\\\\vistascodi\\\\CursoTrilogia1\\\\modulo1\\\\leccion__TRACKED_VAR__.html')",
+      "Bash(grep -A 20 'function esCodigoValido\\\\|mensajeOk\\\\|mensajeError' 'C:\\\\Users\\\\river\\\\OneDrive\\\\Desktop\\\\vistascodi\\\\CursoTrilogia1\\\\modulo1\\\\leccion__TRACKED_VAR__.html')"
     ]
   }
 }

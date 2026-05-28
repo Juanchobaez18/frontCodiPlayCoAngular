@@ -30,6 +30,7 @@ import {
 import {
   getLeccionContent,
   type LeccionVistaCodiContent,
+  type EditorConfig,
 } from './lecciones-vistascodi.data';
 
 export type EstudiantePanelView =
@@ -71,7 +72,7 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   readonly panelView = signal<EstudiantePanelView>('inicio');
   readonly profile = signal<EstudianteProfile | null>(null);
   readonly foros = signal<ForoListItem[]>([]);
-  readonly foroDetalle = signal<(ForoListItem & { respuestas?: unknown[] }) | null>(null);
+  readonly foroDetalle = signal<(ForoListItem & { respuestas?: any[] }) | null>(null);
   readonly moduloActivo = signal<ModuloPanelConfig | null>(null);
   readonly modulosPanel = MODULOS_PANEL;
   readonly modulosBE = signal<ModuloBackend[]>([]);
@@ -80,8 +81,27 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   readonly leccionStaticContent = signal<LeccionVistaCodiContent | null>(null);
   readonly leccionPasoActual = signal(0);
   cursoModulosId = 0;
+  moduloPanelNum = 0;
+  leccionPanelOrden = 0;
   moduloLoading = false;
   leccionLoading = false;
+
+  // Editor de código
+  editorCode = '';
+  editorMsg = '';
+  editorSuccess = false;
+  editorPreviewId = 'code-preview-box';
+
+  // Paint tool
+  paintTool: 'pencil' | 'eraser' | 'rect' | 'circle' | 'line' = 'pencil';
+  paintColor = '#00eaff';
+  paintSize = 8;
+  private paintCanvas: HTMLCanvasElement | null = null;
+  private paintCtx: CanvasRenderingContext2D | null = null;
+  private paintDrawing = false;
+  private paintStartX = 0;
+  private paintStartY = 0;
+  private paintSnapshot: ImageData | null = null;
   hoveredLeccion = 0;
 
   loadingProfile = false;
@@ -115,6 +135,17 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   perfilInfo: string | null = null;
   perfilErrorForm: string | null = null;
   selectedAvatar: File | null = null;
+
+  avatarPreview: string | null = null;
+  avatarUploading = false;
+  avatarUploadInfo: string | null = null;
+  avatarUploadError: string | null = null;
+
+  nuevaRespuestaForo = '';
+  enviandoRespuestaForo = false;
+
+  respuestasBandeja: Record<number, string> = {};
+  enviandoRespuestaBandeja: Record<number, boolean> = {};
 
   readonly userDisplayName = computed(() => {
     const u = this.auth.currentUser();
@@ -161,7 +192,7 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
     document.body.classList.add('estudiante-panel-root');
     const saved = localStorage.getItem(THEME_KEY);
     this.isDarkMode = saved === 'dark';
-    if (this.isDarkMode) document.body.classList.add('dark-mode');
+    document.body.classList.toggle('dark-mode', this.isDarkMode);
     this.loadProfile();
   }
 
@@ -182,6 +213,8 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
     else if (path.includes('/editar-perfil')) view = 'editar-perfil';
     else if (path.includes('/soporte')) view = 'soporte';
     else if (path.includes('/modulo-lista/')) view = 'curso-modulos';
+    else if (path.includes('/leccion-panel/')) view = 'leccion';
+    else if (path.includes('/modulo-panel/')) view = 'modulo';
     else if (path.includes('/leccion/')) view = 'leccion';
     else if (path.includes('/modulo/')) view = 'modulo';
     else if (path.includes('/inicio')) view = 'inicio';
@@ -192,20 +225,35 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
     this.panelView.set(view);
 
     if (view === 'modulo') {
-      const id = Number(path.split('/modulo/')[1]?.split('/')[0] ?? '0');
-      if (id > 0) this.loadModulo(id);
-      else this.moduloActivoBE.set(null);
-      this.moduloActivo.set(getModuloConfig(id) ?? null);
+      if (path.includes('/modulo-panel/')) {
+        const num = Number(path.split('/modulo-panel/')[1]?.split('/')[0] ?? '0');
+        this.loadModuloPanel(num);
+      } else {
+        const id = Number(path.split('/modulo/')[1]?.split('/')[0] ?? '0');
+        this.moduloActivo.set(null);
+        this.moduloPanelNum = 0;
+        if (id > 0) this.loadModulo(id);
+        else this.moduloActivoBE.set(null);
+      }
     } else if (view === 'curso-modulos') {
       const cursoId = Number(path.split('/modulo-lista/')[1]?.split('/')[0] ?? '0');
       this.cursoModulosId = cursoId;
       if (cursoId > 0) this.loadModulosBE(cursoId);
     } else if (view === 'leccion') {
-      const leccionId = Number(path.split('/leccion/')[1]?.split('/')[0] ?? '0');
-      if (leccionId > 0) this.loadLeccion(leccionId);
+      if (path.includes('/leccion-panel/')) {
+        const parts = path.split('/leccion-panel/')[1]?.split('/') ?? [];
+        const mod = Number(parts[0] ?? '0');
+        const lec = Number(parts[1] ?? '0');
+        if (mod > 0 && lec > 0) this.loadLeccionPanel(mod, lec);
+      } else {
+        const leccionId = Number(path.split('/leccion/')[1]?.split('/')[0] ?? '0');
+        this.moduloPanelNum = 0;
+        if (leccionId > 0) this.loadLeccion(leccionId);
+      }
     } else {
       this.moduloActivo.set(null);
       this.moduloActivoBE.set(null);
+      this.moduloPanelNum = 0;
     }
 
     if (view === 'foro-detalle') {
@@ -359,58 +407,82 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
 
   onAvatarSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.selectedAvatar = input.files?.[0] ?? null;
+    const file = input.files?.[0];
+    if (!file) return;
+    input.value = '';
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        // Center-crop to square, then scale to 256×256
+        const size = Math.min(img.width, img.height);
+        const canvas = document.createElement('canvas');
+        canvas.width = 256;
+        canvas.height = 256;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(
+          img,
+          (img.width - size) / 2, (img.height - size) / 2, size, size,
+          0, 0, 256, 256
+        );
+
+        this.avatarPreview = canvas.toDataURL('image/jpeg', 0.92);
+
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const processed = new File([blob], 'avatar.jpg', { type: 'image/jpeg' });
+          this.uploadAvatarFile(processed);
+        }, 'image/jpeg', 0.92);
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  private uploadAvatarFile(file: File): void {
+    const userId = this.auth.currentUser()?.id;
+    if (!userId) return;
+
+    this.avatarUploading = true;
+    this.avatarUploadInfo = null;
+    this.avatarUploadError = null;
+
+    this.api.uploadAvatar(userId, file).subscribe({
+      next: () => {
+        this.avatarUploading = false;
+        this.avatarUploadInfo = '¡Foto actualizada correctamente!';
+        this.selectedAvatar = null;
+        this.auth.checkAuthStatus().subscribe();
+        this.loadProfile();
+        setTimeout(() => { this.avatarUploadInfo = null; this.avatarPreview = null; }, 3000);
+      },
+      error: (err: { error?: { message?: string } }) => {
+        this.avatarUploading = false;
+        this.avatarUploadError = err?.error?.message ?? 'No se pudo subir la foto.';
+        this.avatarPreview = null;
+      },
+    });
   }
 
   guardarPerfil(): void {
     const userId = this.auth.currentUser()?.id;
-    const estId = this.profile()?.id ?? this.auth.currentUser()?.estudiante?.id;
     if (!userId) return;
 
     this.perfilSaving = true;
     this.perfilInfo = null;
     this.perfilErrorForm = null;
 
-    const saveUser = () => {
-      this.api
-        .updateUser(userId, {
-          name: this.perfilForm.name,
-          lastName: this.perfilForm.lastName,
-          email: this.perfilForm.email,
-          docType: this.perfilForm.docType,
-          docNumber: this.perfilForm.docNumber,
-        })
-        .subscribe({
-          next: () => {
-            if (estId) {
-              this.api
-                .updateEstudiante(estId, {
-                  fechanacimiento: this.perfilForm.fechanacimiento,
-                  edad: Number(this.perfilForm.edad),
-                })
-                .subscribe({
-                  next: () => this.finishPerfilSave(),
-                  error: (err) => this.failPerfil(err),
-                });
-            } else {
-              this.finishPerfilSave();
-            }
-          },
-          error: (err) => this.failPerfil(err),
-        });
-    };
-
-    if (this.selectedAvatar) {
-      this.api.uploadAvatar(userId, this.selectedAvatar).subscribe({
-        next: () => {
-          this.selectedAvatar = null;
-          saveUser();
-        },
+    this.api
+      .updateUser(userId, {
+        name: this.perfilForm.name,
+        lastName: this.perfilForm.lastName,
+        email: this.perfilForm.email,
+      })
+      .subscribe({
+        next: () => this.finishPerfilSave(),
         error: (err) => this.failPerfil(err),
       });
-    } else {
-      saveUser();
-    }
   }
 
   private finishPerfilSave(): void {
@@ -452,7 +524,83 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
+    if (this.panelView() === 'leccion' && this.moduloPanelNum > 0) {
+      this.router.navigate(['/estudiante/modulo-panel', this.moduloPanelNum]);
+      return;
+    }
+    if (this.panelView() === 'modulo' && this.moduloPanelNum > 0) {
+      this.router.navigate(['/estudiante/inicio']);
+      return;
+    }
     window.history.back();
+  }
+
+  private lessonStorageKey(moduloNum: number): string {
+    return `modulo${moduloNum}_maxLesson`;
+  }
+
+  getMaxLessonCompleted(moduloNum: number): number {
+    const raw = localStorage.getItem(this.lessonStorageKey(moduloNum));
+    const n = parseInt(raw ?? '0', 10);
+    return Number.isNaN(n) ? 0 : n;
+  }
+
+  isLeccionPanelUnlocked(moduloNum: number, leccionOrden: number): boolean {
+    const max = this.getMaxLessonCompleted(moduloNum);
+    return leccionOrden <= max + 1;
+  }
+
+  markLeccionPanelComplete(moduloNum: number, leccionOrden: number): void {
+    const max = this.getMaxLessonCompleted(moduloNum);
+    if (leccionOrden > max) {
+      localStorage.setItem(this.lessonStorageKey(moduloNum), String(leccionOrden));
+    }
+  }
+
+  loadModuloPanel(num: number): void {
+    this.moduloLoading = true;
+    this.moduloActivoBE.set(null);
+    const config = getModuloConfig(num);
+    this.moduloActivo.set(config ?? null);
+    this.moduloPanelNum = config ? num : 0;
+    this.moduloLoading = false;
+  }
+
+  loadLeccionPanel(moduloNum: number, leccionOrden: number): void {
+    this.leccionLoading = true;
+    this.leccionPasoActual.set(0);
+    this.moduloPanelNum = moduloNum;
+    this.leccionPanelOrden = leccionOrden;
+
+    const mod = getModuloConfig(moduloNum);
+    const item = mod?.lecciones[leccionOrden - 1];
+    const content = getLeccionContent(moduloNum, leccionOrden);
+
+    this.leccionActiva.set({
+      id: moduloNum * 100 + leccionOrden,
+      titulo: item?.titulo ?? `Lección ${leccionOrden}`,
+      descripcion: item?.descripcion ?? '',
+      contenido: '',
+      orden: String(leccionOrden),
+    });
+    this.leccionStaticContent.set(content ?? null);
+    const firstPaso = content?.pasos[0];
+    this.initEditorForStep(firstPaso);
+    if (firstPaso?.paint) setTimeout(() => this.initPaint(), 50);
+    this.leccionLoading = false;
+  }
+
+  onLeccionPanelClick(moduloNum: number, leccionOrden: number, event: Event): void {
+    if (!this.isLeccionPanelUnlocked(moduloNum, leccionOrden)) {
+      event.preventDefault();
+    }
+  }
+
+  completarLeccionPanel(): void {
+    if (this.moduloPanelNum > 0 && this.leccionPanelOrden > 0) {
+      this.markLeccionPanelComplete(this.moduloPanelNum, this.leccionPanelOrden);
+    }
+    this.goBack();
   }
 
   safeHtml(html: string): SafeHtml {
@@ -513,16 +661,290 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
     const content = this.leccionStaticContent();
     if (!content) return;
     const max = content.pasos.length - 1;
-    if (this.leccionPasoActual() < max) this.leccionPasoActual.update(v => v + 1);
+    if (this.leccionPasoActual() < max) {
+      this.leccionPasoActual.update(v => v + 1);
+      const newPaso = content.pasos[this.leccionPasoActual()];
+      this.initEditorForStep(newPaso);
+      if (newPaso.paint) setTimeout(() => this.initPaint(), 50);
+    }
   }
 
   anteriorPaso(): void {
-    if (this.leccionPasoActual() > 0) this.leccionPasoActual.update(v => v - 1);
+    const content = this.leccionStaticContent();
+    if (this.leccionPasoActual() > 0) {
+      this.leccionPasoActual.update(v => v - 1);
+      const newPaso = content?.pasos[this.leccionPasoActual()];
+      this.initEditorForStep(newPaso);
+      if (newPaso?.paint) setTimeout(() => this.initPaint(), 50);
+    }
+  }
+
+  private initEditorForStep(paso?: { editor?: EditorConfig; paint?: true }): void {
+    this.editorMsg = '';
+    this.editorSuccess = false;
+    const box = document.getElementById(this.editorPreviewId);
+    if (box) box.innerHTML = '';
+    this.editorCode = paso?.editor?.startCode ?? '';
+    this.paintCanvas = null;
+    this.paintCtx = null;
+  }
+
+  resetEditor(): void {
+    const content = this.leccionStaticContent();
+    const paso = content?.pasos[this.leccionPasoActual()];
+    this.editorMsg = '';
+    this.editorSuccess = false;
+    const box = document.getElementById(this.editorPreviewId);
+    if (box) box.innerHTML = '';
+    this.editorCode = paso?.editor?.startCode ?? '';
+  }
+
+  initPaint(): void {
+    const canvas = document.getElementById('paint-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    this.paintCanvas = canvas;
+    this.paintCtx = canvas.getContext('2d');
+    if (!this.paintCtx) return;
+    this.paintCtx.fillStyle = '#ffffff';
+    this.paintCtx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  onPaintMouseDown(e: MouseEvent): void {
+    if (!this.paintCtx || !this.paintCanvas) return;
+    this.paintDrawing = true;
+    const rect = this.paintCanvas.getBoundingClientRect();
+    const scaleX = this.paintCanvas.width / rect.width;
+    const scaleY = this.paintCanvas.height / rect.height;
+    this.paintStartX = (e.clientX - rect.left) * scaleX;
+    this.paintStartY = (e.clientY - rect.top) * scaleY;
+    if (this.paintTool !== 'pencil' && this.paintTool !== 'eraser') {
+      this.paintSnapshot = this.paintCtx.getImageData(0, 0, this.paintCanvas.width, this.paintCanvas.height);
+    } else {
+      this.paintCtx.beginPath();
+      this.paintCtx.moveTo(this.paintStartX, this.paintStartY);
+    }
+  }
+
+  onPaintMouseMove(e: MouseEvent): void {
+    if (!this.paintDrawing || !this.paintCtx || !this.paintCanvas) return;
+    const rect = this.paintCanvas.getBoundingClientRect();
+    const scaleX = this.paintCanvas.width / rect.width;
+    const scaleY = this.paintCanvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    this.paintCtx.lineWidth = this.paintSize;
+    this.paintCtx.lineCap = 'round';
+    this.paintCtx.lineJoin = 'round';
+    if (this.paintTool === 'pencil') {
+      this.paintCtx.strokeStyle = this.paintColor;
+      this.paintCtx.lineTo(x, y);
+      this.paintCtx.stroke();
+    } else if (this.paintTool === 'eraser') {
+      this.paintCtx.strokeStyle = '#ffffff';
+      this.paintCtx.lineTo(x, y);
+      this.paintCtx.stroke();
+    } else if (this.paintSnapshot) {
+      this.paintCtx.putImageData(this.paintSnapshot, 0, 0);
+      this.paintCtx.strokeStyle = this.paintColor;
+      this.paintCtx.beginPath();
+      if (this.paintTool === 'rect') {
+        this.paintCtx.strokeRect(this.paintStartX, this.paintStartY, x - this.paintStartX, y - this.paintStartY);
+      } else if (this.paintTool === 'circle') {
+        const rx = Math.abs(x - this.paintStartX) / 2;
+        const ry = Math.abs(y - this.paintStartY) / 2;
+        const cx = this.paintStartX + (x - this.paintStartX) / 2;
+        const cy = this.paintStartY + (y - this.paintStartY) / 2;
+        this.paintCtx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        this.paintCtx.stroke();
+      } else if (this.paintTool === 'line') {
+        this.paintCtx.moveTo(this.paintStartX, this.paintStartY);
+        this.paintCtx.lineTo(x, y);
+        this.paintCtx.stroke();
+      }
+    }
+  }
+
+  onPaintMouseUp(): void {
+    this.paintDrawing = false;
+    this.paintSnapshot = null;
+  }
+
+  clearPaintCanvas(): void {
+    if (!this.paintCtx || !this.paintCanvas) return;
+    this.paintCtx.fillStyle = '#ffffff';
+    this.paintCtx.fillRect(0, 0, this.paintCanvas.width, this.paintCanvas.height);
+  }
+
+  downloadPaintCanvas(): void {
+    if (!this.paintCanvas) return;
+    const link = document.createElement('a');
+    link.download = 'mi-pagina-web.png';
+    link.href = this.paintCanvas.toDataURL('image/png');
+    link.click();
+  }
+
+  runCode(editor: EditorConfig): void {
+    const code = this.editorCode.trim();
+    this.editorMsg = '';
+    this.editorSuccess = false;
+    const box = document.getElementById(this.editorPreviewId);
+    if (box) box.innerHTML = '';
+
+    if (!code) {
+      this.editorMsg = 'Escribe algo de código primero.';
+      return;
+    }
+
+    const valid = this.validateCode(editor.validator, code);
+    if (!valid) {
+      this.editorMsg = editor.errorMsg;
+      return;
+    }
+
+    this.editorSuccess = true;
+    this.editorMsg = editor.validMsg;
+
+    if (box) {
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '100%';
+      iframe.style.height = '260px';
+      iframe.style.border = 'none';
+      iframe.style.borderRadius = '8px';
+      box.appendChild(iframe);
+      const doc = iframe.contentWindow!.document;
+      doc.open();
+      doc.write(code);
+      doc.close();
+    }
+  }
+
+  private validateCode(validator: EditorConfig['validator'], html: string): boolean {
+    const h = html.toLowerCase();
+    const count = (tag: string) => (h.match(new RegExp(`<${tag}[\\s>]`, 'g')) || []).length;
+    switch (validator) {
+      case 'basic-html':
+        return h.includes('<!doctype html') && h.includes('<html') && h.includes('</html>') &&
+               h.includes('<head') && h.includes('</head>') && h.includes('<body') &&
+               h.includes('</body>') && h.includes('<h1') && h.includes('</h1>') &&
+               h.includes('<p') && h.includes('</p>');
+      case 'titles-paragraphs':
+        return (count('h1') + count('h2') + count('h3')) >= 3 && count('p') >= 3;
+      case 'images':
+        return (h.match(/<img[\s\S]*?>/g) || []).length >= 3;
+      case 'lists': {
+        const ulBlocks = h.match(/<ul[\s\S]*?<\/ul>/g) || [];
+        const olBlocks = h.match(/<ol[\s\S]*?<\/ol>/g) || [];
+        const liIn = (blocks: string[]) => blocks.reduce((n, b) => n + (b.match(/<li[\s>]/g) || []).length, 0);
+        return ulBlocks.length >= 1 && olBlocks.length >= 1 && liIn(ulBlocks) >= 3 && liIn(olBlocks) >= 3;
+      }
+      case 'links':
+        return (h.match(/<a[\s\S]*?href=["'][^"']+["'][\s\S]*?>[\s\S]*?<\/a>/g) || []).length >= 4;
+      case 'table':
+        return h.includes('<table') && h.includes('</table>') && (h.match(/<tr[\s>]/g) || []).length >= 4;
+      case 'form':
+        return h.includes('<form') && h.includes('</form>') && count('label') >= 2 &&
+               count('input') >= 2 && count('button') >= 1;
+      case 'full-page':
+        return h.includes('<h1') && h.includes('</h1>') && h.includes('<p') &&
+               (h.match(/<img[\s\S]*?src=["'][^"']+["'][\s\S]*?alt=["'][^"']*["'][\s\S]*?>/g) || []).length >= 1 &&
+               (h.match(/<a[\s\S]*?href=["'][^"']+["'][\s\S]*?>[\s\S]*?<\/a>/g) || []).length >= 1;
+      case 'css-basic':
+        return h.includes('<style') && h.includes('background-color') &&
+               h.includes('color') && h.includes('font-family');
+      case 'css-gradient':
+        return h.includes('<style') &&
+               (h.includes('linear-gradient') || h.includes('radial-gradient')) &&
+               (h.match(/color\s*:/g) || []).length >= 2;
+      case 'css-typography':
+        return h.includes('<style') && h.includes('font-size') &&
+               h.includes('font-family') && (h.includes('font-weight') || h.includes('text-align'));
+      case 'css-box-model':
+        return h.includes('<style') && h.includes('border') &&
+               h.includes('border-radius') && h.includes('padding') && h.includes('box-shadow');
+      case 'css-lists-tables':
+        return h.includes('<style') &&
+               (h.includes('list-style') || h.includes('border-collapse')) &&
+               (h.includes('li') || h.includes('table'));
+      default: return true;
+    }
   }
 
   formatFecha(value: string | Date | undefined): string {
     if (!value) return '';
     const d = new Date(value);
     return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleDateString('es-CO');
+  }
+
+  responderForo(foroId: number): void {
+    if (!this.nuevaRespuestaForo.trim()) return;
+    const estId = this.profile()?.id;
+    if (!estId) return;
+
+    this.enviandoRespuestaForo = true;
+    
+    this.api.responderForo(foroId, { contenido: this.nuevaRespuestaForo, estudianteId: estId }).subscribe({
+      next: () => {
+        this.enviandoRespuestaForo = false;
+        this.nuevaRespuestaForo = '';
+        this.loadForoDetalle(foroId); // Recargar foro para ver la respuesta
+      },
+      error: (err) => {
+        this.enviandoRespuestaForo = false;
+        console.error('Error al responder foro:', err);
+      }
+    });
+  }
+
+  responderBandeja(mensajeId: number): void {
+    const contenido = this.respuestasBandeja[mensajeId];
+    if (!contenido || !contenido.trim()) return;
+    
+    const estId = this.profile()?.id;
+    // Buscamos el mensaje original para saber a qué docente responder
+    const msgOriginal = this.profile()?.mensajes?.find(m => m.id === mensajeId);
+    const docId = msgOriginal?.docente?.id;
+
+    if (!estId || !docId) return;
+
+    this.enviandoRespuestaBandeja[mensajeId] = true;
+    
+    this.api.enviarMensaje({
+      contenido,
+      estudianteId: estId,
+      docenteId: docId,
+      remitenteTipo: 'estudiante'
+    }).subscribe({
+      next: () => {
+        this.enviandoRespuestaBandeja[mensajeId] = false;
+        this.respuestasBandeja[mensajeId] = '';
+        this.loadProfile(); // Recargar el perfil para actualizar la bandeja
+      },
+      error: (err) => {
+        this.enviandoRespuestaBandeja[mensajeId] = false;
+        console.error('Error al enviar mensaje:', err);
+      }
+    });
+  }
+
+  getAutorNombre(r: any): string {
+    if (r.estudiante?.user) {
+      const u = r.estudiante.user;
+      return [u.name, u.lastName].filter(Boolean).join(' ') || 'Estudiante';
+    }
+    if (r.docente?.user) {
+      const u = r.docente.user;
+      return [u.name, u.lastName].filter(Boolean).join(' ') || 'Docente';
+    }
+    return 'Usuario';
+  }
+
+  marcarComoCompletada(leccionId: number) {
+    this.api.marcarLeccionCompletada(leccionId).subscribe({
+      next: () => {
+        this.loadProfile(); // Actualiza el progreso
+        alert('Lección completada con éxito!');
+      },
+      error: (err) => console.error(err)
+    });
   }
 }

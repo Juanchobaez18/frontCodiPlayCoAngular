@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+
 import { DocenteApiService, DocenteCurso, CursoDetalle, EstudianteProgreso } from '../services/docente-api.service';
 
 @Component({
   selector: 'app-mis-cursos',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './mis-cursos.component.html',
   styleUrls: ['./mis-cursos.component.scss'],
 })

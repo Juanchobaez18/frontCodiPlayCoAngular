@@ -47,6 +47,41 @@ export interface DocenteEstudiante {
   email: string;
 }
 
+export interface TareaEntrega {
+  id: number;
+  estudianteNombre: string;
+  estudianteApellido?: string;
+  estado: string;
+  calificacion: string | null;
+  resultado?: string | null;
+}
+
+export interface DocenteTarea {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  fechaVencimiento: string;
+  fechaCreacion?: string;
+  estudiantes: number;
+  estado: string;
+  modulo?: string;
+  leccion?: string;
+  cursoId?: number;
+  cursoNombre?: string;
+  entregas?: TareaEntrega[];
+}
+
+export interface ForoRespuesta {
+  id: number;
+  mensaje: string;
+  estudianteNombre: string;
+  estudianteApellido?: string;
+  esDocente?: boolean;
+  docenteId?: number;
+  estudianteId?: number;
+  fechaCreacion: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DocenteApiService {
   private readonly http = inject(HttpClient);
@@ -61,6 +96,10 @@ export class DocenteApiService {
     );
   }
 
+  getForoById(foroId: number): Observable<DocenteForo> {
+    return this.http.get<DocenteForo>(`${API_BASE}/docente/foros/${foroId}`);
+  }
+
   createForo(dto: { titulo: string; descripcion: string; cursoId: number }): Observable<DocenteForo> {
     return this.http.post<DocenteForo>(`${API_BASE}/docente/foros`, dto);
   }
@@ -69,10 +108,38 @@ export class DocenteApiService {
     return this.http.delete(`${API_BASE}/docente/foros/${foroId}`);
   }
 
+  getForoRespuestas(foroId: number): Observable<ForoRespuesta[]> {
+    return this.http.get<ForoRespuesta[]>(`${API_BASE}/docente/foros/${foroId}/respuestas`);
+  }
+
+  responderForo(foroId: number, dto: { contenido: string; docenteId: number }): Observable<any> {
+    return this.http.post(`${API_BASE}/foros/${foroId}/respuestas`, dto);
+  }
+
+  updateForoRespuesta(respuestaId: number, dto: { contenido: string }): Observable<any> {
+    return this.http.put(`${API_BASE}/foros/respuestas/${respuestaId}`, dto);
+  }
+
+  deleteForoRespuesta(respuestaId: number): Observable<any> {
+    return this.http.delete(`${API_BASE}/foros/respuestas/${respuestaId}`);
+  }
+
   getEstudiantes(): Observable<DocenteEstudiante[]> {
     return this.http.get<DocenteEstudiante[]>(`${API_BASE}/docente/estudiantes`).pipe(
       catchError(() => of([])),
     );
+  }
+
+  getTareas(): Observable<DocenteTarea[]> {
+    return this.http.get<DocenteTarea[]>(`${API_BASE}/docente/tareas`);
+  }
+
+  calificarTarea(entregaId: number, resultado: 'APROBADO' | 'NO_APROBADO'): Observable<any> {
+    return this.http.post(`${API_BASE}/docente/tareas/calificar`, {
+      entregaId,
+      calificacion: resultado === 'APROBADO' ? 'Aprobado' : 'No aprobado',
+      resultado,
+    });
   }
 
   getMensajesEnviados(): Observable<DocenteMensaje[]> {

@@ -237,7 +237,7 @@
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(37, 99, 235, 0.1) 50%, rgba(251, 146, 60, 0.1) 100%);
   border-radius: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  overflow: hidden;
+  overflow: clip;
   backdrop-filter: blur(10px);
 }
 
@@ -298,14 +298,16 @@
 .hero-title {
   font-size: 4rem;
   font-weight: 900;
+  line-height: 1.2;
   margin-bottom: 1rem;
+  padding-bottom: 0.1em;
   background: linear-gradient(45deg, #10b981 0%, #2563eb 25%, #fb923c 50%, #10b981 100%);
   background-size: 200% 200%;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: titleGradient 4s ease infinite;
-  filter: drop-shadow(0 2px 8px rgba(16, 185, 129, 0.3));
+  display: inline-block;
 
   @media (max-width: 768px) { font-size: 2.5rem; }
 }
@@ -402,12 +404,16 @@
 .section-header {
   text-align: center;
   margin-bottom: 3rem;
+  overflow: visible;
 }
 
 .section-title {
   font-size: 3rem;
   font-weight: 800;
+  line-height: 1.2;
   margin-bottom: 1rem;
+  padding-bottom: 0.1em;
+  display: inline-block;
   background: linear-gradient(45deg, #2563eb 0%, #10b981 50%, #fb923c 100%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -777,7 +783,10 @@
 .contact-title {
   font-size: 2.5rem;
   font-weight: 800;
+  line-height: 1.2;
   margin-bottom: 1rem;
+  padding-bottom: 0.1em;
+  display: inline-block;
   background: linear-gradient(45deg, #10b981 0%, #2563eb 50%, #fb923c 100%);
   background-clip: text;
   -webkit-background-clip: text;

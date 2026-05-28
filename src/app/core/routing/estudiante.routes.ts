@@ -11,10 +11,14 @@ const ESTUDIANTE_LEGACY_REDIRECTS: Routes = [
   { path: 'PanelControlUsuario/forosListado', redirectTo: '/estudiante/foros', pathMatch: 'full' },
   { path: 'PanelControlUsuario/editar-perfil', redirectTo: '/estudiante/editar-perfil', pathMatch: 'full' },
   { path: 'PanelControlUsuario/soporte', redirectTo: '/estudiante/soporte', pathMatch: 'full' },
-  { path: 'PanelControlUsuario/modulo1', redirectTo: '/estudiante/modulo/1', pathMatch: 'full' },
-  { path: 'PanelControlUsuario/modulo2', redirectTo: '/estudiante/modulo/2', pathMatch: 'full' },
-  { path: 'PanelControlUsuario/modulo3', redirectTo: '/estudiante/modulo/3', pathMatch: 'full' },
-  { path: 'PanelControlUsuario/modulo4', redirectTo: '/estudiante/modulo/4', pathMatch: 'full' },
+  { path: 'PanelControlUsuario/modulo1', redirectTo: '/estudiante/modulo-panel/1', pathMatch: 'full' },
+  { path: 'PanelControlUsuario/modulo2', redirectTo: '/estudiante/modulo-panel/2', pathMatch: 'full' },
+  { path: 'PanelControlUsuario/modulo3', redirectTo: '/estudiante/modulo-panel/3', pathMatch: 'full' },
+  { path: 'PanelControlUsuario/modulo4', redirectTo: '/estudiante/modulo-panel/4', pathMatch: 'full' },
+  { path: 'estudiante/modulo/1', redirectTo: '/estudiante/modulo-panel/1', pathMatch: 'full' },
+  { path: 'estudiante/modulo/2', redirectTo: '/estudiante/modulo-panel/2', pathMatch: 'full' },
+  { path: 'estudiante/modulo/3', redirectTo: '/estudiante/modulo-panel/3', pathMatch: 'full' },
+  { path: 'estudiante/modulo/4', redirectTo: '/estudiante/modulo-panel/4', pathMatch: 'full' },
 ];
 
 const loadEstudianteLayout = () =>
@@ -30,7 +34,17 @@ export const ESTUDIANTE_ROUTES: Routes = [
     canActivate: [estudiantePanelGuard],
   },
   {
-    path: 'estudiante/modulo/:num',
+    path: 'estudiante/leccion-panel/:modulo/:leccion',
+    loadComponent: loadEstudianteLayout,
+    canActivate: [estudiantePanelGuard],
+  },
+  {
+    path: 'estudiante/modulo-panel/:num',
+    loadComponent: loadEstudianteLayout,
+    canActivate: [estudiantePanelGuard],
+  },
+  {
+    path: 'estudiante/modulo/:id',
     loadComponent: loadEstudianteLayout,
     canActivate: [estudiantePanelGuard],
   },
