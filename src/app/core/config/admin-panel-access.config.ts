@@ -17,6 +17,7 @@ export const ADMIN_PANEL_ALLOWED_MODULE_NAMES_LOWER = [
   'panel administrativo',
   'gestión administrativa',
   'gestion administrativa',
+  'panel de administración',
 ] as const;
 
 export const PROTECTED_SYSTEM_ADMIN_ROLE_NAMES_LOWER = [

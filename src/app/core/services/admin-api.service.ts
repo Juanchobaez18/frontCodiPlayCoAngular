@@ -5,9 +5,10 @@ const API_BASE = 'http://localhost:3000';
 
 export interface DashboardStats {
   totalEstudiantes: number;
+  totalEstudiantesActivos: number;
   totalCursosActivos: number;
   totalDocentesActivos: number;
-  totalEstudiantesActivos?: number;
+  tasaExito: number;
 }
 
 export interface ManagedUser {

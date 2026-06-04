@@ -1,0 +1,86 @@
+<header class="glass-navbar">
+  <div class="header-container">
+    <a routerLink="/" class="logo-wrapper">
+      <img src="img/logo.png" alt="CodiPlayCo Logo" class="logo-animate" />
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="success-container">
+
+    <!-- Confirmando inscripción -->
+    @if (confirmando()) {
+      <div class="confirming-state">
+        <div class="spinner"></div>
+        <h2 class="success-title" style="font-size:1.5rem">Confirmando tu inscripción…</h2>
+        <p class="success-subtitle">Por favor espera un momento.</p>
+      </div>
+    }
+
+    <!-- Inscripción confirmada -->
+    @if (!confirmando() && inscrito()) {
+      <div class="success-icon">
+        <div class="check-circle">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="26" cy="26" r="25" stroke="#1effb4" stroke-width="2"/>
+            <path d="M14 27L22 35L38 18" stroke="#1effb4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <h1 class="success-title">¡Pago e inscripción exitosos!</h1>
+      <p class="success-subtitle">Tu acceso al curso ha sido activado correctamente.</p>
+
+      @if (transaccionId) {
+        <p class="transaction-ref">Referencia de transacción: <strong>#{{ transaccionId }}</strong></p>
+      }
+
+      <div class="success-message">
+        <p>Ya puedes acceder a tu curso desde el panel de estudiante.</p>
+        <p class="redirect-notice">Redirigiendo en <strong>{{ countdown() }}</strong> segundo(s)…</p>
+      </div>
+
+      <div class="success-actions">
+        <button class="btn-primary" (click)="irAlPanel()">
+          Ir a mi panel ahora
+        </button>
+        <a routerLink="/cursos" class="btn-secondary">
+          Ver más cursos
+        </a>
+      </div>
+    }
+
+    <!-- Error de confirmación -->
+    @if (!confirmando() && errorConfirm()) {
+      <div class="error-state">
+        <div class="error-icon">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="26" cy="26" r="25" stroke="#f87171" stroke-width="2"/>
+            <path d="M18 18L34 34M34 18L18 34" stroke="#f87171" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h1 class="success-title" style="color:#f87171">No se pudo confirmar</h1>
+        <p class="success-subtitle">
+          Tu pago puede estar siendo procesado. Si ya pagaste, espera unos minutos e intenta acceder directamente.
+        </p>
+        @if (transaccionId) {
+          <p class="transaction-ref">Referencia: <strong>#{{ transaccionId }}</strong></p>
+        }
+        <div class="success-actions">
+          <button class="btn-primary" (click)="irAlPanel()">
+            Intentar entrar al panel
+          </button>
+          <a routerLink="/cursos" class="btn-secondary">
+            Volver a cursos
+          </a>
+        </div>
+      </div>
+    }
+
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
+</footer>

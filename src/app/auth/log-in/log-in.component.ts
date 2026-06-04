@@ -15,6 +15,7 @@ import { LoginInterface } from '../interfaces/login';
 import { Auth } from '../../core/services/auth';
 import { userHasAdminPanelAccess } from '../../core/config/admin-panel-access.config';
 import { userHasDocentePanelAccess } from '../../core/config/docente-panel-access.config';
+import { userHasEstudiantePanelAccess } from '../../core/config/estudiante-panel-access.config';
  
 @Component({
   selector: 'app-log-in',
@@ -74,8 +75,16 @@ export class LogIn {
           this.router.navigate(['/admin/dashboard']);
         } else if (userHasDocentePanelAccess(res.user)) {
           this.router.navigate(['/docente/dashboard']);
+        } else if (userHasEstudiantePanelAccess(res.user)) {
+          const pendingCursoId = localStorage.getItem('pendingCursoId');
+          if (pendingCursoId) {
+            localStorage.removeItem('pendingCursoId');
+            this.router.navigate(['/registro-pago', pendingCursoId]);
+          } else {
+            this.router.navigate(['/estudiante/inicio']);
+          }
         } else {
-          this.router.navigate(['/users']);
+          this.router.navigate(['/dashboard']);
         }
       },
       error: (err) => {

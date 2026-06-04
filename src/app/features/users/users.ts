@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { UserService, EstudianteProfile } from './services/user.service';
-import { Auth } from '../core/services/auth';
+import { Auth } from '../../core/services/auth';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, take, switchMap } from 'rxjs';
 

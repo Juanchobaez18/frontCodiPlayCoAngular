@@ -57,19 +57,16 @@ export class MensajesComponent {
 
   private loadMensajes() {
     this.mensajesLoading.set(true);
-    this.apiService.getMensajes().subscribe({
-      next: (data) => {
-        // Separate by tipo or show all in both
-        const enviados = (data || []).filter((m) => m.tipo === 'enviado' || !m.tipo);
-        const recibidos = (data || []).filter((m) => m.tipo === 'recibido');
-        this.mensajesEnviados.set(enviados);
-        this.mensajesRecibidos.set(recibidos);
-        this.mensajesLoading.set(false);
-      },
-      error: (error) => {
-        console.error('Error loading mensajes:', error);
-        this.mensajesLoading.set(false);
-      },
+    Promise.all([
+      this.apiService.getMensajesEnviados().toPromise(),
+      this.apiService.getMensajesRecibidos().toPromise(),
+    ]).then(([enviados, recibidos]) => {
+      this.mensajesEnviados.set(enviados || []);
+      this.mensajesRecibidos.set(recibidos || []);
+      this.mensajesLoading.set(false);
+    }).catch((error) => {
+      console.error('Error loading mensajes:', error);
+      this.mensajesLoading.set(false);
     });
   }
 

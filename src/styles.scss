@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
+@use './app/core/styles/admin-panel.global.scss';
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Outfit:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Outfit:wght@400;600;700;800&family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -71,6 +72,10 @@ body.dark {
   color-scheme: dark;
 }
 
+body.estudiante-panel-root {
+  overflow: hidden;
+}
+
 .app-admin-root {
   --background: #f0ecf7;
   --foreground: #1e293b;
@@ -97,4 +102,90 @@ body.dark {
   --shadow-card: 0 4px 24px rgb(0 0 0 / 0.3);
 }
 
-@import './app/core/styles/admin-panel.global.scss';
+/* ═══════════════════════════════════════════════════
+   PANEL ESTUDIANTE — CSS TOKENS (oklch palette)
+═══════════════════════════════════════════════════ */
+.estudiante-panel-root {
+  --radius: 1.25rem;
+
+  /* Palette */
+  --ep-primary:     oklch(0.7 0.18 230);
+  --ep-primary-fg:  oklch(0.99 0.01 230);
+  --ep-secondary:   oklch(0.95 0.04 230);
+  --ep-muted-fg:    oklch(0.55 0.05 260);
+  --ep-accent:      oklch(0.85 0.15 320);
+  --ep-border:      oklch(0.92 0.02 230);
+
+  /* Named hues */
+  --ep-sky:    oklch(0.78 0.14 230);
+  --ep-sunny:  oklch(0.85 0.17 85);
+  --ep-grass:  oklch(0.78 0.18 150);
+  --ep-bubble: oklch(0.78 0.16 340);
+  --ep-locked: oklch(0.85 0.03 230);
+
+  /* Gradients */
+  --ep-gradient-bg: linear-gradient(135deg,
+    oklch(0.97 0.03 220) 0%,
+    oklch(0.95 0.05 280) 50%,
+    oklch(0.96 0.04 330) 100%);
+  --ep-gradient-primary: linear-gradient(135deg,
+    oklch(0.72 0.18 230) 0%,
+    oklch(0.68 0.2  260) 100%);
+  --ep-gradient-card: linear-gradient(145deg,
+    oklch(1 0 0) 0%,
+    oklch(0.98 0.02 230) 100%);
+
+  /* Shadows */
+  --ep-shadow-soft: 0 10px 30px -10px oklch(0.5 0.15 240 / 0.15),
+                    0 4px  12px -4px  oklch(0.5 0.15 240 / 0.08);
+  --ep-shadow-glow: 0 0  0  4px oklch(0.7 0.18 230 / 0.15),
+                    0 8px 24px -4px oklch(0.7 0.18 230 / 0.45);
+  --ep-shadow-pop:  0 20px 50px -12px oklch(0.5 0.15 240 / 0.25);
+
+  /* Legacy compat — keep existing var names working */
+  --primary-blue:          oklch(0.7 0.18 230);
+  --primary-hover:         oklch(0.65 0.2 260);
+  --bg-panel:              white;
+  --bg-body-gradient-start:oklch(0.97 0.03 220);
+  --bg-body-gradient-end:  oklch(0.95 0.05 280);
+  --text-main:             oklch(0.25 0.08 260);
+  --text-secondary:        oklch(0.55 0.05 260);
+  --border-light:          oklch(0.92 0.02 230);
+  --bg-input:              oklch(0.96 0.02 230);
+  --btn-locked-bg:         oklch(0.96 0.02 230);
+  --btn-locked-text:       oklch(0.65 0.04 260);
+  --shadow-card:           var(--ep-shadow-soft);
+}
+
+body.dark-mode.estudiante-panel-root {
+  --ep-primary:    oklch(0.7 0.18 230);
+  --ep-secondary:  oklch(0.22 0.05 260);
+  --ep-muted-fg:   oklch(0.65 0.06 240);
+  --ep-border:     oklch(0.25 0.04 260);
+  --ep-gradient-bg: linear-gradient(135deg,
+    oklch(0.1 0.03 240) 0%,
+    oklch(0.12 0.04 270) 50%,
+    oklch(0.11 0.04 300) 100%);
+
+  --primary-blue:           oklch(0.68 0.18 230);
+  --primary-hover:          oklch(0.62 0.2 260);
+  --bg-panel:               oklch(0.17 0.04 260);
+  --bg-body-gradient-start: oklch(0.1 0.03 240);
+  --text-main:              oklch(0.92 0.02 230);
+  --text-secondary:         oklch(0.65 0.06 240);
+  --border-light:           oklch(0.25 0.04 260);
+  --bg-input:               oklch(0.22 0.04 260);
+  --btn-locked-bg:          oklch(0.22 0.04 260);
+  --btn-locked-text:        oklch(0.5 0.05 260);
+  --shadow-card:            0 8px 30px rgba(0,0,0,0.5);
+}
+
+/* Gradient text utility */
+.estudiante-panel-root .text-gradient-primary {
+  background: var(--ep-gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+

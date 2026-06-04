@@ -5,9 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Auth } from '../../services/auth';
-import { DocenteApiService, type CursoDocente } from '../../services/docente-api.service';
+import { DocenteApiService, type CursoDocente, type DocenteForo, type DocenteMensaje, type DocenteEstudiante, type DocenteTarea, type TareaEntrega, type ForoRespuesta } from '../../services/docente-api.service';
 import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.component';
 import { AdminLucideIconsModule } from '../admin-lucide-icons.module';
+import { MisCursosComponent } from '../../../features/docente/mis-cursos/mis-cursos.component';
 import { LayoutDashboard, BookOpen, LogOut, ClipboardList, MessageSquare, Mail, Sun, Moon } from 'lucide-angular';
 
 export type DocentePanelView = 'dashboard' | 'mis-cursos' | 'tareas' | 'foros' | 'mensajes' | null;
@@ -25,6 +26,7 @@ const THEME_KEY = 'codipayco-admin-theme';
     RouterLinkActive,
     DashboardLayoutComponent,
     AdminLucideIconsModule,
+    MisCursosComponent,
   ],
 })
 export class DocenteLayoutComponent implements OnInit {
@@ -58,13 +60,40 @@ export class DocenteLayoutComponent implements OnInit {
     return (name.split(/\s+/)[0]?.[0] ?? 'D').toUpperCase();
   });
 
+  readonly userAvatar = computed(() => this.authService.currentUser()?.avatar ?? null);
+
   perfilError: string | null = null;
+  uploadError: string | null = null;
   selectedFile: File | null = null;
   uploadSuccess = false;
 
   readonly misCursosSig = signal<CursoDocente[]>([]);
   cursosLoading = false;
   cursosError: string | null = null;
+
+  readonly forosSig = signal<DocenteForo[]>([]);
+  forosLoading = false;
+
+  readonly mensajesEnviadosSig = signal<DocenteMensaje[]>([]);
+  readonly mensajesRecibidosSig = signal<DocenteMensaje[]>([]);
+  mensajesLoading = false;
+
+  readonly estudiantesSig = signal<DocenteEstudiante[]>([]);
+
+  // Tareas functional state
+  readonly tareasSig = signal<DocenteTarea[]>([]);
+  tareasLoading = false;
+  tareasError: string | null = null;
+  calificando = signal<Set<number>>(new Set());
+
+  // Foros thread detail state
+  readonly selectedForoId = signal<number | null>(null);
+  readonly selectedForoSig = signal<DocenteForo | null>(null);
+  readonly foroRespuestasSig = signal<ForoRespuesta[]>([]);
+  foroRespuestasLoading = false;
+  nuevaRespuestaContenido = '';
+  editandoRespuestaId: number | null = null;
+  editandoRespuestaContenido = '';
 
   readonly misStats = computed(() => {
     const userId = this.authService.currentUser()?.id;
@@ -152,8 +181,30 @@ export class DocenteLayoutComponent implements OnInit {
     this.lastViewKey = key;
     this.docentePanelView.set(view);
 
+    // Reset forum selection by default
+    this.selectedForoId.set(null);
+    this.selectedForoSig.set(null);
+    this.foroRespuestasSig.set([]);
+
     if (view === 'dashboard' || view === 'mis-cursos' || view === 'tareas' || view === 'foros') {
       this.loadCursos();
+    }
+    if (view === 'tareas') {
+      this.loadTareas();
+    }
+    if (view === 'foros') {
+      this.loadForos();
+      // Check if it's a specific forum detail
+      const forumMatch = path.match(/\/docente\/foros\/(\d+)/);
+      if (forumMatch) {
+        const foroId = parseInt(forumMatch[1], 10);
+        this.selectedForoId.set(foroId);
+        this.loadForoDetalle(foroId);
+      }
+    }
+    if (view === 'mensajes') {
+      this.loadMensajes();
+      this.loadEstudiantes();
     }
   }
 
@@ -204,8 +255,39 @@ export class DocenteLayoutComponent implements OnInit {
   uploadProfileImage(): void {
     if (!this.selectedFile) return;
     this.perfilError = null;
-    this.uploadSuccess = true;
-    this.selectedFile = null;
+    this.uploadError = null;
+    this.uploadSuccess = false;
+    const file = this.selectedFile;
+    this.docenteApi.uploadFotoPerfil(file).subscribe({
+      next: (res: any) => {
+        this.uploadSuccess = true;
+        this.selectedFile = null;
+        const url: string | undefined = res?.fotoPerfil?.url;
+        if (url) {
+          this.authService.patchAvatar(`http://localhost:3000${url}`);
+        }
+      },
+      error: () => {
+        this.uploadError = 'Error al subir la imagen. Intenta de nuevo.';
+      },
+    });
+  }
+
+  loadForos(): void {
+    this.forosLoading = true;
+    this.docenteApi.getForos().subscribe({
+      next: (foros) => {
+        this.forosSig.set(foros);
+        this.forosLoading = false;
+      },
+      error: () => {
+        this.forosLoading = false;
+      },
+    });
+  }
+
+  forosPorCurso(cursoId: number): DocenteForo[] {
+    return this.forosSig().filter((f) => f.cursoId === cursoId);
   }
 
   crearForo(): void {
@@ -213,13 +295,52 @@ export class DocenteLayoutComponent implements OnInit {
     this.foroSending = true;
     this.foroInfo = null;
     this.foroError = null;
-    setTimeout(() => {
-      this.foroInfo = 'Foro creado exitosamente.';
-      this.foroTitulo = '';
-      this.foroCursoId = 0;
-      this.foroDescripcion = '';
-      this.foroSending = false;
-    }, 600);
+    this.docenteApi.createForo({ titulo: this.foroTitulo, descripcion: this.foroDescripcion, cursoId: this.foroCursoId }).subscribe({
+      next: () => {
+        this.foroInfo = 'Foro creado exitosamente.';
+        this.foroTitulo = '';
+        this.foroCursoId = 0;
+        this.foroDescripcion = '';
+        this.foroSending = false;
+        this.loadForos();
+      },
+      error: () => {
+        this.foroError = 'Error al crear el foro. Intenta de nuevo.';
+        this.foroSending = false;
+      },
+    });
+  }
+
+  eliminarForo(foroId: number): void {
+    this.docenteApi.deleteForo(foroId).subscribe({
+      next: () => {
+        this.forosSig.update((list) => list.filter((f) => f.id !== foroId));
+      },
+      error: () => {
+        this.foroError = 'Error al eliminar el foro.';
+      },
+    });
+  }
+
+  loadMensajes(): void {
+    this.mensajesLoading = true;
+    Promise.all([
+      this.docenteApi.getMensajesEnviados().toPromise(),
+      this.docenteApi.getMensajesRecibidos().toPromise(),
+    ]).then(([enviados, recibidos]) => {
+      this.mensajesEnviadosSig.set(enviados ?? []);
+      this.mensajesRecibidosSig.set(recibidos ?? []);
+      this.mensajesLoading = false;
+    }).catch(() => {
+      this.mensajesLoading = false;
+    });
+  }
+
+  loadEstudiantes(): void {
+    this.docenteApi.getEstudiantes().subscribe({
+      next: (data) => this.estudiantesSig.set(data),
+      error: () => {},
+    });
   }
 
   enviarMensajeDocente(): void {
@@ -227,11 +348,156 @@ export class DocenteLayoutComponent implements OnInit {
     this.msgSendingDocente = true;
     this.msgInfoDocente = null;
     this.msgErrorDocente = null;
-    setTimeout(() => {
-      this.msgInfoDocente = 'Mensaje enviado correctamente.';
-      this.msgContenido = '';
-      this.msgDestinatarioId = 0;
-      this.msgSendingDocente = false;
-    }, 600);
+    this.docenteApi.sendMensaje({ destinatarioId: this.msgDestinatarioId, contenido: this.msgContenido }).subscribe({
+      next: () => {
+        this.msgInfoDocente = 'Mensaje enviado correctamente.';
+        this.msgContenido = '';
+        this.msgDestinatarioId = 0;
+        this.msgSendingDocente = false;
+        this.loadMensajes();
+      },
+      error: () => {
+        this.msgErrorDocente = 'Error al enviar el mensaje. Intenta de nuevo.';
+        this.msgSendingDocente = false;
+      },
+    });
+  }
+
+  loadTareas(): void {
+    this.tareasLoading = true;
+    this.tareasError = null;
+    this.docenteApi.getTareas().subscribe({
+      next: (tareas) => {
+        this.tareasSig.set(tareas);
+        this.tareasLoading = false;
+      },
+      error: (err) => {
+        this.tareasError = err?.status === 401 || err?.status === 403
+          ? 'Sin acceso: verifica que tu cuenta tenga perfil de docente activo.'
+          : 'Error al cargar las tareas. Recarga la página.';
+        this.tareasLoading = false;
+      },
+    });
+  }
+
+  get cursosConTareas() {
+    const map = new Map<number, { id: number; nombre: string; tareas: DocenteTarea[] }>();
+    for (const t of this.tareasSig()) {
+      const cId = t.cursoId || 0;
+      if (!map.has(cId)) {
+        map.set(cId, { id: cId, nombre: t.cursoNombre || 'Curso', tareas: [] });
+      }
+      map.get(cId)!.tareas.push(t);
+    }
+    return Array.from(map.values());
+  }
+
+  isCalificando(entregaId: number): boolean {
+    return this.calificando().has(entregaId);
+  }
+
+  calificarTarea(entregaId: number, resultado: 'APROBADO' | 'NO_APROBADO'): void {
+    const loading = new Set(this.calificando());
+    loading.add(entregaId);
+    this.calificando.set(loading);
+
+    this.docenteApi.calificarTarea(entregaId, resultado).subscribe({
+      next: () => {
+        const l = new Set(this.calificando());
+        l.delete(entregaId);
+        this.calificando.set(l);
+        this.loadTareas(); // Reload tasks to show updated status/calificacion
+      },
+      error: () => {
+        const l = new Set(this.calificando());
+        l.delete(entregaId);
+        this.calificando.set(l);
+      }
+    });
+  }
+
+  loadForoDetalle(foroId: number): void {
+    this.foroRespuestasLoading = true;
+    this.docenteApi.getForoById(foroId).subscribe({
+      next: (foro) => {
+        this.selectedForoSig.set(foro);
+      },
+      error: () => {
+        this.selectedForoSig.set(null);
+      }
+    });
+
+    this.docenteApi.getForoRespuestas(foroId).subscribe({
+      next: (respuestas) => {
+        this.foroRespuestasSig.set(respuestas);
+        this.foroRespuestasLoading = false;
+      },
+      error: () => {
+        this.foroRespuestasLoading = false;
+      }
+    });
+  }
+
+  publicarRespuesta(): void {
+    const foroId = this.selectedForoId();
+    if (!foroId || !this.nuevaRespuestaContenido.trim()) return;
+
+    const docenteId = this.authService.currentUser()?.docente?.id || 0;
+    this.docenteApi.responderForo(foroId, {
+      contenido: this.nuevaRespuestaContenido,
+      docenteId: docenteId
+    }).subscribe({
+      next: () => {
+        this.nuevaRespuestaContenido = '';
+        this.loadForoDetalle(foroId);
+      },
+      error: () => {
+        // error handling
+      }
+    });
+  }
+
+  eliminarRespuesta(respuestaId: number): void {
+    const foroId = this.selectedForoId();
+    if (!foroId) return;
+
+    if (confirm('¿Estás seguro de que deseas eliminar esta respuesta?')) {
+      this.docenteApi.deleteForoRespuesta(respuestaId).subscribe({
+        next: () => {
+          this.loadForoDetalle(foroId);
+        },
+        error: () => {
+          // error handling
+        }
+      });
+    }
+  }
+
+  iniciarEdicion(respuesta: ForoRespuesta): void {
+    this.editandoRespuestaId = respuesta.id;
+    this.editandoRespuestaContenido = respuesta.mensaje;
+  }
+
+  guardarEdicion(): void {
+    const foroId = this.selectedForoId();
+    const respId = this.editandoRespuestaId;
+    if (!foroId || !respId || !this.editandoRespuestaContenido.trim()) return;
+
+    this.docenteApi.updateForoRespuesta(respId, {
+      contenido: this.editandoRespuestaContenido
+    }).subscribe({
+      next: () => {
+        this.cancelarEdicion();
+        this.loadForoDetalle(foroId);
+      },
+      error: () => {
+        // error handling
+      }
+    });
+  }
+
+  cancelarEdicion(): void {
+    this.editandoRespuestaId = null;
+    this.editandoRespuestaContenido = '';
   }
 }

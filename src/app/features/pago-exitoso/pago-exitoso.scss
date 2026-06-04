@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Rubik:wght@400;500;700&family=Quicksand:wght@500;700&display=swap');
+
+:host {
+  display: block;
+  font-family: 'Rubik', sans-serif;
+  background-image: url('/img/ab52e048-112b-4037-b524-a6e290351461.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+:host::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 30, 0.55);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glass-navbar {
+  background: rgba(255,255,255,0.08);
+  border-radius: 30px;
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255,255,255,0.15);
+  position: relative;
+  z-index: 10;
+  padding: 0.3rem 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 2.5rem;
+}
+
+.logo-wrapper { display: flex; align-items: center; }
+
+.logo-animate {
+  height: 6rem;
+  max-width: 320px;
+  width: auto;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 160px);
+  padding: 2rem 1.5rem;
+}
+
+.success-container {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 28px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+}
+
+.success-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.check-circle {
+  width: 90px;
+  height: 90px;
+  animation: popIn 0.6s cubic-bezier(0.68,-0.55,0.27,1.55) both;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 16px rgba(30, 255, 180, 0.5));
+  }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.3); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.success-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.5rem;
+  text-shadow: 0 0 30px rgba(30, 255, 180, 0.4);
+}
+
+.success-subtitle {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.7);
+  margin: 0 0 1.25rem;
+}
+
+.transaction-ref {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.25);
+  padding: 6px 14px;
+  border-radius: 50px;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+
+  strong { color: #1effb4; }
+}
+
+.success-message {
+  margin-bottom: 2rem;
+  p {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.75);
+    margin: 0.4rem 0;
+    line-height: 1.5;
+  }
+}
+
+.success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-primary {
+  display: block;
+  padding: 0.9rem 2rem;
+  background: linear-gradient(135deg, #a100ff, #4361ee);
+  color: #fff;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 50px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 20px rgba(161,0,255,0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(161,0,255,0.5);
+    color: #fff;
+  }
+}
+
+.btn-secondary {
+  display: block;
+  padding: 0.9rem 2rem;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.75);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: all 0.3s;
+
+  &:hover {
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+}
+
+/* btn-primary as a button element */
+button.btn-primary {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+}
+
+.redirect-notice {
+  font-size: 0.9rem !important;
+  color: rgba(30, 255, 180, 0.8) !important;
+
+  strong { color: #1effb4; }
+}
+
+/* Spinner for loading state */
+.confirming-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255,255,255,0.15);
+  border-top-color: #1effb4;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error state icon */
+.error-state { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+
+.error-icon {
+  width: 80px;
+  height: 80px;
+  animation: popIn 0.5s cubic-bezier(0.68,-0.55,0.27,1.55) both;
+  svg { width: 100%; height: 100%; filter: drop-shadow(0 0 14px rgba(248,113,113,0.5)); }
+}
+
+footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 1.5rem;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}

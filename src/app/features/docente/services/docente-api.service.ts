@@ -176,13 +176,13 @@ export class DocenteApiService {
   }
 
   getMensajesEnviados(): Observable<DocenteMensaje[]> {
-    return this.http.get<DocenteMensaje[]>(`${this.docenteUrl}/mensajes`).pipe(
+    return this.http.get<DocenteMensaje[]>(`${this.docenteUrl}/mensajes?tipo=enviado`).pipe(
       catchError(() => of([])),
     );
   }
 
   getMensajesRecibidos(): Observable<DocenteMensaje[]> {
-    return this.http.get<DocenteMensaje[]>(`${this.docenteUrl}/mensajes`).pipe(
+    return this.http.get<DocenteMensaje[]>(`${this.docenteUrl}/mensajes?tipo=recibido`).pipe(
       catchError(() => of([])),
     );
   }
@@ -197,23 +197,23 @@ export class DocenteApiService {
   }
 
   getForoById(foroId: number): Observable<DocenteForo> {
-    return this.http.get<DocenteForo>(`${this.forosUrl}/${foroId}`);
+    return this.http.get<DocenteForo>(`${this.docenteUrl}/foros/${foroId}`);
   }
 
   createForo(dto: CreateForoDto): Observable<DocenteForo> {
-    return this.http.post<DocenteForo>(this.forosUrl, dto);
+    return this.http.post<DocenteForo>(`${this.docenteUrl}/foros`, dto);
   }
 
   updateForo(foroId: number, dto: UpdateForoDto): Observable<DocenteForo> {
-    return this.http.put<DocenteForo>(`${this.forosUrl}/${foroId}`, dto);
+    return this.http.put<DocenteForo>(`${this.docenteUrl}/foros/${foroId}`, dto);
   }
 
   deleteForo(foroId: number): Observable<any> {
-    return this.http.delete(`${this.forosUrl}/${foroId}`);
+    return this.http.delete(`${this.docenteUrl}/foros/${foroId}`);
   }
 
   getForoRespuestas(foroId: number): Observable<ForoRespuesta[]> {
-    return this.http.get<ForoRespuesta[]>(`${this.forosUrl}/${foroId}/respuestas`);
+    return this.http.get<ForoRespuesta[]>(`${this.docenteUrl}/foros/${foroId}/respuestas`);
   }
 
   // ─── Foto de perfil ───
