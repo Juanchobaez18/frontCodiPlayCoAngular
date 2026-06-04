@@ -895,6 +895,81 @@
 }
 
 
+/* Lesson badge shown above the student table */
+.docente-leccion-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(79,70,229,0.06));
+  border: 1.5px solid rgba(124,58,237,0.25);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.85rem;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 8%; right: 8%;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent);
+  }
+
+  > i {
+    font-size: 1.3rem;
+    color: #7c3aed;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #7c3aed;
+    opacity: 0.8;
+  }
+
+  &__nombre {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1040;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__modulo {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+}
+
+/* Small chip shown per-row in the table */
+.docente-leccion-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(124,58,237,0.09);
+  color: #7c3aed;
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+
+  i { font-size: 0.7rem; }
+}
+
 /* ── 7. FORMULARIO FOROS ─────────────────────── */
 .docente-foro-form {
   display: flex;

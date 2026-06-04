@@ -1,59 +1,83 @@
-# Adso3063267
+# CodiPlayCo — Frontend (Angular)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.2.
+Aplicación web para la plataforma educativa CodiPlayCo. Construida con Angular 21 + Angular Material + Signals.
 
-## Development server
+---
 
-To start a local development server, run:
+## Requisitos previos
+
+- Node.js ≥ 18
+- Backend CodiPlayCo corriendo en `http://localhost:3000`  
+  ⚠️ Asegúrate de haber ejecutado `npm run seed` en el backend antes de usar la app.
+
+---
+
+## Instalación y desarrollo
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+La app estará disponible en `http://localhost:4200`.
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Paneles disponibles
 
-```bash
-ng generate component component-name
+| Panel | Ruta | Acceso |
+|-------|------|--------|
+| Landing / Cursos | `/` · `/cursos` | Público |
+| Registro | `/auth/register` | Público |
+| Login | `/auth/login` | Público |
+| Panel Estudiante | `/estudiante/inicio` | Rol `estudiante` |
+| Panel Docente | `/docente/dashboard` | Rol `docente` |
+| Panel Admin | `/admin/dashboard` | Rol `admin` |
+
+---
+
+## Flujo de inscripción a un curso
+
+1. El visitante va a `/cursos` y hace clic en **Inscribirme**
+2. Si no tiene sesión → va a `/auth/register` con el banner del curso seleccionado
+3. Completa el registro → redirige automáticamente a `/registro-pago/:id`
+4. Si ya tiene sesión → va directamente a `/registro-pago/:id`
+5. En la página de pago hace clic en **Registrar e Ir al Pago** → Stripe Checkout
+6. Stripe redirige a `/pago-exitoso?transaccion=:id` para confirmar la inscripción
+
+---
+
+## Scripts disponibles
+
+| Comando | Descripción |
+|---------|-------------|
+| `ng serve` | Servidor de desarrollo |
+| `ng build` | Build de producción en `dist/` |
+| `ng test` | Tests unitarios |
+
+---
+
+## Variables de entorno del frontend
+
+Todas las URLs del backend se configuran directamente en los servicios bajo `src/app/core/services/`.  
+El valor por defecto es `http://localhost:3000`.
+
+---
+
+## Estructura del proyecto
+
 ```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
+src/app/
+├── auth/                    Login y registro
+├── core/
+│   ├── services/            Auth, EstudianteApi, DocenteApi, PendingCourse
+│   ├── guards/              authGuard, docenteGuard, adminGuard, estudiantePanelGuard
+│   ├── interceptors/        authInterceptor (agrega Bearer token a todas las peticiones)
+│   ├── components/          Layouts: admin, docente, estudiante
+│   └── routing/             Rutas por rol
+└── features/
+    ├── cursos/              Catálogo público de cursos
+    ├── registro-pago/       Confirmación previa al pago con Stripe
+    ├── pago-exitoso/        Confirmación post-pago
+    └── docente/             Componentes del panel docente
 ```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

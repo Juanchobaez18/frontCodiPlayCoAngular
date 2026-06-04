@@ -81,7 +81,8 @@ export interface TareaEntrega {
   estudianteNombre: string;
   estudianteApellido?: string;
   estado: string;
-  calificacion: string;
+  calificacion: string | null;
+  resultado: 'APROBADO' | 'NO_APROBADO' | null;
 }
 
 export interface DocenteMensaje {

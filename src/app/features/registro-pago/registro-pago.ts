@@ -1,8 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Auth } from '../../core/services/auth';
+import { PendingCourseService } from '../../core/services/pending-course.service';
 
 interface CursoDetalle {
   id: number;
@@ -24,6 +25,7 @@ export class RegistroPagoComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly pendingCourse = inject(PendingCourseService);
   readonly auth = inject(Auth);
 
   private readonly API = 'http://localhost:3000';
@@ -31,12 +33,15 @@ export class RegistroPagoComponent implements OnInit {
   curso: CursoDetalle | null = null;
   cursoLoading = true;
   cursoError: string | null = null;
-
   procesando = false;
   pagoError: string | null = null;
   cancelado = false;
 
   ngOnInit(): void {
+    // The user has reached the payment page, so the pending-course handshake
+    // is complete. Clear it to prevent stale redirects on future logins.
+    this.pendingCourse.clear();
+
     this.cancelado = this.route.snapshot.queryParamMap.get('cancelado') === 'true';
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -61,8 +66,11 @@ export class RegistroPagoComponent implements OnInit {
   irAlPago(): void {
     if (!this.curso) return;
 
-    const token = localStorage.getItem('token');
-    if (!token) {
+    // Token check is a fast-fail before the HTTP request.
+    // If there is somehow no token here, preserve the course so the user
+    // lands back on this page automatically after re-authenticating.
+    if (!localStorage.getItem('token')) {
+      this.pendingCourse.save(this.curso.id);
       this.router.navigate(['/auth/login']);
       return;
     }
@@ -70,8 +78,7 @@ export class RegistroPagoComponent implements OnInit {
     this.procesando = true;
     this.pagoError = null;
 
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-
+    // Authorization header is added automatically by authInterceptor
     this.http
       .post<{ url: string; transactionId: number }>(
         `${this.API}/payments/stripe/create-session`,
@@ -80,7 +87,6 @@ export class RegistroPagoComponent implements OnInit {
           amount: Number(this.curso.precio),
           courseName: this.curso.nombre,
         },
-        { headers },
       )
       .subscribe({
         next: (res) => {

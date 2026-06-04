@@ -21,6 +21,7 @@ import {
   type MensajeEstudiante,
   type ModuloBackend,
   type LeccionBackend,
+  type TareaEntregaEstudiante,
 } from '../../services/estudiante-api.service';
 import {
   MODULOS_PANEL,
@@ -114,6 +115,7 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   isDarkMode = false;
 
   bandejaTab: 'recibidos' | 'enviados' = 'recibidos';
+  leccionCompletadaMsg = '';
 
   soporteName = '';
   soporteEmail = '';
@@ -545,9 +547,33 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
     return Number.isNaN(n) ? 0 : n;
   }
 
+  /** Returns the TareaEntrega for the given module/lesson (0-based: prev lesson gates this one). */
+  private entregaForPrevLesson(moduloNum: number, leccionOrden: number): TareaEntregaEstudiante | undefined {
+    if (leccionOrden <= 1) return undefined;
+    const prevOrden = leccionOrden - 1;
+    return (this.profile()?.tareasEntregas ?? []).find(
+      (e) => e.tarea?.modulo?.orden === moduloNum && e.tarea?.leccion?.orden === prevOrden,
+    );
+  }
+
   isLeccionPanelUnlocked(moduloNum: number, leccionOrden: number): boolean {
+    const gate = this.entregaForPrevLesson(moduloNum, leccionOrden);
+    if (gate) {
+      return gate.resultado === 'APROBADO';
+    }
     const max = this.getMaxLessonCompleted(moduloNum);
     return leccionOrden <= max + 1;
+  }
+
+  isLeccionPendienteAprobacion(moduloNum: number, leccionOrden: number): boolean {
+    const gate = this.entregaForPrevLesson(moduloNum, leccionOrden);
+    // Only "pending" when student has actually submitted (entregado) but teacher hasn't reviewed yet
+    return !!gate && gate.resultado === null && gate.estado === 'entregado';
+  }
+
+  isLeccionRechazada(moduloNum: number, leccionOrden: number): boolean {
+    const gate = this.entregaForPrevLesson(moduloNum, leccionOrden);
+    return !!gate && gate.resultado === 'NO_APROBADO';
   }
 
   markLeccionPanelComplete(moduloNum: number, leccionOrden: number): void {
@@ -599,8 +625,30 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   completarLeccionPanel(): void {
     if (this.moduloPanelNum > 0 && this.leccionPanelOrden > 0) {
       this.markLeccionPanelComplete(this.moduloPanelNum, this.leccionPanelOrden);
+      // Notify backend so the teacher can review and approve
+      this.api.marcarTareaEntregada(this.moduloPanelNum, this.leccionPanelOrden).subscribe({
+        next: (res: any) => {
+          if (res?.success) {
+            // Teacher gate exists: show pending message and reload profile on return
+            this.leccionCompletadaMsg = '¡Lección completada! Tu trabajo ha sido enviado al docente para revisión. Podrás continuar una vez que sea aprobado.';
+            setTimeout(() => {
+              this.leccionCompletadaMsg = '';
+              this.loadProfile();
+              this.goBack();
+            }, 3000);
+          } else {
+            // No teacher gate: navigate immediately, no delay needed
+            this.goBack();
+          }
+        },
+        error: () => {
+          // On API error, navigate back without blocking the student
+          this.goBack();
+        },
+      });
+    } else {
+      this.goBack();
     }
-    this.goBack();
   }
 
   safeHtml(html: string): SafeHtml {

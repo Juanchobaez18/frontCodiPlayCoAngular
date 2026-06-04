@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Auth } from '../../core/services/auth';
-import { userHasEstudiantePanelAccess } from '../../core/config/estudiante-panel-access.config';
+import { PendingCourseService } from '../../core/services/pending-course.service';
 
 interface Curso {
   id: number;
@@ -12,7 +12,6 @@ interface Curso {
   dificultad: string;
   precio: number;
   estado: boolean;
-  docente?: { id: number; user?: { name: string; lastName: string } };
 }
 
 @Component({
@@ -26,6 +25,7 @@ export class CursosComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(Auth);
   private readonly router = inject(Router);
+  private readonly pendingCourse = inject(PendingCourseService);
 
   cursos: Curso[] = [];
   loading = true;
@@ -44,7 +44,7 @@ export class CursosComponent implements OnInit {
   ngOnInit(): void {
     this.http.get<Curso[]>('http://localhost:3000/curso').subscribe({
       next: (data) => {
-        this.cursos = data.filter((c) => c.estado);
+        this.cursos = data.filter(c => c.estado);
         this.loading = false;
       },
       error: () => {
@@ -52,6 +52,17 @@ export class CursosComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  inscribirme(cursoId: number): void {
+    this.pendingCourse.save(cursoId);
+
+    // isAuthenticated() relies on the in-memory signal, which resets on F5.
+    // Falling back to the stored token lets returning users skip the register form
+    // and go straight to payment. The authGuard will still validate the token.
+    const hasSession = this.auth.isAuthenticated() || !!localStorage.getItem('token');
+
+    this.router.navigate(hasSession ? ['/registro-pago', cursoId] : ['/auth/register']);
   }
 
   toggleMenu(): void {
@@ -83,15 +94,5 @@ export class CursosComponent implements OnInit {
   shortDesc(text: string, max = 90): string {
     if (!text) return '';
     return text.length > max ? text.slice(0, max) + '…' : text;
-  }
-
-  inscribirme(cursoId: number): void {
-    const user = this.auth.currentUser();
-    if (this.auth.isAuthenticated() && user && userHasEstudiantePanelAccess(user)) {
-      this.router.navigate(['/registro-pago', cursoId]);
-    } else {
-      localStorage.setItem('pendingCursoId', String(cursoId));
-      this.router.navigate(['/auth/login']);
-    }
   }
 }

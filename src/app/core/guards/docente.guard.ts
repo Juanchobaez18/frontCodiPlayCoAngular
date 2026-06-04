@@ -1,36 +1,33 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
-import { Auth } from '../services/auth';
 import { map, take } from 'rxjs';
-
-const isDocente = (user: { roles?: { name?: string }[] } | null | undefined): boolean =>
-  user?.roles?.some((r) => String(r.name ?? '').toLowerCase().includes('docente')) ?? false;
-
-const isUserActive = (user: { isActive?: boolean } | null | undefined): boolean =>
-  user?.isActive === true;
+import { Auth } from '../services/auth';
+import { userHasDocentePanelAccess } from '../config/docente-panel-access.config';
 
 export const docenteGuard: CanActivateFn = () => {
-  const authService = inject(Auth);
+  const auth = inject(Auth);
   const router = inject(Router);
 
-  if (authService.isAuthenticated()) {
-    const user = authService.currentUser();
-    if (isDocente(user) && isUserActive(user)) return true;
+  const allowUser = () => {
+    const user = auth.currentUser();
+    // Reuse the same access logic used in the login redirect and nav items
+    if (userHasDocentePanelAccess(user) && user?.isActive) return true;
     router.navigateByUrl('/auth/login');
     return false;
-  }
+  };
 
-  return authService.checkAuthStatus().pipe(
+  // Fast path: signal already populated (normal in-session navigation)
+  if (auth.isAuthenticated()) return allowUser();
+
+  // Slow path: signal empty after F5 — validate token with the backend first
+  return auth.checkAuthStatus().pipe(
     take(1),
-    map((loggedIn) => {
+    map(loggedIn => {
       if (!loggedIn) {
         router.navigateByUrl('/auth/login');
         return false;
       }
-      const user = authService.currentUser();
-      if (isDocente(user) && isUserActive(user)) return true;
-      router.navigateByUrl('/auth/login');
-      return false;
+      return allowUser();
     }),
   );
 };

@@ -1,10 +1,16 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Auth } from '../../core/services/auth';
-import type { AuthResponse } from '../../core/services/auth';
+import { Auth, type AuthResponse } from '../../core/services/auth';
+import { PendingCourseService } from '../../core/services/pending-course.service';
+
+interface CursoResumen {
+  id: number;
+  nombre: string;
+  precio: number;
+}
 
 @Component({
   selector: 'app-register',
@@ -13,17 +19,20 @@ import type { AuthResponse } from '../../core/services/auth';
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
-export class Register {
+export class Register implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(Auth);
   private readonly router = inject(Router);
+  private readonly pendingCourse = inject(PendingCourseService);
 
   private readonly API = 'http://localhost:3000/auth/register';
 
   loading = false;
   errorMessage = '';
-  successMessage = '';
   stars = Array(6);
+
+  /** Populated when the user arrives via "Inscribirme" so the form shows the course context. */
+  cursoPendiente: CursoResumen | null = null;
 
   form = {
     name: '',
@@ -37,6 +46,16 @@ export class Register {
     edad: null as number | null,
   };
 
+  ngOnInit(): void {
+    const cursoId = this.pendingCourse.peek();
+    if (cursoId) {
+      this.http.get<CursoResumen>(`http://localhost:3000/curso/${cursoId}`).subscribe({
+        next: (c) => { this.cursoPendiente = c; },
+        error: () => { /* Banner is optional — form still works without it */ },
+      });
+    }
+  }
+
   onFechaNacimientoChange(): void {
     if (!this.form.fechanacimiento) return;
     const hoy = new Date();
@@ -49,34 +68,28 @@ export class Register {
 
   onSubmit(): void {
     this.errorMessage = '';
-    this.successMessage = '';
 
     if (this.form.password !== this.form.confirmPassword) {
       this.errorMessage = 'Las contraseñas no coinciden.';
       return;
     }
-
     if (!this.form.edad || this.form.edad < 1) {
       this.errorMessage = 'Verifica la fecha de nacimiento.';
       return;
     }
 
     this.loading = true;
-
     const { confirmPassword, ...payload } = this.form;
 
     this.http.post<AuthResponse>(this.API, payload).subscribe({
       next: (res) => {
         this.loading = false;
-        localStorage.setItem('token', res.access_token);
+        // Populate the Auth signal immediately so guards/components don't need
+        // an extra checkAuthStatus() round-trip.
+        this.auth.setAuthState(res);
 
-        const pendingCursoId = localStorage.getItem('pendingCursoId');
-        if (pendingCursoId) {
-          localStorage.removeItem('pendingCursoId');
-          this.router.navigate(['/registro-pago', pendingCursoId]);
-        } else {
-          this.router.navigate(['/cursos']);
-        }
+        const cursoId = this.pendingCourse.consume();
+        this.router.navigate(cursoId ? ['/registro-pago', cursoId] : ['/cursos']);
       },
       error: (err) => {
         this.loading = false;

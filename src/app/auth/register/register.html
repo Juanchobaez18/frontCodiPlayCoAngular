@@ -16,6 +16,17 @@
     <div class="form-title"><span></span> Crear cuenta</div>
     <div class="title-2"><span>CodiPlayCo</span></div>
 
+    @if (cursoPendiente) {
+      <div class="curso-banner">
+        <div class="curso-banner__glow"></div>
+        <p class="curso-banner__badge">🎓 Te estás inscribiendo en</p>
+        <div class="curso-banner__body">
+          <span class="curso-banner__nombre">{{ cursoPendiente.nombre }}</span>
+          <span class="curso-banner__precio">${{ cursoPendiente.precio | number:'1.0-0' }}</span>
+        </div>
+      </div>
+    }
+
     @if (errorMessage) {
       <p class="error-msg">{{ errorMessage }}</p>
     }

@@ -247,6 +247,48 @@ body.dark-mode .lesson-btn.locked {
   color: #4b5563 !important;
 }
 
+/* Pending teacher approval state */
+.card-button.lesson-btn.pending,
+.lesson-btn.pending {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+  color: #fff !important;
+  cursor: not-allowed;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Rejected / must repeat state */
+.card-button.lesson-btn.rejected,
+.lesson-btn.rejected {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  color: #fff !important;
+  cursor: not-allowed;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Message shown after completing a lesson */
+.leccion-completada-msg {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  animation: fadeInSlide 0.4s ease;
+
+  i { font-size: 1.2rem; }
+}
+
+@keyframes fadeInSlide {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .no-lecciones {
   text-align: center;
   padding: 60px 20px;

@@ -21,6 +21,18 @@ export interface MensajeEstudiante {
   docente?: { id: number; user?: { name?: string; lastName?: string } };
 }
 
+export interface TareaEntregaEstudiante {
+  id: number;
+  resultado: 'APROBADO' | 'NO_APROBADO' | null;
+  estado: string;
+  tarea: {
+    id: number;
+    titulo: string;
+    leccion: { id: number; titulo: string; orden: number } | null;
+    modulo: { id: number; titulo: string; orden: number } | null;
+  } | null;
+}
+
 export interface EstudianteProfile {
   id: number;
   fechanacimiento?: string;
@@ -46,6 +58,7 @@ export interface EstudianteProfile {
   }[];
   mensajes: MensajeEstudiante[];
   leccionesCompletadas?: { id: number }[];
+  tareasEntregas?: TareaEntregaEstudiante[];
 }
 
 export interface ForoListItem {
@@ -117,6 +130,10 @@ export class EstudianteApiService {
 
   marcarLeccionCompletada(leccionId: number) {
     return this.http.post(`${API_BASE}/estudiantes/mis-lecciones/${leccionId}/completar`, {});
+  }
+
+  marcarTareaEntregada(moduloOrden: number, leccionOrden: number) {
+    return this.http.post(`${API_BASE}/estudiantes/mis-tareas/entregar`, { moduloOrden, leccionOrden });
   }
 
   enviarSoporte(body: { name: string; email: string; message: string }) {

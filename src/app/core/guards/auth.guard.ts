@@ -1,26 +1,32 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
-import { Auth } from '../services/auth'; // Asegúrate que el nombre de la clase sea Auth o AuthService
-import { map, tap } from 'rxjs';
+import { map } from 'rxjs';
+import { Auth } from '../services/auth';
+import { PendingCourseService } from '../services/pending-course.service';
 
-export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(Auth);
+export const authGuard: CanActivateFn = (route) => {
+  const auth = inject(Auth);
   const router = inject(Router);
+  const pendingCourse = inject(PendingCourseService);
 
-  // 1. Si ya tenemos los datos en el Signal, permitimos el paso
-  if (authService.isAuthenticated()) {
-    return true;
-  }
+  // Fast path: signal is already populated (normal in-session navigation)
+  if (auth.isAuthenticated()) return true;
 
-  // 2. Si no están en el Signal (ej: F5), usamos el checkAuthStatus del servicio
-  return authService.checkAuthStatus().pipe(
+  // Slow path: signal is empty after a page reload (F5), but a token may exist.
+  // checkAuthStatus() validates the token with the backend and repopulates the signal.
+  return auth.checkAuthStatus().pipe(
     map(isLoggedIn => {
-      if (!isLoggedIn) {
-        // Si el token no es válido o no existe, al login
-        router.navigateByUrl('/auth/login');
-        return false;
+      if (isLoggedIn) return true;
+
+      // If the protected route is /registro-pago/:id, preserve the course id
+      // so the login/register page can redirect here automatically after auth.
+      const cursoId = route.paramMap.get('id');
+      if (cursoId && !pendingCourse.peek()) {
+        pendingCourse.save(Number(cursoId));
       }
-      return true; // Token válido, repobló el Signal y permite el paso
-    })
+
+      router.navigateByUrl('/auth/login');
+      return false;
+    }),
   );
 };

@@ -20,3 +20,125 @@
     }
   }
 }
+
+.leccion-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, #667eea15, #764ba215);
+  border: 1.5px solid #667eea55;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+
+  > i {
+    font-size: 1.5rem;
+    color: #667eea;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #667eea;
+  }
+
+  &__nombre {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  &__modulo {
+    font-size: 0.78rem;
+    color: #888;
+  }
+}
+
+.tarea-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.75rem !important;
+
+  i {
+    color: #999;
+  }
+}
+
+.leccion-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #667eea18;
+  color: #667eea;
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.estado-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  &--entregado    { background: #e3f2fd; color: #1565c0; }
+  &--no_entregado { background: #fafafa; color: #aaa; border: 1px solid #ddd; }
+  &--calificado   { background: #e8f5e9; color: #2e7d32; }
+}
+
+.calificacion-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  &--ok { background: #e8f5e9; color: #2e7d32; }
+  &--no { background: #fce4ec; color: #c62828; }
+}
+
+.btn-aprobar,
+.btn-no-aprobar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.btn-aprobar {
+  background: #4caf50;
+  color: #fff;
+  margin-right: 0.4rem;
+
+  &:not(:disabled):hover { background: #388e3c; }
+}
+
+.btn-no-aprobar {
+  background: #ef5350;
+  color: #fff;
+
+  &:not(:disabled):hover { background: #c62828; }
+}

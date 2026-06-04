@@ -38,6 +38,14 @@
                 >
                   Vamos
                 </a>
+              } @else if (isLeccionPendienteAprobacion(modPanel.numero, orden)) {
+                <button type="button" class="card-button lesson-btn pending" disabled>
+                  <i class="fa-solid fa-hourglass-half"></i> Esperando aprobación
+                </button>
+              } @else if (isLeccionRechazada(modPanel.numero, orden)) {
+                <button type="button" class="card-button lesson-btn rejected" disabled>
+                  <i class="fa-solid fa-rotate-left"></i> Repite la lección anterior
+                </button>
               } @else {
                 <button type="button" class="card-button lesson-btn locked" disabled>
                   <i class="fa-solid fa-lock"></i> Bloqueado
@@ -234,28 +242,34 @@
 
           <!-- Nav buttons -->
           <div class="leccion-nav">
-            @if (content && paso > 0) {
-              <button type="button" class="btn-lec btn-lec--prev" (click)="anteriorPaso()">
-                <i class="fas fa-arrow-left"></i> Anterior
-              </button>
+            @if (leccionCompletadaMsg) {
+              <div class="leccion-completada-msg">
+                <i class="fas fa-check-circle"></i> {{ leccionCompletadaMsg }}
+              </div>
             } @else {
-              <button type="button" class="btn-lec btn-lec--back" (click)="goBack()">
-                ← Volver al módulo
-              </button>
-            }
+              @if (content && paso > 0) {
+                <button type="button" class="btn-lec btn-lec--prev" (click)="anteriorPaso()">
+                  <i class="fas fa-arrow-left"></i> Anterior
+                </button>
+              } @else {
+                <button type="button" class="btn-lec btn-lec--back" (click)="goBack()">
+                  ← Volver al módulo
+                </button>
+              }
 
-            @if (content && paso < content.pasos.length - 1) {
-              <button type="button" class="btn-lec btn-lec--next" (click)="siguientePaso()">
-                Siguiente <i class="fas fa-arrow-right"></i>
-              </button>
-            } @else {
-              <button
-                type="button"
-                class="btn-lec btn-lec--finish"
-                (click)="moduloPanelNum > 0 ? completarLeccionPanel() : goBack()"
-              >
-                <i class="fas fa-check"></i> Completar lección
-              </button>
+              @if (content && paso < content.pasos.length - 1) {
+                <button type="button" class="btn-lec btn-lec--next" (click)="siguientePaso()">
+                  Siguiente <i class="fas fa-arrow-right"></i>
+                </button>
+              } @else {
+                <button
+                  type="button"
+                  class="btn-lec btn-lec--finish"
+                  (click)="moduloPanelNum > 0 ? completarLeccionPanel() : goBack()"
+                >
+                  <i class="fas fa-check"></i> Completar lección
+                </button>
+              }
             }
           </div>
         </div>

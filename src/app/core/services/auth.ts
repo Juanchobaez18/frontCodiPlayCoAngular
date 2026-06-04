@@ -3,16 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { LoginInterface } from '../../auth/interfaces/login';
 import { Router } from '@angular/router';
-// import { LoginInterface } from '../interfaces/login';
-
-// export interface AuthResponse {
-//   accessToken: string;
-//   user: {
-//     id: number;
-//     email: string;
-//     role: string; // Importante por tu RBAC
-//   };
-// }
 
 export interface Module {
   id: number;
@@ -24,7 +14,7 @@ export interface Role {
   id: number;
   name: string;
   description: string;
-  modules: Module[]; // Los módulos a los que este rol da acceso
+  modules: Module[];
 }
 
 export interface User {
@@ -36,109 +26,77 @@ export interface User {
   email: string;
   isActive: boolean;
   avatar?: string;
-  roles: Role[]; // Nota que es un array según tu JSON
-  /** Perfil docente (Nest/TypeORM); define acceso real al panel y a `/docente/*`. */
+  roles: Role[];
   docente?: { id: number } | null;
   estudiante?: { id: number } | null;
 }
 
 export interface AuthResponse {
-  access_token: string; // Coincide con el snake_case de tu backend
+  access_token: string;
   user: User;
 }
 
-
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class Auth {
-
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
   private readonly API_URL = 'http://localhost:3000/auth';
 
-  // 1. Estado privado (Signal) - Almacena el objeto completo del back
-  private _authStatus = signal<AuthResponse | null>(null);
+  private readonly _authStatus = signal<AuthResponse | null>(null);
 
-  // 2. Selectores públicos (Computed) - Reaccionan automáticamente
-  public currentUser = computed(() => this._authStatus()?.user);
-  public isAuthenticated = computed(() => !!this._authStatus());
+  readonly currentUser = computed(() => this._authStatus()?.user);
+  readonly isAuthenticated = computed(() => !!this._authStatus());
+  readonly userModules = computed(() =>
+    this._authStatus()?.user.roles.flatMap(r => r.modules.map(m => m.name)) ?? [],
+  );
 
-  // Selector para obtener los permisos (módulos) de forma aplanada
-  public userModules = computed(() => {
-    const user = this._authStatus()?.user;
-    return user ? user.roles.flatMap(r => r.modules.map(m => m.name)) : [];
-  });
-
-  /** Método principal de Login */
-  public login(credentials: LoginInterface): Observable<AuthResponse> {
+  login(credentials: LoginInterface): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials).pipe(
-      tap((response) => {
-        // Persistencia básica para recargas de página
-        localStorage.setItem('token', response.access_token);
-        // Guardamos en la Signal el objeto que contiene access_token y user
-        this._authStatus.set(response);
-      })
+      tap(res => this.applyAuthResponse(res)),
     );
   }
 
-  public logout(): void {
-    localStorage.clear()
-    this._authStatus.set(null);
-    this.router.navigateByUrl('/auth').then(() => {
-      // Opcional: Aquí podrías mostrar un mensaje de "Has cerrado sesión
-      window.location.reload(); // Forzamos recarga para limpiar cualquier estado residual"
-    });
-    // localStorage.removeItem('token');
+  /**
+   * Called after registration to populate the signal without a second HTTP round-trip.
+   * Registration returns the same AuthResponse shape as login, so we can use it directly.
+   */
+  setAuthState(response: AuthResponse): void {
+    this.applyAuthResponse(response);
   }
 
-  public patchAvatar(url: string): void {
-    const current = this._authStatus();
-    if (!current) return;
-    this._authStatus.set({
-      ...current,
-      user: { ...current.user, avatar: url },
-    });
-  }
+  /**
+   * Validates the stored JWT and refreshes the in-memory signal.
+   * Guards call this on page reload (F5) when the signal is empty but a token exists.
+   */
+  checkAuthStatus(): Observable<boolean> {
+    if (!localStorage.getItem('token')) return of(false);
 
-  public checkAuthStatus(): Observable<boolean> {
-    const token = localStorage.getItem('token'); // Asegúrate que la llave sea exactamente 'token'
-    if (!token) return of(false);
-
-    // Inyectamos el header manualmente aquí
     return this.http.get<AuthResponse>(`${this.API_URL}/check-status`).pipe(
-      tap((response) => {
-        this._authStatus.set(response);
-        localStorage.setItem('token', response.access_token);
-      }),
+      tap(res => this.applyAuthResponse(res)),
       map(() => true),
       catchError(() => {
         this.logout();
         return of(false);
-      })
+      }),
     );
   }
 
-  // public checkAuthStatus(): Observable<boolean> {
-  //   const token = localStorage.getItem('token');
-  //   if (!token) return of(false);
+  logout(): void {
+    localStorage.clear();
+    this._authStatus.set(null);
+    // Full reload clears any residual component state Angular might hold
+    this.router.navigateByUrl('/auth').then(() => window.location.reload());
+  }
 
-  //   return this.http.get<AuthResponse>(`${this.API_URL}/check-status`).pipe(
-  //     tap((response) => {
-  //       this._authStatus.set(response);
-  //       localStorage.setItem('token', response.access_token);
-  //     }),
-  //     map(() => true),
-  //     catchError(() => {
-  //       this.logout();
-  //       return of(false);
-  //     })
-  //   );
-  // }
+  patchAvatar(url: string): void {
+    const current = this._authStatus();
+    if (current) {
+      this._authStatus.set({ ...current, user: { ...current.user, avatar: url } });
+    }
+  }
 
-  // public login(user: LoginInterface){
-  //   this.http.post<LoginInterface>(`http://localhost:3000/users`, user).subscribe(data => {
-  //     // ... Aqui es donde pienso darle un valor al signal que vamos a configurar
-  //   });
-  // }
+  private applyAuthResponse(res: AuthResponse): void {
+    localStorage.setItem('token', res.access_token);
+    this._authStatus.set(res);
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -13,7 +13,7 @@ const API_BASE = 'http://localhost:3000';
   templateUrl: './pago-exitoso.html',
   styleUrl: './pago-exitoso.scss',
 })
-export class PagoExitosoComponent implements OnInit {
+export class PagoExitosoComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
@@ -24,6 +24,8 @@ export class PagoExitosoComponent implements OnInit {
   errorConfirm = signal(false);
   cursoId = signal<number | null>(null);
   countdown = signal(3);
+
+  private countdownInterval: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
     this.transaccionId = this.route.snapshot.queryParamMap.get('transaccion');
@@ -53,11 +55,19 @@ export class PagoExitosoComponent implements OnInit {
       });
   }
 
+  ngOnDestroy(): void {
+    if (this.countdownInterval !== null) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
+  }
+
   private startCountdown(): void {
-    const interval = setInterval(() => {
+    this.countdownInterval = setInterval(() => {
       const current = this.countdown();
       if (current <= 1) {
-        clearInterval(interval);
+        clearInterval(this.countdownInterval!);
+        this.countdownInterval = null;
         this.router.navigateByUrl('/estudiante/inicio');
       } else {
         this.countdown.set(current - 1);
@@ -66,6 +76,10 @@ export class PagoExitosoComponent implements OnInit {
   }
 
   irAlPanel(): void {
+    if (this.countdownInterval !== null) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
     this.router.navigateByUrl('/estudiante/inicio');
   }
 }

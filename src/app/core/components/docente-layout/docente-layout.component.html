@@ -257,6 +257,11 @@
                     </button>
                   </div>
                 </div>
+              } @else if (calificarError) {
+                <div class="alert alert-error" style="margin-bottom:1rem;padding:0.75rem 1rem;border-radius:8px;background:#fef2f2;color:#c0392b;border:1px solid #f5c6c6;">
+                  <i class="fas fa-exclamation-circle"></i> {{ calificarError }}
+                  <button type="button" (click)="calificarError=null" style="float:right;background:none;border:none;cursor:pointer;font-size:1rem;">✕</button>
+                </div>
               } @else if (tareasSig().length === 0) {
                 <div class="glass-card docente-panel-bloque">
                   <h2 class="docente-panel-bloque__titulo">
@@ -283,20 +288,26 @@
                     <div class="docente-bloque-body">
                       @for (tarea of curso.tareas; track tarea.id) {
                         <div class="docente-tarea-inner-card">
-                          <!-- Meta de Módulo y Lección -->
-                          <div class="docente-tarea-meta-text">
-                            <span class="meta-label">Módulo:</span>
-                            <span class="meta-value">{{ tarea.modulo || 'N/A' }}</span>
-                            <span class="meta-separator">|</span>
-                            <span class="meta-label">Lección:</span>
-                            <span class="meta-value">{{ tarea.leccion || 'N/A' }}</span>
-                          </div>
-                          
+
+                          <!-- Lección evaluada — highlighted so teacher knows exactly what to review -->
+                          @if (tarea.leccion) {
+                            <div class="docente-leccion-badge">
+                              <i class="fas fa-book-open"></i>
+                              <div class="docente-leccion-badge__info">
+                                <span class="docente-leccion-badge__label">Lección que se evalúa</span>
+                                <span class="docente-leccion-badge__nombre">{{ tarea.leccion }}</span>
+                                @if (tarea.modulo) {
+                                  <span class="docente-leccion-badge__modulo">{{ tarea.modulo }}</span>
+                                }
+                              </div>
+                            </div>
+                          }
+
                           <div class="docente-tarea-meta-text" style="margin-bottom: 1rem;">
-                            <span class="meta-label">Fecha:</span>
+                            <span class="meta-label"><i class="fas fa-calendar-alt"></i> Creada:</span>
                             <span class="meta-value">{{ tarea.fechaCreacion ? (tarea.fechaCreacion | date:'dd/MM/yyyy') : '—' }}</span>
                             <span class="meta-separator">|</span>
-                            <span class="meta-label">Fecha entrega:</span>
+                            <span class="meta-label">Vence:</span>
                             <span class="meta-value">{{ tarea.fechaVencimiento ? (tarea.fechaVencimiento | date:'dd/MM/yyyy') : '—' }}</span>
                           </div>
 
@@ -306,6 +317,7 @@
                               <thead>
                                 <tr>
                                   <th>Estudiante</th>
+                                  <th>Lección en revisión</th>
                                   <th>Estado</th>
                                   <th>Calificación</th>
                                   <th>Acciones</th>
@@ -325,36 +337,48 @@
                                         {{ entrega.estudianteNombre }} {{ entrega.estudianteApellido || '' }}
                                       </td>
                                       <td>
+                                        @if (tarea.leccion) {
+                                          <span class="docente-leccion-chip">
+                                            <i class="fas fa-book"></i> {{ tarea.leccion }}
+                                          </span>
+                                        } @else {
+                                          <span style="opacity:0.4">—</span>
+                                        }
+                                      </td>
+                                      <td>
                                         <span class="estado-badge" [ngClass]="{
-                                          'estado-entregado': entrega.estado === 'ENTREGADO',
-                                          'estado-no-entregado': entrega.estado === 'NO_ENTREGADO',
-                                          'estado-calificado': entrega.estado === 'CALIFICADO'
+                                          'estado-entregado':    entrega.estado === 'entregado',
+                                          'estado-no-entregado': entrega.estado === 'no_entregado',
+                                          'estado-calificado':   entrega.estado === 'calificado'
                                         }">
-                                          {{ entrega.estado === 'ENTREGADO' ? 'Entregado' : entrega.estado === 'NO_ENTREGADO' ? 'No entregado' : entrega.estado === 'CALIFICADO' ? 'Calificado' : entrega.estado }}
+                                          {{ entrega.estado === 'entregado' ? 'Entregado'
+                                           : entrega.estado === 'no_entregado' ? 'No entregado'
+                                           : entrega.estado === 'calificado'   ? 'Calificado'
+                                           : entrega.estado }}
                                         </span>
                                       </td>
                                       <td>
                                         <span class="calificacion-cell-text">{{ entrega.calificacion || '—' }}</span>
                                       </td>
                                       <td class="docente-tabla-actions">
-                                        @if (entrega.estado !== 'CALIFICADO') {
-                                          <button 
-                                            type="button" 
-                                            class="btn-aprobar" 
-                                            [disabled]="isCalificando(entrega.id)" 
+                                        @if (entrega.estado !== 'calificado') {
+                                          <button
+                                            type="button"
+                                            class="btn-aprobar"
+                                            [disabled]="isCalificando(entrega.id)"
                                             (click)="calificarTarea(entrega.id, 'APROBADO')">
-                                            Aprobar
+                                            <i class="fas fa-check"></i> Aprobar
                                           </button>
-                                          <button 
-                                            type="button" 
-                                            class="btn-no-aprobar" 
-                                            [disabled]="isCalificando(entrega.id)" 
+                                          <button
+                                            type="button"
+                                            class="btn-no-aprobar"
+                                            [disabled]="isCalificando(entrega.id)"
                                             (click)="calificarTarea(entrega.id, 'NO_APROBADO')">
-                                            No aprobar
+                                            <i class="fas fa-rotate-left"></i> No aprobar
                                           </button>
                                         } @else {
                                           <span class="calificacion-resultado" [ngClass]="{
-                                            'resultado-aprobado': entrega.resultado === 'APROBADO',
+                                            'resultado-aprobado':    entrega.resultado === 'APROBADO',
                                             'resultado-no-aprobado': entrega.resultado === 'NO_APROBADO'
                                           }">
                                             {{ entrega.resultado === 'APROBADO' ? '✓ Aprobado' : '✗ No aprobado' }}
@@ -493,14 +517,20 @@
                     Responder al foro
                   </h2>
                   <div class="docente-bloque-body">
+                    @if (foroDetalleError) {
+                      <div style="background:#fef2f2;color:#c0392b;border:1px solid #f5c6c6;border-radius:8px;padding:0.6rem 1rem;margin-bottom:0.75rem;font-size:0.87rem;display:flex;align-items:center;justify-content:space-between;">
+                        <span><i class="fas fa-exclamation-circle"></i> {{ foroDetalleError }}</span>
+                        <button type="button" (click)="foroDetalleError=null" style="background:none;border:none;cursor:pointer;">✕</button>
+                      </div>
+                    }
                     <form (ngSubmit)="publicarRespuesta()" class="docente-foro-form">
                       <div class="form-group">
-                        <textarea 
-                          class="docente-foro-input" 
-                          rows="4" 
-                          placeholder="Escribe tu respuesta como docente..." 
-                          [(ngModel)]="nuevaRespuestaContenido" 
-                          [ngModelOptions]="{standalone: true}" 
+                        <textarea
+                          class="docente-foro-input"
+                          rows="4"
+                          placeholder="Escribe tu respuesta como docente..."
+                          [(ngModel)]="nuevaRespuestaContenido"
+                          [ngModelOptions]="{standalone: true}"
                           required></textarea>
                       </div>
                       <button type="submit" class="btn-primary mt-2" [disabled]="!nuevaRespuestaContenido.trim()">

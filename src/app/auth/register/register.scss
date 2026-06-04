@@ -242,6 +242,86 @@
   padding: 8px 12px;
 }
 
+.curso-banner {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 212, 255, 0.13) 0%,
+    rgba(30, 255, 180, 0.07) 50%,
+    rgba(161, 0, 255, 0.12) 100%
+  );
+  border: 1.5px solid rgba(0, 212, 255, 0.55);
+  border-radius: 14px;
+  padding: 1rem 1.25rem 1.1rem;
+  margin-bottom: 1.2rem;
+  box-shadow:
+    0 0 28px -8px rgba(0, 212, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  // top shimmer line
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 8%; right: 8%;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, #00d4ff 40%, #1effb4 60%, transparent);
+    opacity: 0.7;
+  }
+
+  &__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% -20%, rgba(0,212,255,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  &__badge {
+    position: relative;
+    font-family: monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #1effb4;
+    margin: 0 0 0.55rem;
+    opacity: 0.9;
+  }
+
+  &__body {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__nombre {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 22px rgba(0, 212, 255, 0.45);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    -webkit-text-stroke: 0.4px rgba(255,255,255,0.3);
+  }
+
+  &__precio {
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.65rem;
+    font-weight: 900;
+    color: #1effb4;
+    text-shadow:
+      0 0 18px rgba(30, 255, 180, 0.6),
+      0 0 40px rgba(30, 255, 180, 0.25);
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+}
+
 footer {
   position: relative;
   z-index: 2;

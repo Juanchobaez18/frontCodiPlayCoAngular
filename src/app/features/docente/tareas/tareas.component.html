@@ -22,17 +22,26 @@
         </h2>
 
         <div class="sub-panel">
-          <p>
-            <strong>Módulo:</strong>
-            <span>{{ tarea.modulo || 'N/A' }}</span>
-            &nbsp;|&nbsp;
-            <strong>Lección:</strong>
-            <span>{{ tarea.leccion || 'N/A' }}</span>
-          </p>
-          <p>
-            <strong>Fecha:</strong> <span>{{ tarea.fechaCreacion || 'N/A' }}</span>
-            &nbsp;|&nbsp;
-            <strong>Fecha entrega:</strong> <span>{{ tarea.fechaVencimiento }}</span>
+          <!-- Lección asociada destacada -->
+          @if (tarea.leccion) {
+            <div class="leccion-badge">
+              <i class="fa-solid fa-book-open"></i>
+              <div class="leccion-badge__info">
+                <span class="leccion-badge__label">Lección que evalúa</span>
+                <span class="leccion-badge__nombre">{{ tarea.leccion }}</span>
+                @if (tarea.modulo) {
+                  <span class="leccion-badge__modulo">{{ tarea.modulo }}</span>
+                }
+              </div>
+            </div>
+          }
+
+          <p class="tarea-meta">
+            <i class="fa-regular fa-calendar"></i>
+            <span><strong>Creada:</strong> {{ tarea.fechaCreacion || 'N/A' }}</span>
+            &nbsp;&nbsp;
+            <i class="fa-regular fa-clock"></i>
+            <span><strong>Vence:</strong> {{ tarea.fechaVencimiento }}</span>
           </p>
 
           @if (tarea.entregas && tarea.entregas.length > 0) {
@@ -40,6 +49,7 @@
               <thead>
                 <tr>
                   <th>Estudiante</th>
+                  <th>Lección en revisión</th>
                   <th>Estado</th>
                   <th>Calificación</th>
                   <th>Acciones</th>
@@ -49,22 +59,46 @@
                 @for (entrega of tarea.entregas; track entrega.id) {
                   <tr>
                     <td>{{ entrega.estudianteNombre }} {{ entrega.estudianteApellido || '' }}</td>
-                    <td>{{ entrega.estado }}</td>
-                    <td>{{ entrega.calificacion }}</td>
+                    <td>
+                      @if (tarea.leccion) {
+                        <span class="leccion-chip">
+                          <i class="fa-solid fa-book"></i> {{ tarea.leccion }}
+                        </span>
+                      } @else {
+                        <span style="opacity:0.5">—</span>
+                      }
+                    </td>
+                    <td>
+                      <span class="estado-chip estado-chip--{{ entrega.estado }}">
+                        {{ entrega.estado }}
+                      </span>
+                    </td>
+                    <td>
+                      @if (entrega.calificacion) {
+                        <span class="calificacion-chip calificacion-chip--{{ entrega.calificacion === 'Aprobado' ? 'ok' : 'no' }}">
+                          {{ entrega.calificacion }}
+                        </span>
+                      } @else {
+                        <span style="opacity:0.5">Pendiente</span>
+                      }
+                    </td>
                     <td>
                       <button
                         type="button"
-                        value="APROBADO"
+                        class="btn-aprobar"
                         [disabled]="isCalificando(entrega.id)"
                         (click)="calificar(entrega.id, 'APROBADO')"
-                      >Aprobar</button>
+                      >
+                        <i class="fa-solid fa-check"></i> Aprobar
+                      </button>
                       <button
                         type="button"
-                        value="NO_APROBADO"
-                        style="margin-left: 0.5rem;"
+                        class="btn-no-aprobar"
                         [disabled]="isCalificando(entrega.id)"
                         (click)="calificar(entrega.id, 'NO_APROBADO')"
-                      >No aprobar</button>
+                      >
+                        <i class="fa-solid fa-rotate-left"></i> No aprobar
+                      </button>
                     </td>
                   </tr>
                 }

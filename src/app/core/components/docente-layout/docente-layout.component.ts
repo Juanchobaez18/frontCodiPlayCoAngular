@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Auth } from '../../services/auth';
 import { DocenteApiService, type CursoDocente, type DocenteForo, type DocenteMensaje, type DocenteEstudiante, type DocenteTarea, type TareaEntrega, type ForoRespuesta } from '../../services/docente-api.service';
@@ -94,6 +95,8 @@ export class DocenteLayoutComponent implements OnInit {
   nuevaRespuestaContenido = '';
   editandoRespuestaId: number | null = null;
   editandoRespuestaContenido = '';
+  foroDetalleError: string | null = null;
+  calificarError: string | null = null;
 
   readonly misStats = computed(() => {
     const userId = this.authService.currentUser()?.id;
@@ -209,7 +212,6 @@ export class DocenteLayoutComponent implements OnInit {
   }
 
   loadCursos(): void {
-    if (this.misCursosSig().length) return;
     this.cursosLoading = true;
     this.cursosError = null;
     this.docenteApi.getCursos().subscribe({
@@ -324,15 +326,16 @@ export class DocenteLayoutComponent implements OnInit {
 
   loadMensajes(): void {
     this.mensajesLoading = true;
-    Promise.all([
-      this.docenteApi.getMensajesEnviados().toPromise(),
-      this.docenteApi.getMensajesRecibidos().toPromise(),
-    ]).then(([enviados, recibidos]) => {
-      this.mensajesEnviadosSig.set(enviados ?? []);
-      this.mensajesRecibidosSig.set(recibidos ?? []);
-      this.mensajesLoading = false;
-    }).catch(() => {
-      this.mensajesLoading = false;
+    forkJoin({
+      enviados: this.docenteApi.getMensajesEnviados(),
+      recibidos: this.docenteApi.getMensajesRecibidos(),
+    }).subscribe({
+      next: ({ enviados, recibidos }) => {
+        this.mensajesEnviadosSig.set(enviados ?? []);
+        this.mensajesRecibidosSig.set(recibidos ?? []);
+        this.mensajesLoading = false;
+      },
+      error: () => { this.mensajesLoading = false; },
     });
   }
 
@@ -397,6 +400,7 @@ export class DocenteLayoutComponent implements OnInit {
   }
 
   calificarTarea(entregaId: number, resultado: 'APROBADO' | 'NO_APROBADO'): void {
+    this.calificarError = null;
     const loading = new Set(this.calificando());
     loading.add(entregaId);
     this.calificando.set(loading);
@@ -406,13 +410,14 @@ export class DocenteLayoutComponent implements OnInit {
         const l = new Set(this.calificando());
         l.delete(entregaId);
         this.calificando.set(l);
-        this.loadTareas(); // Reload tasks to show updated status/calificacion
+        this.loadTareas();
       },
       error: () => {
         const l = new Set(this.calificando());
         l.delete(entregaId);
         this.calificando.set(l);
-      }
+        this.calificarError = 'No se pudo calificar la entrega. Intenta de nuevo.';
+      },
     });
   }
 
@@ -441,59 +446,56 @@ export class DocenteLayoutComponent implements OnInit {
   publicarRespuesta(): void {
     const foroId = this.selectedForoId();
     if (!foroId || !this.nuevaRespuestaContenido.trim()) return;
+    this.foroDetalleError = null;
 
-    const docenteId = this.authService.currentUser()?.docente?.id || 0;
-    this.docenteApi.responderForo(foroId, {
-      contenido: this.nuevaRespuestaContenido,
-      docenteId: docenteId
-    }).subscribe({
-      next: () => {
-        this.nuevaRespuestaContenido = '';
-        this.loadForoDetalle(foroId);
-      },
-      error: () => {
-        // error handling
-      }
-    });
+    const docenteId = this.authService.currentUser()?.docente?.id ?? 0;
+    this.docenteApi.responderForo(foroId, { contenido: this.nuevaRespuestaContenido, docenteId })
+      .subscribe({
+        next: () => {
+          this.nuevaRespuestaContenido = '';
+          this.loadForoDetalle(foroId);
+        },
+        error: () => {
+          this.foroDetalleError = 'No se pudo publicar la respuesta. Intenta de nuevo.';
+        },
+      });
   }
 
   eliminarRespuesta(respuestaId: number): void {
     const foroId = this.selectedForoId();
-    if (!foroId) return;
+    if (!foroId || !confirm('¿Eliminar esta respuesta?')) return;
+    this.foroDetalleError = null;
 
-    if (confirm('¿Estás seguro de que deseas eliminar esta respuesta?')) {
-      this.docenteApi.deleteForoRespuesta(respuestaId).subscribe({
-        next: () => {
-          this.loadForoDetalle(foroId);
-        },
-        error: () => {
-          // error handling
-        }
-      });
-    }
+    this.docenteApi.deleteForoRespuesta(respuestaId).subscribe({
+      next: () => { this.loadForoDetalle(foroId); },
+      error: () => {
+        this.foroDetalleError = 'No se pudo eliminar la respuesta.';
+      },
+    });
   }
 
   iniciarEdicion(respuesta: ForoRespuesta): void {
     this.editandoRespuestaId = respuesta.id;
     this.editandoRespuestaContenido = respuesta.mensaje;
+    this.foroDetalleError = null;
   }
 
   guardarEdicion(): void {
     const foroId = this.selectedForoId();
     const respId = this.editandoRespuestaId;
     if (!foroId || !respId || !this.editandoRespuestaContenido.trim()) return;
+    this.foroDetalleError = null;
 
-    this.docenteApi.updateForoRespuesta(respId, {
-      contenido: this.editandoRespuestaContenido
-    }).subscribe({
-      next: () => {
-        this.cancelarEdicion();
-        this.loadForoDetalle(foroId);
-      },
-      error: () => {
-        // error handling
-      }
-    });
+    this.docenteApi.updateForoRespuesta(respId, { contenido: this.editandoRespuestaContenido })
+      .subscribe({
+        next: () => {
+          this.cancelarEdicion();
+          this.loadForoDetalle(foroId);
+        },
+        error: () => {
+          this.foroDetalleError = 'No se pudo guardar la edición.';
+        },
+      });
   }
 
   cancelarEdicion(): void {
