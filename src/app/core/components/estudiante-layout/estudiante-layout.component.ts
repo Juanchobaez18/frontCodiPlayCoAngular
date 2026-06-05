@@ -624,12 +624,20 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
 
   completarLeccionPanel(): void {
     if (this.moduloPanelNum > 0 && this.leccionPanelOrden > 0) {
-      this.markLeccionPanelComplete(this.moduloPanelNum, this.leccionPanelOrden);
-      // Notify backend so the teacher can review and approve
       this.api.marcarTareaEntregada(this.moduloPanelNum, this.leccionPanelOrden).subscribe({
         next: (res: any) => {
-          if (res?.success) {
-            // Teacher gate exists: show pending message and reload profile on return
+          if (res?.success && res?.completed) {
+            // Sin gate de docente: lección completada directamente
+            this.markLeccionPanelComplete(this.moduloPanelNum, this.leccionPanelOrden);
+            this.leccionCompletadaMsg = '¡Lección completada! Tu progreso ha sido guardado.';
+            setTimeout(() => {
+              this.leccionCompletadaMsg = '';
+              this.loadProfile();
+              this.goBack();
+            }, 2000);
+          } else if (res?.success) {
+            // Gate de docente: mostrar mensaje de espera y recargar perfil al volver
+            this.markLeccionPanelComplete(this.moduloPanelNum, this.leccionPanelOrden);
             this.leccionCompletadaMsg = '¡Lección completada! Tu trabajo ha sido enviado al docente para revisión. Podrás continuar una vez que sea aprobado.';
             setTimeout(() => {
               this.leccionCompletadaMsg = '';
@@ -637,12 +645,11 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
               this.goBack();
             }, 3000);
           } else {
-            // No teacher gate: navigate immediately, no delay needed
+            // No se encontró lección ni tarea: navegar sin cambios
             this.goBack();
           }
         },
         error: () => {
-          // On API error, navigate back without blocking the student
           this.goBack();
         },
       });
