@@ -65,3 +65,4 @@ import {
   exports: [LucideAngularModule],
 })
 export class AdminLucideIconsModule {}
+

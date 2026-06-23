@@ -77,7 +77,7 @@ export class Perfil implements OnInit {
 
   private resolveAvatar(avatar: string | undefined) {
     this.avatarUrl = avatar?.startsWith('uploads/')
-      ? `http://localhost:3000/${avatar}`
+      ? `https://codiplayconest.onrender.com/${avatar}`
       : null;
     const u = this.user;
     this.avatarInitials =
@@ -147,3 +147,4 @@ export class Perfil implements OnInit {
       });
   }
 }
+

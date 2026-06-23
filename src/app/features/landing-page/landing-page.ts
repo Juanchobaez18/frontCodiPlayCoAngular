@@ -8,3 +8,4 @@ import { RouterLink } from '@angular/router';
   styleUrl: './landing-page.scss',
 })
 export class LandingPage {}
+

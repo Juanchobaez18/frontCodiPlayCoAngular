@@ -40,7 +40,7 @@ export interface AuthResponse {
 export class Auth {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly API_URL = 'http://localhost:3000/auth';
+  private readonly API_URL = 'https://codiplayconest.onrender.com/auth';
 
   private readonly _authStatus = signal<AuthResponse | null>(null);
 
@@ -100,3 +100,4 @@ export class Auth {
     this._authStatus.set(res);
   }
 }
+

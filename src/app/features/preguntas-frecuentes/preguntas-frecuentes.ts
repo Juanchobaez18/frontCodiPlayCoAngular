@@ -36,3 +36,4 @@ export class PreguntasFrecuentesComponent {
     return this.flippedCards.has(index);
   }
 }
+

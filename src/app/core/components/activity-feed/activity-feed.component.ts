@@ -16,3 +16,4 @@ export interface AdminActivityItem {
 export class ActivityFeedComponent {
   @Input({ required: true }) items!: readonly AdminActivityItem[];
 }
+

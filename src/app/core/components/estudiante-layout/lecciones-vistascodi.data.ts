@@ -1025,3 +1025,4 @@ export function getLeccionContent(moduloOrden: number, leccionOrden: number | st
   const key = `${moduloOrden}-${leccionOrden}`;
   return LECCIONES_CONTENT[key];
 }
+

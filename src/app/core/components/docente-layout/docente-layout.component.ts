@@ -266,7 +266,7 @@ export class DocenteLayoutComponent implements OnInit {
         this.selectedFile = null;
         const url: string | undefined = res?.fotoPerfil?.url;
         if (url) {
-          this.authService.patchAvatar(`http://localhost:3000${url}`);
+          this.authService.patchAvatar(`https://codiplayconest.onrender.com${url}`);
         }
       },
       error: () => {
@@ -503,3 +503,4 @@ export class DocenteLayoutComponent implements OnInit {
     this.editandoRespuestaContenido = '';
   }
 }
+

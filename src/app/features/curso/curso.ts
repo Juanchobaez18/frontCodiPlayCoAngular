@@ -7,3 +7,4 @@ import { Component } from '@angular/core';
   styleUrl: './curso.scss',
 })
 export class Curso {}
+

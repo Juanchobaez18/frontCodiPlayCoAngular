@@ -99,3 +99,4 @@ export const ESTUDIANTE_ROUTES: Routes = [
     redirectTo: '/estudiante/inicio',
   },
 ];
+
