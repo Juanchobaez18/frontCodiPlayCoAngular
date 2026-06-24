@@ -86,7 +86,7 @@
 
 .nav-wrapper {
   display: flex; gap: 0.5rem; align-items: center; flex: 1; justify-content: center;
-  @media (max-width: 768px) { display: none; }
+  @media (max-width: 1024px) { display: none; }
 }
 
 .actions-wrapper {
@@ -183,7 +183,7 @@
   &.active span:nth-child(2) { opacity: 0; left: -60px; }
   &.active span:nth-child(3) { top: 10px; transform: rotate(-135deg); }
 
-  @media (max-width: 768px) { display: block; }
+  @media (max-width: 1024px) { display: block; }
 }
 
 /* ── MOBILE MENU ─────────────────────────────────────── */

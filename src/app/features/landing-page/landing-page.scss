@@ -133,7 +133,7 @@
   justify-content: center;
   flex: 1;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     display: none;
   }
 }
@@ -311,7 +311,7 @@
   &.active span:nth-child(2) { opacity: 0; left: -60px; }
   &.active span:nth-child(3) { top: 10px; transform: rotate(-135deg); }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     display: block;
   }
 }

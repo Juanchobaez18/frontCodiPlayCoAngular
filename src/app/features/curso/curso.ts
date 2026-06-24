@@ -6,5 +6,18 @@ import { Component } from '@angular/core';
   templateUrl: './curso.html',
   styleUrl: './curso.scss',
 })
-export class Curso {}
+export class Curso {
+  mobileMenuOpen = false;
+
+  toggleMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+    document.body.style.overflow = this.mobileMenuOpen ? 'hidden' : 'auto';
+  }
+
+  closeMenu(): void {
+    if (!this.mobileMenuOpen) return;
+    this.mobileMenuOpen = false;
+    document.body.style.overflow = 'auto';
+  }
+}
 
