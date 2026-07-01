@@ -1,0 +1,114 @@
+<div class="payment-container">
+  <mat-card class="payment-card">
+    <mat-card-header>
+      <mat-card-title>Realizar Pago</mat-card-title>
+      <mat-card-subtitle>Ingresa los detalles de tu tarjeta de crédito</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (ngSubmit)="submitPayment()" class="payment-form">
+        <!-- Monto -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Monto</mat-label>
+          <input
+            matInput
+            [(ngModel)]="amount"
+            name="amount"
+            type="number"
+            placeholder="10.00"
+            step="0.01"
+            min="0"
+            [disabled]="isLoading"
+          />
+        </mat-form-field>
+
+        <!-- Moneda -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Moneda</mat-label>
+          <input
+            matInput
+            [(ngModel)]="currency"
+            name="currency"
+            type="text"
+            placeholder="usd"
+            [disabled]="isLoading"
+          />
+        </mat-form-field>
+
+        <!-- Número de Tarjeta -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Número de Tarjeta</mat-label>
+          <input
+            matInput
+            (change)="formatCardNumber($event)"
+            [value]="cardNumber"
+            name="cardNumber"
+            placeholder="4242 4242 4242 4242"
+            maxlength="19"
+            [disabled]="isLoading"
+          />
+        </mat-form-field>
+
+        <!-- Expiración y CVC -->
+        <div class="row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>MM/YY</mat-label>
+            <input
+              matInput
+              (change)="formatExpiry($event)"
+              [value]="cardExpiry"
+              name="cardExpiry"
+              placeholder="12/25"
+              maxlength="5"
+              [disabled]="isLoading"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>CVC</mat-label>
+            <input
+              matInput
+              [(ngModel)]="cardCvc"
+              name="cardCvc"
+              type="password"
+              placeholder="123"
+              maxlength="4"
+              [disabled]="isLoading"
+            />
+          </mat-form-field>
+        </div>
+
+        <!-- Descripción -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descripción (Opcional)</mat-label>
+          <input
+            matInput
+            [(ngModel)]="description"
+            name="description"
+            placeholder="Descripción del pago"
+            [disabled]="isLoading"
+          />
+        </mat-form-field>
+
+        <!-- Botón Submit -->
+        <button
+          mat-raised-button
+          color="primary"
+          class="submit-btn full-width"
+          [disabled]="isLoading || !amount"
+        >
+          <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+          {{ isLoading ? 'Procesando...' : 'Pagar Ahora' }}
+        </button>
+      </form>
+
+      <!-- Nota de prueba -->
+      <div class="test-note">
+        <p><strong>🔒 Tarjeta de Prueba:</strong></p>
+        <p>Número: 4242 4242 4242 4242</p>
+        <p>Expiración: 12/25</p>
+        <p>CVC: 123</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
