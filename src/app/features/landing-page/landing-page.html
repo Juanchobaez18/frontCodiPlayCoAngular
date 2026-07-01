@@ -12,22 +12,22 @@
 			</nav>
 
 			<div class="actions-wrapper">
-				<div id="nav-toggle" class="hamburger">
-					<span></span>
-					<span></span>
-					<span></span>
-				</div>
-				<a class="btn-launch" routerLink="/auth/login">
-					<span>Iniciar Sesión</span>
-				</a>
-			</div>
-		</div>
-	</header>
+<div class="hamburger" [class.active]="mobileMenuOpen" (click)="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <a class="btn-launch" routerLink="/auth/login">
+        <span>Iniciar Sesión</span>
+      </a>
+    </div>
+  </div>
+</header>
 
-	<div id="mobile-menu" class="mobile-menu">
-		<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
-		<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
-		<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
+<div class="mobile-menu" [class.active]="mobileMenuOpen">
+  <a class="nav-link-glass" routerLink="/cursos" (click)="closeMenu()">Cursos</a>
+  <a class="nav-link-glass" routerLink="/quienes-somos" (click)="closeMenu()">Quienes Somos</a>
+  <a class="nav-link-glass" routerLink="/preguntas-frecuentes" (click)="closeMenu()">Preguntas Frecuentes</a>
 	</div>
 
 	<main class="container">
@@ -54,26 +54,5 @@
 	<p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
 </footer>
 
-<script>
-	document.addEventListener('DOMContentLoaded', function () {
-		const navToggle = document.getElementById('nav-toggle');
-		const mobileMenu = document.getElementById('mobile-menu');
 
-		if (navToggle && mobileMenu) {
-			navToggle.addEventListener('click', () => {
-				navToggle.classList.toggle('active');
-				mobileMenu.classList.toggle('active');
-				document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
-			});
-
-			mobileMenu.addEventListener('click', (e) => {
-				if (e.target.closest('.nav-link-glass')) {
-					navToggle.classList.remove('active');
-					mobileMenu.classList.remove('active');
-					document.body.style.overflow = 'auto';
-				}
-			});
-		}
-	});
-</script>
 

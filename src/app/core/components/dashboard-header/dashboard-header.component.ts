@@ -25,3 +25,4 @@ export class DashboardHeaderComponent {
     this.searchQueryChange.emit(value);
   }
 }
+

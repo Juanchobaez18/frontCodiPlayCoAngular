@@ -220,7 +220,7 @@
     <div class="panel-card profile-card">
       <div class="profile-card__avatar">
         @if (estudiante.user.avatar?.startsWith('uploads/')) {
-          <img [src]="'http://localhost:3000/' + estudiante.user.avatar"
+          <img [src]="'https://codiplayconest.onrender.com/' + estudiante.user.avatar"
                [alt]="estudiante.user.name"
                style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;" />
         } @else {
@@ -306,3 +306,4 @@
 
 </div><!-- /page-layout -->
 }
+

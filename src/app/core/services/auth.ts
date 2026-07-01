@@ -40,7 +40,7 @@ export interface AuthResponse {
 export class Auth {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly API_URL = 'http://localhost:3000/auth';
+  private readonly API_URL = 'https://codiplayconest.onrender.com/auth';
 
   private readonly _authStatus = signal<AuthResponse | null>(null);
 
@@ -85,7 +85,7 @@ export class Auth {
     localStorage.clear();
     this._authStatus.set(null);
     // Full reload clears any residual component state Angular might hold
-    this.router.navigateByUrl('/auth').then(() => window.location.reload());
+    this.router.navigateByUrl('/').then(() => window.location.reload());
   }
 
   patchAvatar(url: string): void {
@@ -100,3 +100,4 @@ export class Auth {
     this._authStatus.set(res);
   }
 }
+

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://codiplayconest.onrender.com';
 
 export interface CursoEstudiante {
   id: number;
@@ -160,3 +160,4 @@ export class EstudianteApiService {
     return this.http.get<LeccionBackend>(`${API_BASE}/lecciones/${id}`);
   }
 }
+

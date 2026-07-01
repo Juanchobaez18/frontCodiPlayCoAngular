@@ -58,7 +58,7 @@ export type EstudiantePanelView =
 const THEME_KEY = 'codiplay-theme';
 const DEFAULT_AVATAR =
   '/assetsPanelUsuaario/22b8078e-03d9-49d7-a4a6-f70b4208e8c9-removebg-preview.png';
-const API_MEDIA = 'http://localhost:3000';
+const API_MEDIA = 'https://codiplayconest.onrender.com';
 
 /** Banner y fondo del inicio (reemplazables en `public/assetsPanelUsuaario/`). */
 export const ESTUDIANTE_INICIO_HERO = '/assetsPanelUsuaario/inicio-hero-banner.png';
@@ -1204,3 +1204,4 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
     });
   }
 }
+

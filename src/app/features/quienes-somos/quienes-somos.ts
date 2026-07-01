@@ -22,3 +22,4 @@ export class QuienesSomosComponent {
     document.body.style.overflow = '';
   }
 }
+

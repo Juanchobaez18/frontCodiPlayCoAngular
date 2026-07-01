@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class PerfilService {
   private http = inject(HttpClient);
-  private readonly API = 'http://localhost:3000';
+  private readonly API = 'https://codiplayconest.onrender.com';
 
   updateBasicInfo(userId: number, data: { name: string; lastName: string }): Observable<any> {
     return this.http.put(`${this.API}/users/${userId}`, data);
@@ -21,3 +21,4 @@ export class PerfilService {
     return this.http.patch(`${this.API}/users/${userId}/avatar`, body);
   }
 }
+

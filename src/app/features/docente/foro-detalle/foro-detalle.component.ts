@@ -66,3 +66,4 @@ export class ForoDetalleComponent implements OnInit {
     this.router.navigate(['/docente/foros']);
   }
 }
+

@@ -4,7 +4,7 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://codiplayconest.onrender.com';
 
 @Component({
   selector: 'app-pago-exitoso',
@@ -83,3 +83,4 @@ export class PagoExitosoComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/estudiante/inicio');
   }
 }
+

@@ -110,3 +110,4 @@ export const MODULOS_PANEL: ModuloPanelConfig[] = [
 export function getModuloConfig(num: number): ModuloPanelConfig | undefined {
   return MODULOS_PANEL.find((m) => m.numero === num);
 }
+

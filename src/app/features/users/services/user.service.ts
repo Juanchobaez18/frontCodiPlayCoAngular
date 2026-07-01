@@ -26,6 +26,7 @@ export class UserService {
 
   getEstudianteProfile() {
     const userId = this.auth.currentUser()?.id;
-    return this.http.get<EstudianteProfile>(`http://localhost:3000/estudiantes/by-user/${userId}`);
+    return this.http.get<EstudianteProfile>(`https://codiplayconest.onrender.com/estudiantes/by-user/${userId}`);
   }
 }
+

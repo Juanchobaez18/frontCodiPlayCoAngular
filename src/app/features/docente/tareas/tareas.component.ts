@@ -126,3 +126,4 @@ export class TareasComponent implements OnDestroy {
     return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString('es-CO');
   }
 }
+

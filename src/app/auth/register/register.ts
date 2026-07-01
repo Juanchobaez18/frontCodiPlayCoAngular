@@ -25,7 +25,7 @@ export class Register implements OnInit {
   private readonly router = inject(Router);
   private readonly pendingCourse = inject(PendingCourseService);
 
-  private readonly API = 'http://localhost:3000/auth/register';
+  private readonly API = 'https://codiplayconest.onrender.com/auth/register';
 
   loading = false;
   errorMessage = '';
@@ -49,7 +49,7 @@ export class Register implements OnInit {
   ngOnInit(): void {
     const cursoId = this.pendingCourse.peek();
     if (cursoId) {
-      this.http.get<CursoResumen>(`http://localhost:3000/curso/${cursoId}`).subscribe({
+      this.http.get<CursoResumen>(`https://codiplayconest.onrender.com/curso/${cursoId}`).subscribe({
         next: (c) => { this.cursoPendiente = c; },
         error: () => { /* Banner is optional — form still works without it */ },
       });
@@ -101,3 +101,4 @@ export class Register implements OnInit {
     });
   }
 }
+

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://codiplayconest.onrender.com';
 
 export interface DocenteDashboardStats {
   totalEstudiantes: number;
@@ -234,3 +234,4 @@ export class DocenteApiService {
     );
   }
 }
+

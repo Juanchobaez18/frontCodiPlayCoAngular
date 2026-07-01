@@ -7,3 +7,4 @@ import { Component } from '@angular/core';
   styleUrl: './modules.scss',
 })
 export class Modules {}
+

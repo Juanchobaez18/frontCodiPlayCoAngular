@@ -84,3 +84,4 @@ export class CountUpDirective implements OnChanges, OnDestroy {
     return `${this.countUpPrefix}${n}${this.countUpSuffix}`;
   }
 }
+

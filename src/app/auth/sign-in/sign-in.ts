@@ -27,7 +27,7 @@ export class SignIn {
 
     try{
 
-      const res = await fetch('http://localhost:3000/registro/guardar',{
+      const res = await fetch('https://codiplayconest.onrender.com/registro/guardar',{
         method:'POST',
         headers:{
           'Content-Type':'application/json'

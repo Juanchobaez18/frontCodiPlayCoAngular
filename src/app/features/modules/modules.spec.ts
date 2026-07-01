@@ -20,3 +20,4 @@ describe('Modules', () => {
     expect(component).toBeTruthy();
   });
 });
+

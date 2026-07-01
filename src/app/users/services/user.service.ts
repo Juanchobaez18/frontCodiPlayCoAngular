@@ -36,7 +36,7 @@ export interface EstudianteProfile {
 export class UserService {
   private http = inject(HttpClient);
   private authService = inject(Auth);
-  private api = 'http://localhost:3000';
+  private api = 'https://codiplayconest.onrender.com';
 
   getEstudianteProfile(): Observable<EstudianteProfile> {
     const userId = this.authService.currentUser()?.id;
