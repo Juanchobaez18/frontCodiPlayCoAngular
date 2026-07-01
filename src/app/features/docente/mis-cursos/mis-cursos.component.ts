@@ -1,7 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 import { DocenteApiService, DocenteCurso, CursoDetalle, EstudianteProgreso } from '../services/docente-api.service';
+import { ProgressWsService } from '../../../core/services/progress-ws.service';
 
 @Component({
   selector: 'app-mis-cursos',
@@ -10,8 +12,9 @@ import { DocenteApiService, DocenteCurso, CursoDetalle, EstudianteProgreso } fro
   templateUrl: './mis-cursos.component.html',
   styleUrls: ['./mis-cursos.component.scss'],
 })
-export class MisCursosComponent {
+export class MisCursosComponent implements OnDestroy {
   private apiService = inject(DocenteApiService);
+  private progressWs = inject(ProgressWsService);
 
   cursos = signal<DocenteCurso[]>([]);
   cursosLoading = signal(true);
@@ -20,8 +23,14 @@ export class MisCursosComponent {
   cursosDetalle = signal<Map<number, CursoDetalle>>(new Map());
   detalleLoading = signal<Set<number>>(new Set());
 
+  private wsSub: Subscription | null = null;
+
   constructor() {
     this.loadCursos();
+  }
+
+  ngOnDestroy(): void {
+    this.wsSub?.unsubscribe();
   }
 
   private loadCursos() {
@@ -30,6 +39,21 @@ export class MisCursosComponent {
       next: (data) => {
         this.cursos.set(data);
         this.cursosLoading.set(false);
+
+        // Subscribe to each course's WebSocket room so progress updates arrive live
+        this.wsSub?.unsubscribe();
+        this.progressWs.connect();
+        data.forEach((c) => this.progressWs.joinCurso(c.id));
+        this.wsSub = this.progressWs.progreso$.subscribe(() => {
+          // Reload courses list to refresh progress bars
+          this.apiService.getCursos().subscribe({
+            next: (updated) => {
+              this.cursos.set(updated);
+              updated.forEach((c) => this.loadCursoDetalle(c.id));
+            },
+          });
+        });
+
         // Load detail for each course
         data.forEach((c) => this.loadCursoDetalle(c.id));
       },
