@@ -22,26 +22,53 @@
         </h2>
 
         <div class="sub-panel">
-          <!-- Lección asociada destacada -->
-          @if (tarea.leccion) {
+          <!-- Módulo + Lección badge -->
+          @if (tarea.leccion || tarea.modulo) {
             <div class="leccion-badge">
               <i class="fa-solid fa-book-open"></i>
               <div class="leccion-badge__info">
-                <span class="leccion-badge__label">Lección que evalúa</span>
-                <span class="leccion-badge__nombre">{{ tarea.leccion }}</span>
+                @if (tarea.leccion) {
+                  <span class="leccion-badge__label">Lección que evalúa</span>
+                  <span class="leccion-badge__nombre">{{ tarea.leccion }}</span>
+                }
                 @if (tarea.modulo) {
-                  <span class="leccion-badge__modulo">{{ tarea.modulo }}</span>
+                  <span class="leccion-badge__modulo">
+                    <i class="fa-solid fa-layer-group"></i> {{ tarea.modulo }}
+                  </span>
                 }
               </div>
             </div>
           }
 
+          <!-- Dates row -->
           <p class="tarea-meta">
             <i class="fa-regular fa-calendar"></i>
-            <span><strong>Creada:</strong> {{ tarea.fechaCreacion || 'N/A' }}</span>
+            <span><strong>Creada:</strong> {{ formatFecha(tarea.fechaCreacion) }}</span>
             &nbsp;&nbsp;
             <i class="fa-regular fa-clock"></i>
-            <span><strong>Vence:</strong> {{ tarea.fechaVencimiento }}</span>
+            @if (editFechaId === tarea.id) {
+              <span class="fecha-edit-inline">
+                <input
+                  type="date"
+                  class="fecha-input"
+                  [(ngModel)]="editFechaValue"
+                  [disabled]="savingFecha"
+                />
+                <button type="button" class="btn-fecha-save" [disabled]="savingFecha" (click)="saveFecha(tarea.id)" title="Guardar">
+                  <i class="fa-solid fa-check"></i>
+                </button>
+                <button type="button" class="btn-fecha-cancel" [disabled]="savingFecha" (click)="cancelEditFecha()" title="Cancelar">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </span>
+            } @else {
+              <span>
+                <strong>Vence:</strong> {{ formatFecha(tarea.fechaVencimiento) }}
+                <button type="button" class="btn-edit-fecha" (click)="startEditFecha(tarea)" title="Editar fecha">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+              </span>
+            }
           </p>
 
           @if (tarea.entregas && tarea.entregas.length > 0) {
@@ -50,6 +77,7 @@
                 <tr>
                   <th>Estudiante</th>
                   <th>Lección en revisión</th>
+                  <th>Módulo</th>
                   <th>Estado</th>
                   <th>Calificación</th>
                   <th>Acciones</th>
@@ -63,6 +91,15 @@
                       @if (tarea.leccion) {
                         <span class="leccion-chip">
                           <i class="fa-solid fa-book"></i> {{ tarea.leccion }}
+                        </span>
+                      } @else {
+                        <span style="opacity:0.5">—</span>
+                      }
+                    </td>
+                    <td>
+                      @if (tarea.modulo) {
+                        <span class="modulo-chip">
+                          <i class="fa-solid fa-layer-group"></i> {{ tarea.modulo }}
                         </span>
                       } @else {
                         <span style="opacity:0.5">—</span>
@@ -83,22 +120,30 @@
                       }
                     </td>
                     <td>
-                      <button
-                        type="button"
-                        class="btn-aprobar"
-                        [disabled]="isCalificando(entrega.id)"
-                        (click)="calificar(entrega.id, 'APROBADO')"
-                      >
-                        <i class="fa-solid fa-check"></i> Aprobar
-                      </button>
-                      <button
-                        type="button"
-                        class="btn-no-aprobar"
-                        [disabled]="isCalificando(entrega.id)"
-                        (click)="calificar(entrega.id, 'NO_APROBADO')"
-                      >
-                        <i class="fa-solid fa-rotate-left"></i> No aprobar
-                      </button>
+                      @if (entrega.estado === 'entregado' || entrega.resultado === 'NO_APROBADO') {
+                        <button
+                          type="button"
+                          class="btn-aprobar"
+                          [disabled]="isCalificando(entrega.id)"
+                          (click)="calificar(entrega.id, 'APROBADO')"
+                        >
+                          <i class="fa-solid fa-check"></i> Aprobar
+                        </button>
+                        <button
+                          type="button"
+                          class="btn-no-aprobar"
+                          [disabled]="isCalificando(entrega.id)"
+                          (click)="calificar(entrega.id, 'NO_APROBADO')"
+                        >
+                          <i class="fa-solid fa-rotate-left"></i> No aprobar
+                        </button>
+                      } @else if (entrega.resultado === 'APROBADO') {
+                        <span class="estado-chip estado-chip--aprobado">
+                          <i class="fa-solid fa-circle-check"></i> Aprobado
+                        </span>
+                      } @else {
+                        <span style="opacity:0.5; font-size:0.82rem;">Sin entrega</span>
+                      }
                     </td>
                   </tr>
                 }

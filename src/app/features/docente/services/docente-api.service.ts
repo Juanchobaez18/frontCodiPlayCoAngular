@@ -73,6 +73,8 @@ export interface DocenteTarea {
   estado: string;
   modulo?: string;
   leccion?: string;
+  cursoId?: number;
+  cursoNombre?: string;
   entregas?: TareaEntrega[];
 }
 
@@ -169,6 +171,12 @@ export class DocenteApiService {
       calificacion: resultado === 'APROBADO' ? 'Aprobado' : 'No aprobado',
       resultado,
     }).pipe(catchError(() => of({ success: false, message: 'Endpoint no disponible aún' })));
+  }
+
+  updateFechaVencimiento(tareaId: number, fechaVencimiento: string): Observable<any> {
+    return this.http.put(`${this.docenteUrl}/tareas/fecha-vencimiento`, { tareaId, fechaVencimiento }).pipe(
+      catchError(() => of({ success: false })),
+    );
   }
 
   // ─── Mensajes ───

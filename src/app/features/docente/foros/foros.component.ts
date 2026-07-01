@@ -87,7 +87,12 @@ export class ForosComponent {
       },
       error: (err) => {
         this.creando.set(false);
-        this.errorMessage.set('Error al crear el foro');
+        // Mostrar el mensaje real del backend para facilitar diagnóstico
+        const backendMsg: string =
+          err?.error?.message ??
+          (typeof err?.error === 'string' ? err.error : null) ??
+          'Error al crear el foro. Verifica que el curso esté asignado correctamente.';
+        this.errorMessage.set(backendMsg);
         console.error('Error creating foro:', err);
       },
     });

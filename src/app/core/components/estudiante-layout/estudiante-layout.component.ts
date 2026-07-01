@@ -33,6 +33,14 @@ import {
   type LeccionVistaCodiContent,
   type EditorConfig,
 } from './lecciones-vistascodi.data';
+import {
+  BADGES_CONFIG,
+  todasLasInsigniasConEstado,
+  type BadgeConfig,
+  type BadgeContext,
+} from '../../config/badges.config';
+import { ProgressWsService } from '../../services/progress-ws.service';
+import { Subscription } from 'rxjs';
 
 export type EstudiantePanelView =
   | 'inicio'
@@ -86,6 +94,27 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   leccionPanelOrden = 0;
   moduloLoading = false;
   leccionLoading = false;
+
+  // WebSocket de progreso
+  private readonly progressWs = inject(ProgressWsService);
+  private wsSub?: Subscription;
+
+  // === NOTIFICACIONES ===
+  readonly mensajesNoLeidos = computed(() => {
+    return this.mensajesRecibidos().filter((m) => m.estado !== 'leido').length;
+  });
+
+  readonly forosNuevos = signal(0);
+
+  // Logros / Insignias
+  readonly insignias = signal<(BadgeConfig & { desbloqueada: boolean })[]>([]);
+  readonly progresoModulosDetalle = signal<{
+    moduloId: number;
+    moduloTitulo: string;
+    totalLecciones: number;
+    leccionesCompletadas: number;
+    porcentaje: number;
+  }[]>([]);
 
   // Editor de código
   editorCode = '';
@@ -200,6 +229,8 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.body.classList.remove('estudiante-panel-root', 'dark-mode');
+    this.wsSub?.unsubscribe();
+    this.progressWs.disconnect();
   }
 
   private applyRoute(fullUrl: string): void {
@@ -260,10 +291,23 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
 
     if (view === 'foro-detalle') {
       const id = Number(path.split('/foros/')[1]?.split('/')[0] ?? '0');
-      if (id > 0) this.loadForoDetalle(id);
+      if (id > 0) {
+        this.loadForoDetalle(id);
+        const currentSeenId = Number(localStorage.getItem('estudiante-foros-last-id') ?? '0');
+        if (id > currentSeenId) {
+          localStorage.setItem('estudiante-foros-last-id', id.toString());
+        }
+      }
+      this.forosNuevos.set(0);
     }
 
-    if (view === 'foros') this.loadForos();
+    if (view === 'foros') {
+      this.loadForos();
+      this.forosNuevos.set(0);
+    }
+    if (view === 'bandeja') {
+      this.marcarMensajesRecibidosComoLeidos();
+    }
     if (view === 'editar-perfil') this.syncPerfilForm();
   }
 
@@ -277,6 +321,48 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
         this.profile.set(p);
         this.loadingProfile = false;
         this.syncPerfilForm();
+        
+        const loadModsAndCalc = (profileData: any) => {
+          if (profileData.cursos && profileData.cursos.length > 0) {
+            this.api.getModulosByCurso(profileData.cursos[0].id).subscribe({
+              next: (mods) => {
+                this.modulosBE.set(mods);
+                this.calcularInsigniasYProgreso(profileData);
+              },
+              error: () => {
+                this.calcularInsigniasYProgreso(profileData);
+              }
+            });
+          } else {
+            this.calcularInsigniasYProgreso(profileData);
+          }
+        };
+
+        loadModsAndCalc(p);
+        this._checkForosNuevos();
+
+        // Conectar WebSocket al canal personal del estudiante
+        if (p.id) {
+          this.progressWs.joinEstudiante(p.id);
+          this.wsSub?.unsubscribe();
+          this.wsSub = this.progressWs.progreso$.subscribe((event) => {
+            if (event.estudianteId === p.id) {
+              // Recargar perfil para obtener leccionesCompletadas actualizadas
+              this.api.getProfileByUserId(userId).subscribe({
+                next: (updated) => {
+                  this.profile.set(updated);
+                  loadModsAndCalc(updated);
+                  if (this.panelView() === 'bandeja') {
+                    this.marcarMensajesRecibidosComoLeidos();
+                  }
+                },
+              });
+            }
+          });
+        }
+        if (this.panelView() === 'bandeja') {
+          this.marcarMensajesRecibidosComoLeidos();
+        }
       },
       error: (err) => {
         this.profileError =
@@ -284,6 +370,85 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
         this.loadingProfile = false;
       },
     });
+  }
+
+  private _checkForosNuevos(): void {
+    const lastSeenId = Number(localStorage.getItem('estudiante-foros-last-id') ?? '0');
+    // Obtener foros y comparar con el último ID visto
+    this.api.getForos().subscribe({
+      next: (foros) => {
+        const nuevos = foros.filter(f => f.id > lastSeenId).length;
+        if (this.panelView() !== 'foros' && this.panelView() !== 'foro-detalle') {
+          this.forosNuevos.set(nuevos);
+        } else {
+          this.forosNuevos.set(0);
+          this.actualizarForoLastId(foros);
+        }
+      },
+      error: () => {},
+    });
+  }
+
+  marcarMensajesRecibidosComoLeidos(): void {
+    const unread = this.mensajesRecibidos().filter((m) => m.estado !== 'leido');
+    if (unread.length === 0) return;
+    unread.forEach((m) => {
+      this.api.marcarMensajeLeido(m.id).subscribe({
+        next: () => {
+          m.estado = 'leido';
+          // Forzar refresco
+          this.profile.set({ ...this.profile()! });
+        },
+      });
+    });
+  }
+
+  /**
+   * Calcula las insignias y el desglose de progreso por módulo
+   * usando los datos reales del perfil (leccionesCompletadas x módulos del curso).
+   */
+  private calcularInsigniasYProgreso(perfil: EstudianteProfile): void {
+    const completadasIds = new Set((perfil.leccionesCompletadas ?? []).map(l => l.id));
+    const modulosDetalle: typeof this.progresoModulosDetalle extends { set: (v: infer T) => void } ? T : never[] = [];
+    let totalLecciones = 0;
+    let modulosCompletos = 0;
+
+    for (const curso of perfil.cursos ?? []) {
+      // No tenemos los módulos del curso en el perfil, así que usamos modulosBE si están cargados
+      // En su defecto, el progreso global viene del servidor (perfil.progreso)
+    }
+
+    // Si hay módulos del backend cargados, usarlos para el desglose
+    const modsBE = this.modulosBE();
+    if (modsBE.length > 0) {
+      for (const mod of modsBE) {
+        const lecciones = mod.lecciones ?? [];
+        const completadas = lecciones.filter(l => completadasIds.has(l.id));
+        const pct = lecciones.length > 0
+          ? Math.round((completadas.length / lecciones.length) * 100)
+          : 0;
+        totalLecciones += lecciones.length;
+        if (pct >= 100) modulosCompletos++;
+        modulosDetalle.push({
+          moduloId: mod.id,
+          moduloTitulo: mod.titulo,
+          totalLecciones: lecciones.length,
+          leccionesCompletadas: completadas.length,
+          porcentaje: pct,
+        });
+      }
+      this.progresoModulosDetalle.set(modulosDetalle);
+    }
+
+    const ctx: BadgeContext = {
+      progresoGlobal: perfil.progreso ?? 0,
+      leccionesCompletadas: completadasIds.size,
+      totalLecciones: totalLecciones || 1,
+      modulosCompletos,
+      totalModulos: modsBE.length || (perfil.cursos?.length ?? 0),
+      primeraLeccion: completadasIds.size > 0,
+    };
+    this.insignias.set(todasLasInsigniasConEstado(ctx));
   }
 
   private syncPerfilForm(): void {
@@ -301,14 +466,27 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
     };
   }
 
+  actualizarForoLastId(foros: ForoListItem[]): void {
+    if (!foros || foros.length === 0) return;
+    const maxId = foros.reduce((max, f) => f.id > max ? f.id : max, 0);
+    const currentSeenId = Number(localStorage.getItem('estudiante-foros-last-id') ?? '0');
+    if (maxId > currentSeenId) {
+      localStorage.setItem('estudiante-foros-last-id', maxId.toString());
+    }
+  }
+
   loadForos(): void {
-    if (this.foros().length) return;
+    if (this.foros().length) {
+      this.actualizarForoLastId(this.foros());
+      return;
+    }
     this.forosLoading = true;
     this.forosError = null;
     this.api.getForos().subscribe({
       next: (rows) => {
         this.foros.set(rows);
         this.forosLoading = false;
+        this.actualizarForoLastId(rows);
       },
       error: () => {
         this.forosError = 'No se pudieron cargar los foros.';
@@ -360,8 +538,15 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
 
   modProgress(mod: ModuloPanelConfig): { done: number; pct: number } {
     const total = mod.totalLecciones;
-    const progreso = this.profile()?.progreso ?? 0;
-    const done = Math.min(total, Math.floor((progreso / 100) * total));
+    const perfil = this.profile();
+    if (!perfil || !perfil.leccionesCompletadas) {
+      return { done: 0, pct: 0 };
+    }
+    const completadasEnModulo = perfil.leccionesCompletadas.filter(
+      (lc) => lc.modulo?.orden === mod.numero
+    );
+    const uniqueIds = new Set(completadasEnModulo.map(lc => lc.id));
+    const done = Math.min(total, uniqueIds.size);
     return { done, pct: total ? Math.round((done / total) * 100) : 0 };
   }
 
@@ -542,9 +727,25 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   }
 
   getMaxLessonCompleted(moduloNum: number): number {
-    const raw = localStorage.getItem(this.lessonStorageKey(moduloNum));
-    const n = parseInt(raw ?? '0', 10);
-    return Number.isNaN(n) ? 0 : n;
+    const perfil = this.profile();
+    if (!perfil || !perfil.leccionesCompletadas) {
+      const raw = localStorage.getItem(this.lessonStorageKey(moduloNum));
+      const n = parseInt(raw ?? '0', 10);
+      return Number.isNaN(n) ? 0 : n;
+    }
+    const completadasEnModulo = perfil.leccionesCompletadas.filter(
+      (lc) => lc.modulo?.orden === moduloNum
+    );
+    const maxBD = completadasEnModulo.reduce((max, lc) => {
+      const ord = Number(lc.orden);
+      return ord > max ? ord : max;
+    }, 0);
+    const localVal = Number(localStorage.getItem(this.lessonStorageKey(moduloNum)) ?? '0');
+    if (maxBD > localVal) {
+      localStorage.setItem(this.lessonStorageKey(moduloNum), String(maxBD));
+      return maxBD;
+    }
+    return Math.max(maxBD, localVal);
   }
 
   /** Returns the TareaEntrega for the given module/lesson (0-based: prev lesson gates this one). */

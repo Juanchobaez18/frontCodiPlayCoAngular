@@ -57,7 +57,11 @@ export interface EstudianteProfile {
     curso?: { id: number; nombre: string };
   }[];
   mensajes: MensajeEstudiante[];
-  leccionesCompletadas?: { id: number }[];
+  leccionesCompletadas?: {
+    id: number;
+    orden: number;
+    modulo?: { id: number; orden: number };
+  }[];
   tareasEntregas?: TareaEntregaEstudiante[];
 }
 
@@ -138,6 +142,10 @@ export class EstudianteApiService {
 
   enviarSoporte(body: { name: string; email: string; message: string }) {
     return this.http.post(`${API_BASE}/contact`, body);
+  }
+
+  marcarMensajeLeido(id: number) {
+    return this.http.patch(`${API_BASE}/mensajes/${id}/leido`, {});
   }
 
   getModulosByCurso(cursoId: number) {

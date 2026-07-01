@@ -300,10 +300,26 @@
             <a routerLink="/estudiante/mis-logros"><i class="fa-solid fa-trophy"></i><span>Mis logros</span></a>
           </li>
           <li routerLinkActive="active">
-            <a routerLink="/estudiante/bandeja"><i class="fa-solid fa-box"></i><span>Bandeja</span></a>
+            <a routerLink="/estudiante/bandeja" style="position:relative;display:flex;align-items:center;gap:6px">
+              <i class="fa-solid fa-box"></i>
+              <span>Bandeja</span>
+              @if (mensajesNoLeidos() > 0) {
+                <span class="notif-badge" aria-label="Mensajes nuevos" style="background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;border-radius:999px;min-width:16px;height:16px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;line-height:1;">
+                  {{ mensajesNoLeidos() > 99 ? '99+' : mensajesNoLeidos() }}
+                </span>
+              }
+            </a>
           </li>
           <li routerLinkActive="active">
-            <a routerLink="/estudiante/foros"><i class="fa-solid fa-users"></i><span>Foros</span></a>
+            <a routerLink="/estudiante/foros" style="position:relative;display:flex;align-items:center;gap:6px">
+              <i class="fa-solid fa-users"></i>
+              <span>Foros</span>
+              @if (forosNuevos() > 0) {
+                <span class="notif-badge" aria-label="Foros nuevos" style="background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;border-radius:999px;min-width:16px;height:16px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;line-height:1;">
+                  {{ forosNuevos() > 99 ? '99+' : forosNuevos() }}
+                </span>
+              }
+            </a>
           </li>
         </ul>
       </nav>

@@ -14,6 +14,8 @@ import { Auth, User } from '../core/services/auth';
 import { PerfilService } from './services/perfil.service';
 import { UserService } from '../users/services/user.service';
 
+const API_MEDIA = 'http://localhost:3000';
+
 @Component({
   selector: 'app-perfil',
   standalone: true,
@@ -76,9 +78,15 @@ export class Perfil implements OnInit {
   }
 
   private resolveAvatar(avatar: string | undefined) {
-    this.avatarUrl = avatar?.startsWith('uploads/')
-      ? `http://localhost:3000/${avatar}`
-      : null;
+    if (avatar) {
+      // Normalize: remove leading slash so startsWith works for both '/uploads/...' and 'uploads/...'
+      const normalized = avatar.replace(/^\//, '');
+      this.avatarUrl = normalized.startsWith('uploads/')
+        ? `${API_MEDIA}/${normalized}`
+        : (avatar.startsWith('http') ? avatar : null);
+    } else {
+      this.avatarUrl = null;
+    }
     const u = this.user;
     this.avatarInitials =
       `${u?.name?.charAt(0) ?? ''}${u?.lastName?.charAt(0) ?? ''}`.toUpperCase();
@@ -112,8 +120,18 @@ export class Perfil implements OnInit {
       next: (updated: any) => {
         this.isLoadingAvatar = false;
         this.avatarSuccess = '¡Foto actualizada correctamente!';
-        this.resolveAvatar(updated.avatar);
+        const avatarPath: string | undefined = updated?.avatar;
+        this.resolveAvatar(avatarPath);
+        // Actualizar el signal de auth para que el header/navbar refleje el cambio de inmediato
+        if (avatarPath) {
+          const normalized = avatarPath.replace(/^\//, '');
+          const fullUrl = normalized.startsWith('uploads/')
+            ? `${API_MEDIA}/${normalized}`
+            : (avatarPath.startsWith('http') ? avatarPath : avatarPath);
+          this.authService.patchAvatar(fullUrl);
+        }
         input.value = '';
+        setTimeout(() => { this.avatarSuccess = ''; }, 3500);
       },
       error: (err: any) => {
         this.isLoadingAvatar = false;
