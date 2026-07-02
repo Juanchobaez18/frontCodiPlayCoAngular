@@ -12,7 +12,7 @@
 			</nav>
 
 			<div class="actions-wrapper">
-				<div id="nav-toggle" class="hamburger">
+				<div id="nav-toggle" class="hamburger" [class.active]="isMenuOpen" (click)="toggleMenu()">
 					<span></span>
 					<span></span>
 					<span></span>
@@ -24,7 +24,7 @@
 		</div>
 	</header>
 
-	<div id="mobile-menu" class="mobile-menu">
+	<div id="mobile-menu" class="mobile-menu" [class.active]="isMenuOpen">
 		<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
 		<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
 		<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
@@ -121,27 +121,4 @@
 <footer>
 	<p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
 </footer>
-
-<script>
-	document.addEventListener('DOMContentLoaded', function () {
-		const navToggle = document.getElementById('nav-toggle');
-		const mobileMenu = document.getElementById('mobile-menu');
-
-		if (navToggle && mobileMenu) {
-			navToggle.addEventListener('click', () => {
-				navToggle.classList.toggle('active');
-				mobileMenu.classList.toggle('active');
-				document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : 'auto';
-			});
-
-			mobileMenu.addEventListener('click', (e) => {
-				if (e.target.closest('.nav-link-glass')) {
-					navToggle.classList.remove('active');
-					mobileMenu.classList.remove('active');
-					document.body.style.overflow = 'auto';
-				}
-			});
-		}
-	});
-</script>
 
