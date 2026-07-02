@@ -51,3 +51,4 @@ export class PlatformCardComponent implements AfterViewInit {
     };
   }
 }
+

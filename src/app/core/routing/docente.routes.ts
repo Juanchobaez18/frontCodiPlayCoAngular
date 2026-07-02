@@ -94,3 +94,4 @@ export const DOCENTE_ROUTES: Routes = [
     redirectTo: '/docente/dashboard',
   },
 ];
+

@@ -1,0 +1,36 @@
+[33m>[39m Building...
+[32m√[39m Building...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m                      [2m | [22m [1mRaw size[22m
+[32mmain.js[39m            [2m | [22m[2mmain[22m                       [2m | [22m[36m197.58 kB[39m[2m | [22m
+[32mstyles.css[39m         [2m | [22m[2mstyles[22m                     [2m | [22m[36m180.60 kB[39m[2m | [22m
+[32mchunk-G4YUN43W.js[39m  [2m | [22m[2m-[22m                          [2m | [22m  [36m5.02 kB[39m[2m | [22m
+[32mchunk-RCAXWDBD.js[39m  [2m | [22m[2m-[22m                          [2m | [22m  [36m4.89 kB[39m[2m | [22m
+[32mchunk-U7MX7CDN.js[39m  [2m | [22m[2m-[22m                          [2m | [22m  [36m2.97 kB[39m[2m | [22m
+[32mchunk-SS7436ZG.js[39m  [2m | [22m[2m-[22m                          [2m | [22m  [36m2.11 kB[39m[2m | [22m
+[32mchunk-GOMI4DH3.js[39m  [2m | [22m[2m-[22m                          [2m | [22m  [36m1.37 kB[39m[2m | [22m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m              [2m | [22m[1m394.55 kB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m                      [2m | [22m [1mRaw size[22m
+[32mchunk-75B36SKE.js[39m  [2m | [22m[2mestudiante-layout-component[22m[2m | [22m[36m499.13 kB[39m[2m | [22m
+[32mchunk-RUSPBUQQ.js[39m  [2m | [22m[2mdocente-layout-component[22m   [2m | [22m[36m342.21 kB[39m[2m | [22m
+[32mchunk-ZXRJ4TZO.js[39m  [2m | [22m[2mquienes-somos[22m              [2m | [22m[36m110.53 kB[39m[2m | [22m
+[32mchunk-CO6SFCWO.js[39m  [2m | [22m[2mpreguntas-frecuentes[22m       [2m | [22m [36m94.37 kB[39m[2m | [22m
+[32mchunk-3YENEZEU.js[39m  [2m | [22m[2mperfil[22m                     [2m | [22m [36m57.05 kB[39m[2m | [22m
+[32mchunk-M76OJ7KK.js[39m  [2m | [22m[2msign-in[22m                    [2m | [22m [36m45.85 kB[39m[2m | [22m
+[32mchunk-RRDOX6AO.js[39m  [2m | [22m[2musers[22m                      [2m | [22m [36m42.52 kB[39m[2m | [22m
+[32mchunk-U6YXUXKM.js[39m  [2m | [22m[2mregister[22m                   [2m | [22m [36m42.18 kB[39m[2m | [22m
+[32mchunk-ZAQ42U77.js[39m  [2m | [22m[2mregistro-pago[22m              [2m | [22m [36m41.80 kB[39m[2m | [22m
+[32mchunk-M3RBINQ5.js[39m  [2m | [22m[2mcurso[22m                      [2m | [22m [36m39.36 kB[39m[2m | [22m
+[32mchunk-RZFCCLV6.js[39m  [2m | [22m[2mcursos[22m                     [2m | [22m [36m38.48 kB[39m[2m | [22m
+[32mchunk-U4W5T7YI.js[39m  [2m | [22m[2mlog-in-component[22m           [2m | [22m [36m33.71 kB[39m[2m | [22m
+[32mchunk-MTLK2OZ4.js[39m  [2m | [22m[2mlanding-page[22m               [2m | [22m [36m33.04 kB[39m[2m | [22m
+[32mchunk-65NTGU72.js[39m  [2m | [22m[2mcontacto[22m                   [2m | [22m [36m32.39 kB[39m[2m | [22m
+[32mchunk-KG4EDOEJ.js[39m  [2m | [22m[2mpago-exitoso[22m               [2m | [22m [36m26.68 kB[39m[2m | [22m
+[2m...and 4 more lazy chunks files. Use "--verbose" to show all the files.[22m
+
+Application bundle generation complete. [8.965 seconds] - 2026-07-01T21:01:53.806Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4200[22m/[39m

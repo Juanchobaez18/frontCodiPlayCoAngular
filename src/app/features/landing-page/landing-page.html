@@ -25,9 +25,9 @@
 	</header>
 
 	<div id="mobile-menu" class="mobile-menu" [class.active]="isMenuOpen">
-		<a class="nav-link-glass" routerLink="/cursos">Cursos</a>
-		<a class="nav-link-glass" routerLink="/quienes-somos">Quienes Somos</a>
-		<a class="nav-link-glass" routerLink="/preguntas-frecuentes">Preguntas Frecuentes</a>
+		<a class="nav-link-glass" routerLink="/cursos" (click)="closeMenu()">Cursos</a>
+		<a class="nav-link-glass" routerLink="/quienes-somos" (click)="closeMenu()">Quienes Somos</a>
+		<a class="nav-link-glass" routerLink="/preguntas-frecuentes" (click)="closeMenu()">Preguntas Frecuentes</a>
 	</div>
 
 	<main class="container">

@@ -18,3 +18,4 @@ export class AdminTopbarComponent {
   protected readonly iMoon = Moon;
   protected readonly iSun = Sun;
 }
+

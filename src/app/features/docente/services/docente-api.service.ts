@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://codiplayconest.onrender.com';
 
 export interface DocenteDashboardStats {
   totalEstudiantes: number;
@@ -73,6 +73,8 @@ export interface DocenteTarea {
   estado: string;
   modulo?: string;
   leccion?: string;
+  cursoId?: number;
+  cursoNombre?: string;
   entregas?: TareaEntrega[];
 }
 
@@ -171,6 +173,12 @@ export class DocenteApiService {
     }).pipe(catchError(() => of({ success: false, message: 'Endpoint no disponible aún' })));
   }
 
+  updateFechaVencimiento(tareaId: number, fechaVencimiento: string): Observable<any> {
+    return this.http.put(`${this.docenteUrl}/tareas/fecha-vencimiento`, { tareaId, fechaVencimiento }).pipe(
+      catchError(() => of({ success: false })),
+    );
+  }
+
   // ─── Mensajes ───
   getMensajes(): Observable<DocenteMensaje[]> {
     return this.http.get<DocenteMensaje[]>(`${this.docenteUrl}/mensajes`);
@@ -226,3 +234,4 @@ export class DocenteApiService {
     );
   }
 }
+

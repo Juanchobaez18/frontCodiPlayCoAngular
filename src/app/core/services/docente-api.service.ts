@@ -18,6 +18,28 @@ export interface CursoDocente {
     user?: { id: number; name: string; lastName: string; email: string };
   };
   estudiantes?: { id: number }[];
+  progreso?: number;
+}
+
+export interface EstudianteCursoDetalle {
+  id: number;
+  nombre: string;
+  apellido: string;
+  email: string;
+  progreso: number;
+  estado: string;
+  moduloActual?: string | null;
+  leccionActual?: string | null;
+  progresoModulo?: number;
+}
+
+export interface CursoDetalleDocente {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  estado: boolean;
+  estudiantes: EstudianteCursoDetalle[];
+  modulos: { id: number; nombre: string; orden: number; lecciones: { id: number; nombre: string; orden: number }[] }[];
 }
 
 export interface DocenteForo {
@@ -46,6 +68,51 @@ export interface DocenteEstudiante {
   nombre: string;
   apellido: string;
   email: string;
+  cursos: string[];
+  progreso: number;
+}
+
+export interface LeccionProgresoDetalle {
+  id: number;
+  titulo: string;
+  orden: number;
+  completada: boolean;
+}
+
+export interface ModuloProgresoDetalle {
+  moduloId: number;
+  moduloTitulo: string;
+  orden: number;
+  cursoNombre: string;
+  totalLecciones: number;
+  leccionesCompletadas: number;
+  porcentaje: number;
+  lecciones: LeccionProgresoDetalle[];
+}
+
+export interface EntregaProgresoDetalle {
+  id: number;
+  estado: string;
+  resultado: 'APROBADO' | 'NO_APROBADO' | null;
+  calificacion: string | null;
+  tarea: {
+    id: number;
+    titulo: string;
+    leccion: { id: number; titulo: string } | null;
+    modulo: { id: number; titulo: string } | null;
+  } | null;
+}
+
+export interface EstudianteProgresoDetalle {
+  estudianteId: number;
+  nombre: string;
+  apellido: string;
+  email: string;
+  progresoGlobal: number;
+  totalLeccionesCompletadas: number;
+  totalLecciones: number;
+  progresoModulos: ModuloProgresoDetalle[];
+  tareasEntregas: EntregaProgresoDetalle[];
 }
 
 export interface TareaEntrega {
@@ -88,7 +155,15 @@ export class DocenteApiService {
   private readonly http = inject(HttpClient);
 
   getCursos() {
-    return this.http.get<CursoDocente[]>(`${API_BASE}/curso`);
+    return this.http.get<CursoDocente[]>(`${API_BASE}/docente/cursos`);
+  }
+
+  getDashboardStats(): Observable<{ totalEstudiantes: number; totalCursosActivos: number; tasaCompletacion: number }> {
+    return this.http.get<{ totalEstudiantes: number; totalCursosActivos: number; tasaCompletacion: number }>(`${API_BASE}/docente/dashboard/stats`);
+  }
+
+  getCursoDetalle(cursoId: number): Observable<CursoDetalleDocente> {
+    return this.http.get<CursoDetalleDocente>(`${API_BASE}/docente/cursos/${cursoId}`);
   }
 
   getForos(): Observable<DocenteForo[]> {
@@ -107,6 +182,17 @@ export class DocenteApiService {
 
   deleteForo(foroId: number): Observable<any> {
     return this.http.delete(`${API_BASE}/docente/foros/${foroId}`);
+  }
+
+  updateForo(foroId: number, dto: { titulo: string; descripcion: string }): Observable<DocenteForo> {
+    return this.http.put<DocenteForo>(`${API_BASE}/docente/foros/${foroId}`, dto);
+  }
+
+  getMensajesRecibidosCount(): Observable<number> {
+    return this.getMensajesRecibidos().pipe(
+      map((msgs: DocenteMensaje[]) => msgs.filter((m: DocenteMensaje) => !m.leido).length),
+      catchError(() => of(0)),
+    );
   }
 
   getForoRespuestas(foroId: number): Observable<ForoRespuesta[]> {
@@ -128,6 +214,12 @@ export class DocenteApiService {
   getEstudiantes(): Observable<DocenteEstudiante[]> {
     return this.http.get<DocenteEstudiante[]>(`${API_BASE}/docente/estudiantes`).pipe(
       catchError(() => of([])),
+    );
+  }
+
+  getEstudianteProgreso(estudianteId: number): Observable<EstudianteProgresoDetalle> {
+    return this.http.get<EstudianteProgresoDetalle>(
+      `${API_BASE}/docente/estudiantes/${estudianteId}/progreso`,
     );
   }
 
@@ -159,6 +251,10 @@ export class DocenteApiService {
     return this.http.post(`${API_BASE}/docente/mensajes`, dto);
   }
 
+  marcarMensajeLeido(id: number): Observable<any> {
+    return this.http.patch(`${API_BASE}/mensajes/${id}/leido`, {});
+  }
+
   uploadFotoPerfil(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('foto', file);
@@ -167,3 +263,4 @@ export class DocenteApiService {
     );
   }
 }
+

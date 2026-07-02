@@ -75,3 +75,4 @@ export function userHasEstudiantePanelAccess(
   if (userHasEstudiantePanelModuleAccess(user)) return true;
   return userHasEstudianteRoleNameFallback(user);
 }
+

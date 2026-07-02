@@ -28,7 +28,7 @@ export class RegistroPagoComponent implements OnInit {
   private readonly pendingCourse = inject(PendingCourseService);
   readonly auth = inject(Auth);
 
-  private readonly API = 'http://localhost:3000';
+  private readonly API = 'https://codiplayconest.onrender.com';
 
   curso: CursoDetalle | null = null;
   cursoLoading = true;
@@ -113,3 +113,4 @@ export class RegistroPagoComponent implements OnInit {
     return Array(5 - this.getFilledStars(dificultad).length).fill(0);
   }
 }
+
