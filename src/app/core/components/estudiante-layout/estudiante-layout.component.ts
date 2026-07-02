@@ -827,8 +827,12 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
               this.goBack();
             }, 3000);
           } else {
-            // No se encontró lección ni tarea: navegar sin cambios
-            this.goBack();
+            // Mostrar error porque no existe en backend
+            this.leccionCompletadaMsg = res?.message || 'Error: La lección no existe en la base de datos. El docente debe crearla primero.';
+            setTimeout(() => {
+              this.leccionCompletadaMsg = '';
+              this.goBack();
+            }, 3500);
           }
         },
         error: () => {
