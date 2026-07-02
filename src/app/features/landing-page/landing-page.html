@@ -48,6 +48,74 @@
 			</div>
 		</div>
 	</main>
+
+	<!-- ==== SECCIÓN: JUEGA Y APRENDE ==== -->
+	<section class="game-section">
+		<div class="game-container">
+			<div class="game-header">
+				<h2>Juega y Aprende</h2>
+				<p>¡Dale instrucciones al robot para que alcance la estrella!</p>
+			</div>
+
+			<div class="game-layout">
+				<!-- Lado Izquierdo: Tablero de Juego -->
+				<div class="game-board-wrapper">
+					<div class="game-board" [style.grid-template-columns]="'repeat(' + gridSize + ', 1fr)'" [style.grid-template-rows]="'repeat(' + gridSize + ', 1fr)'">
+						@for (row of gridRows; track row) {
+							@for (col of gridCols; track col) {
+								<div class="game-cell">
+									<!-- Robot -->
+									@if (robotPos.x === col && robotPos.y === row) {
+										<div class="game-robot" [class.success-bounce]="missionAccomplished">🤖</div>
+									}
+									<!-- Estrella -->
+									@if (starPos.x === col && starPos.y === row && !missionAccomplished) {
+										<div class="game-star">⭐</div>
+									}
+								</div>
+							}
+						}
+					</div>
+
+					<!-- Controles -->
+					<div class="game-controls">
+						<div class="control-row">
+							<button class="btn-control btn-up" (click)="moveRobot('up')" [disabled]="missionAccomplished">⬆️ Arriba</button>
+						</div>
+						<div class="control-row">
+							<button class="btn-control btn-left" (click)="moveRobot('left')" [disabled]="missionAccomplished">⬅️ Izquierda</button>
+							<button class="btn-control btn-down" (click)="moveRobot('down')" [disabled]="missionAccomplished">⬇️ Abajo</button>
+							<button class="btn-control btn-right" (click)="moveRobot('right')" [disabled]="missionAccomplished">➡️ Derecha</button>
+						</div>
+						@if (missionAccomplished) {
+							<button class="btn-reset" (click)="resetGame()">🔄 Jugar de nuevo</button>
+						}
+					</div>
+				</div>
+
+				<!-- Lado Derecho: Editor de Código -->
+				<div class="code-editor-wrapper">
+					<div class="code-editor-header">
+						<div class="dots"><span></span><span></span><span></span></div>
+						<span class="file-name">aventura.js</span>
+					</div>
+					<div class="code-editor-content" id="code-editor-content">
+						@for (line of codeLines; track $index) {
+							<div class="code-line">
+								<span class="line-num">{{ $index + 1 }}</span>
+								<span class="line-text" 
+									[class.comment]="line.startsWith('//')" 
+									[class.function]="line.includes('(')" 
+									[class.keyword]="line.includes('true')">
+									{{ line }}
+								</span>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 </div>
 
 <footer>

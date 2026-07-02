@@ -13,6 +13,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { Auth, User } from '../core/services/auth';
 import { PerfilService } from './services/perfil.service';
 import { UserService } from '../users/services/user.service';
+import { environment } from '../../environments/environment';
 
 const API_MEDIA = 'http://localhost:3000';
 
@@ -78,15 +79,9 @@ export class Perfil implements OnInit {
   }
 
   private resolveAvatar(avatar: string | undefined) {
-    if (avatar) {
-      // Normalize: remove leading slash so startsWith works for both '/uploads/...' and 'uploads/...'
-      const normalized = avatar.replace(/^\//, '');
-      this.avatarUrl = normalized.startsWith('uploads/')
-        ? `${API_MEDIA}/${normalized}`
-        : (avatar.startsWith('http') ? avatar : null);
-    } else {
-      this.avatarUrl = null;
-    }
+    this.avatarUrl = avatar?.startsWith('uploads/')
+      ? `${environment.apiUrl}/${avatar}`
+      : null;
     const u = this.user;
     this.avatarInitials =
       `${u?.name?.charAt(0) ?? ''}${u?.lastName?.charAt(0) ?? ''}`.toUpperCase();
@@ -120,16 +115,13 @@ export class Perfil implements OnInit {
       next: (updated: any) => {
         this.isLoadingAvatar = false;
         this.avatarSuccess = '¡Foto actualizada correctamente!';
-        const avatarPath: string | undefined = updated?.avatar;
-        this.resolveAvatar(avatarPath);
-        // Actualizar el signal de auth para que el header/navbar refleje el cambio de inmediato
-        if (avatarPath) {
-          const normalized = avatarPath.replace(/^\//, '');
-          const fullUrl = normalized.startsWith('uploads/')
-            ? `${API_MEDIA}/${normalized}`
-            : (avatarPath.startsWith('http') ? avatarPath : avatarPath);
-          this.authService.patchAvatar(fullUrl);
-        }
+        
+        // El servidor devuelve una nueva URL con UUID para evitar caché, pero actualizamos ambos componentes
+        this.resolveAvatar(updated.avatar);
+        
+        // Actualizamos el servicio Auth global para que cambie en la barra lateral
+        this.authService.patchAvatar(updated.avatar);
+        
         input.value = '';
         setTimeout(() => { this.avatarSuccess = ''; }, 3500);
       },

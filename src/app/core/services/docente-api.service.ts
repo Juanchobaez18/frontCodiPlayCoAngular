@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'https://codiplayconest.onrender.com';
+const API_BASE = environment.apiUrl;
 
 export interface CursoDocente {
   id: number;

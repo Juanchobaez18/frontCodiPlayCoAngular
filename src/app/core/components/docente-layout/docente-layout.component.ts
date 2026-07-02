@@ -9,8 +9,9 @@ import { Auth } from '../../services/auth';
 import { DocenteApiService, type CursoDocente, type CursoDetalleDocente, type DocenteForo, type DocenteMensaje, type DocenteEstudiante, type DocenteTarea, type TareaEntrega, type ForoRespuesta, type EstudianteProgresoDetalle } from '../../services/docente-api.service';
 import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.component';
 import { AdminLucideIconsModule } from '../admin-lucide-icons.module';
-import { ProgressWsService } from '../../services/progress-ws.service';
-import { LayoutDashboard, BookOpen, LogOut, ClipboardList, MessageSquare, Mail, Sun, Moon, ChevronDown, ChevronUp } from 'lucide-angular';
+import { MisCursosComponent } from '../../../features/docente/mis-cursos/mis-cursos.component';
+import { LayoutDashboard, BookOpen, LogOut, ClipboardList, MessageSquare, Mail, Sun, Moon } from 'lucide-angular';
+import { environment } from '../../../../environments/environment';
 
 export type DocentePanelView = 'dashboard' | 'mis-cursos' | 'tareas' | 'foros' | 'mensajes' | null;
 
@@ -61,12 +62,10 @@ export class DocenteLayoutComponent implements OnInit {
   });
 
   readonly userAvatar = computed(() => {
-    const avatar = this.authService.currentUser()?.avatar;
-    if (!avatar) return null;
-    if (avatar.startsWith('http')) return avatar;
-    // Normalize: remove leading slash and build full URL
-    const normalized = avatar.replace(/^\//, '');
-    return `http://localhost:3000/${normalized}`;
+    const path = this.authService.currentUser()?.avatar;
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl}/${path.replace(/^\//, '')}`;
   });
 
   perfilError: string | null = null;
@@ -525,12 +524,7 @@ export class DocenteLayoutComponent implements OnInit {
         this.selectedFile = null;
         const url: string | undefined = res?.fotoPerfil?.url;
         if (url) {
-          // Normalize: remove leading slash for consistency, then build full URL
-          const normalized = url.replace(/^\//, '');
-          const fullUrl = normalized.startsWith('uploads/')
-            ? `http://localhost:3000/${normalized}`
-            : `http://localhost:3000${url}`;
-          this.authService.patchAvatar(fullUrl);
+          this.authService.patchAvatar(`${environment.apiUrl}/${url.replace(/^\//, '')}`);
         }
         setTimeout(() => { this.uploadSuccess = false; }, 4000);
       },

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Auth } from '../../../core/services/auth';
+import { environment } from '../../../../environments/environment';
 
 export interface EstudianteProfile {
   id: number;
@@ -26,7 +27,7 @@ export class UserService {
 
   getEstudianteProfile() {
     const userId = this.auth.currentUser()?.id;
-    return this.http.get<EstudianteProfile>(`https://codiplayconest.onrender.com/estudiantes/by-user/${userId}`);
+    return this.http.get<EstudianteProfile>(`${environment.apiUrl}/estudiantes/by-user/${userId}`);
   }
 }
 

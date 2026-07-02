@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-const API_BASE = 'https://codiplayconest.onrender.com';
+import { environment } from '../../../environments/environment';
+
+const API_BASE = environment.apiUrl;
 
 export interface DashboardStats {
   totalEstudiantes: number;

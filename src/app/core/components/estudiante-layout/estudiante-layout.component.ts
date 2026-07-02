@@ -23,6 +23,7 @@ import {
   type LeccionBackend,
   type TareaEntregaEstudiante,
 } from '../../services/estudiante-api.service';
+import { StorageService } from '../../services/storage.service';
 import {
   MODULOS_PANEL,
   getModuloConfig,
@@ -33,14 +34,7 @@ import {
   type LeccionVistaCodiContent,
   type EditorConfig,
 } from './lecciones-vistascodi.data';
-import {
-  BADGES_CONFIG,
-  todasLasInsigniasConEstado,
-  type BadgeConfig,
-  type BadgeContext,
-} from '../../config/badges.config';
-import { ProgressWsService } from '../../services/progress-ws.service';
-import { Subscription } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export type EstudiantePanelView =
   | 'inicio'
@@ -58,7 +52,6 @@ export type EstudiantePanelView =
 const THEME_KEY = 'codiplay-theme';
 const DEFAULT_AVATAR =
   '/assetsPanelUsuaario/22b8078e-03d9-49d7-a4a6-f70b4208e8c9-removebg-preview.png';
-const API_MEDIA = 'https://codiplayconest.onrender.com';
 
 /** Banner y fondo del inicio (reemplazables en `public/assetsPanelUsuaario/`). */
 export const ESTUDIANTE_INICIO_HERO = '/assetsPanelUsuaario/inicio-hero-banner.png';
@@ -76,6 +69,7 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly api = inject(EstudianteApiService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly storage = inject(StorageService);
   readonly auth = inject(Auth);
 
   readonly panelView = signal<EstudiantePanelView>('inicio');
@@ -191,7 +185,7 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
     const path = this.auth.currentUser()?.avatar ?? this.profile()?.user?.avatar;
     if (!path) return DEFAULT_AVATAR;
     if (path.startsWith('http')) return path;
-    return `${API_MEDIA}/${path.replace(/^\//, '')}`;
+    return `${environment.apiUrl}/${path.replace(/^\//, '')}`;
   });
 
   readonly useAvatarImage = computed(() => {
@@ -221,7 +215,7 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     document.body.classList.add('estudiante-panel-root');
-    const saved = localStorage.getItem(THEME_KEY);
+    const saved = this.storage.getItem(THEME_KEY);
     this.isDarkMode = saved === 'dark';
     document.body.classList.toggle('dark-mode', this.isDarkMode);
     this.loadProfile();
@@ -505,7 +499,7 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   toggleTheme(): void {
     this.isDarkMode = !this.isDarkMode;
     document.body.classList.toggle('dark-mode', this.isDarkMode);
-    localStorage.setItem(THEME_KEY, this.isDarkMode ? 'dark' : 'light');
+    this.storage.setItem(THEME_KEY, this.isDarkMode ? 'dark' : 'light');
   }
 
   toggleSidebar(): void {
@@ -727,25 +721,9 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   }
 
   getMaxLessonCompleted(moduloNum: number): number {
-    const perfil = this.profile();
-    if (!perfil || !perfil.leccionesCompletadas) {
-      const raw = localStorage.getItem(this.lessonStorageKey(moduloNum));
-      const n = parseInt(raw ?? '0', 10);
-      return Number.isNaN(n) ? 0 : n;
-    }
-    const completadasEnModulo = perfil.leccionesCompletadas.filter(
-      (lc) => lc.modulo?.orden === moduloNum
-    );
-    const maxBD = completadasEnModulo.reduce((max, lc) => {
-      const ord = Number(lc.orden);
-      return ord > max ? ord : max;
-    }, 0);
-    const localVal = Number(localStorage.getItem(this.lessonStorageKey(moduloNum)) ?? '0');
-    if (maxBD > localVal) {
-      localStorage.setItem(this.lessonStorageKey(moduloNum), String(maxBD));
-      return maxBD;
-    }
-    return Math.max(maxBD, localVal);
+    const raw = this.storage.getItem(this.lessonStorageKey(moduloNum));
+    const n = parseInt(raw ?? '0', 10);
+    return Number.isNaN(n) ? 0 : n;
   }
 
   /** Returns the TareaEntrega for the given module/lesson (0-based: prev lesson gates this one). */
@@ -780,7 +758,7 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   markLeccionPanelComplete(moduloNum: number, leccionOrden: number): void {
     const max = this.getMaxLessonCompleted(moduloNum);
     if (leccionOrden > max) {
-      localStorage.setItem(this.lessonStorageKey(moduloNum), String(leccionOrden));
+      this.storage.setItem(this.lessonStorageKey(moduloNum), String(leccionOrden));
     }
   }
 
