@@ -13,6 +13,9 @@ import { CommonModule, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { ProgressWsService } from '../../services/progress-ws.service';
+import { BadgeConfig, todasLasInsigniasConEstado, BadgeContext } from '../../config/badges.config';
 import { Auth } from '../../services/auth';
 import {
   EstudianteApiService,

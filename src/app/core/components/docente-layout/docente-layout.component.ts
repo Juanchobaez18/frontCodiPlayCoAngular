@@ -10,8 +10,9 @@ import { DocenteApiService, type CursoDocente, type CursoDetalleDocente, type Do
 import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.component';
 import { AdminLucideIconsModule } from '../admin-lucide-icons.module';
 import { MisCursosComponent } from '../../../features/docente/mis-cursos/mis-cursos.component';
-import { LayoutDashboard, BookOpen, LogOut, ClipboardList, MessageSquare, Mail, Sun, Moon } from 'lucide-angular';
+import { LayoutDashboard, BookOpen, LogOut, ClipboardList, MessageSquare, Mail, Sun, Moon, ChevronDown, ChevronUp } from 'lucide-angular';
 import { environment } from '../../../../environments/environment';
+import { ProgressWsService } from '../../services/progress-ws.service';
 
 export type DocentePanelView = 'dashboard' | 'mis-cursos' | 'tareas' | 'foros' | 'mensajes' | null;
 
