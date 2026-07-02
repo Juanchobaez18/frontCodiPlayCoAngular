@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface CreatePaymentRequest {
   amount: number;
@@ -11,33 +12,23 @@ export interface CreatePaymentRequest {
 }
 
 export interface PaymentResponse {
-  id: string;
-  amount: number;
-  currency: string;
-  status: string;
-  clientSecret?: string;
-  createdAt: Date;
+  transaction: any;
+  clientSecret: string;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class PaymentService {
-  private apiUrl = 'http://localhost:3000/payments';
+  private apiUrl = environment.apiUrl + '/payments';
 
   constructor(private http: HttpClient) {}
 
   createPaymentIntent(payload: CreatePaymentRequest): Observable<PaymentResponse> {
-    return this.http.post<PaymentResponse>(`${this.apiUrl}/create-intent`, payload);
+    return this.http.post<PaymentResponse>(`${this.apiUrl}/stripe/checkout`, payload);
   }
 
-  confirmPayment(paymentIntentId: string): Observable<PaymentResponse> {
-    return this.http.post<PaymentResponse>(`${this.apiUrl}/confirm`, {
-      paymentIntentId,
-    });
-  }
-
-  getPaymentHistory(): Observable<PaymentResponse[]> {
-    return this.http.get<PaymentResponse[]>(`${this.apiUrl}/history`);
+  getPaymentHistory(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}`);
   }
 }

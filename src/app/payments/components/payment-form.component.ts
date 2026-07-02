@@ -89,17 +89,23 @@ export class PaymentFormComponent implements OnInit {
       }
 
       // Confirm payment
-      const confirmedPayment = await this.paymentService
-        .confirmPayment(paymentResponse.id)
-        .toPromise();
+      const stripeInstance = await this.stripeService.initializeStripe();
+      const { paymentIntent, error } = await stripeInstance.confirmCardPayment(
+        paymentResponse.clientSecret,
+        { payment_method: paymentMethodId }
+      );
 
-      if (confirmedPayment?.status === 'succeeded') {
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (paymentIntent.status === 'succeeded') {
         this.snackBar.open('¡Pago realizado exitosamente!', 'Close', { duration: 3000 });
         
-        // Redirect to login after 2 seconds
+        // Redirect to /pago-exitoso after 1 second
         setTimeout(() => {
-          this.router.navigate(['/auth/login']);
-        }, 2000);
+          this.router.navigate(['/pago-exitoso'], { queryParams: { transaccion: paymentResponse.transaction.id } });
+        }, 1000);
       } else {
         this.snackBar.open('Pago pendiente. Por favor verifica tu bandeja de entrada.', 'Close', {
           duration: 5000,
