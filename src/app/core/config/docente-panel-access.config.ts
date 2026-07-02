@@ -100,3 +100,4 @@ export function userIsProtectedSystemDocente(
 ): boolean {
   return userHasDocentePanelAccess(user);
 }
+

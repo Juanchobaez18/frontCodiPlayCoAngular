@@ -87,7 +87,7 @@ export class Auth {
     localStorage.clear();
     this._authStatus.set(null);
     // Full reload clears any residual component state Angular might hold
-    this.router.navigateByUrl('/auth').then(() => window.location.reload());
+    this.router.navigateByUrl('/').then(() => window.location.reload());
   }
 
   patchAvatar(url: string): void {
@@ -102,3 +102,4 @@ export class Auth {
     this._authStatus.set(res);
   }
 }
+

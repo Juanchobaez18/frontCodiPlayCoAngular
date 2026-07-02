@@ -42,3 +42,4 @@ export class SidebarComponent {
   protected readonly iSun = Sun;
   protected readonly iMoon = Moon;
 }
+

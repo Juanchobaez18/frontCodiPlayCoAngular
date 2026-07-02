@@ -15,6 +15,8 @@ import { PerfilService } from './services/perfil.service';
 import { UserService } from '../users/services/user.service';
 import { environment } from '../../environments/environment';
 
+const API_MEDIA = 'http://localhost:3000';
+
 @Component({
   selector: 'app-perfil',
   standalone: true,
@@ -121,6 +123,7 @@ export class Perfil implements OnInit {
         this.authService.patchAvatar(updated.avatar);
         
         input.value = '';
+        setTimeout(() => { this.avatarSuccess = ''; }, 3500);
       },
       error: (err: any) => {
         this.isLoadingAvatar = false;
@@ -154,3 +157,4 @@ export class Perfil implements OnInit {
       });
   }
 }
+

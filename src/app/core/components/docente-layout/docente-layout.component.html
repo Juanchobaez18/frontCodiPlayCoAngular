@@ -54,6 +54,7 @@
           <lucide-icon [img]="iCourses" [size]="18" class="shrink-0 stroke-[2]" />
           <span class="admin-sidebar__label hidden lg:inline">Mis Cursos</span>
         </a>
+
         <a
           routerLink="/docente/tareas"
           routerLinkActive="admin-nav-link--active"
@@ -77,9 +78,15 @@
           routerLinkActive="admin-nav-link--active"
           class="admin-nav-link"
           title="Mensajes"
+          style="position:relative"
         >
           <lucide-icon [img]="iMensajes" [size]="18" class="shrink-0 stroke-[2]" />
           <span class="admin-sidebar__label hidden lg:inline">Mensajes</span>
+          @if (mensajesNoLeidosSig() > 0) {
+            <span class="nav-badge" aria-label="Mensajes sin leer" style="position:absolute;top:4px;right:4px;background:#ef4444;color:#fff;font-size:0.6rem;font-weight:700;border-radius:999px;min-width:16px;height:16px;padding:0 4px;display:flex;align-items:center;justify-content:center;line-height:1;">
+              {{ mensajesNoLeidosSig() > 99 ? '99+' : mensajesNoLeidosSig() }}
+            </span>
+          }
         </a>
       </nav>
 
@@ -238,7 +245,309 @@
           }
 
           @case ('mis-cursos') {
-            <app-mis-cursos></app-mis-cursos>
+            <div class="dashboard-content">
+
+              <!-- Cabecera -->
+              <div class="docente-section-header">
+                <h1 class="page-main-title">
+                  <i class="fas fa-chalkboard-teacher"></i> Mis Cursos y Estudiantes
+                </h1>
+                <p class="page-subtitle">Consulta el progreso de tus cursos y monitorea a tus estudiantes en tiempo real</p>
+              </div>
+
+              <!-- ══ SECCIÓN CURSOS ══════════════════════════════════ -->
+              @if (cursosLoading) {
+                <div class="est-loading-state"><i class="fas fa-spinner fa-spin fa-2x" style="color:#7c3aed"></i><p>Cargando cursos…</p></div>
+              } @else if (cursosError) {
+                <div class="alert alert-error" style="margin-bottom:1rem">{{ cursosError }}</div>
+              } @else if (misCursosSig().length === 0) {
+                <div class="glass-card docente-panel-bloque" style="text-align:center;padding:2rem">
+                  <i class="fas fa-book-open fa-3x" style="opacity:0.25;margin-bottom:0.75rem"></i>
+                  <p style="color:#64748b">No tienes cursos asignados actualmente.</p>
+                </div>
+              } @else {
+                @for (curso of misCursosSig(); track curso.id) {
+                  <div class="glass-card docente-panel-bloque" style="margin-bottom:1.5rem">
+                    <!-- Encabezado del curso -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2rem 0.75rem;border-bottom:1px solid rgb(124 58 237 / 0.07)">
+                      <div>
+                        <h2 class="docente-panel-bloque__titulo" style="padding:0;margin:0">
+                          <span class="panel-icon"><i class="fas fa-book"></i></span>
+                          {{ curso.nombre }}
+                        </h2>
+                        <p style="margin:0.25rem 0 0 0;font-size:0.82rem;color:#64748b">{{ curso.descripcion }}</p>
+                      </div>
+                      <span class="estado-badge" [ngClass]="curso.estado ? 'resultado-aprobado' : 'estado-no-entregado'" style="flex-shrink:0">
+                        {{ curso.estado ? 'Activo' : 'Inactivo' }}
+                      </span>
+                    </div>
+
+                    <div class="docente-bloque-body">
+                      @if (getCursoDetalle(curso.id); as det) {
+                        @if (det.estudiantes.length === 0) {
+                          <p style="color:#64748b;font-style:italic;margin:0.5rem 0">Sin estudiantes inscritos aún.</p>
+                        } @else {
+                          <!-- Tabla compacta: progreso general + módulo actual -->
+                          <div class="docente-sub-panel" style="margin-top:0.5rem">
+                            <table class="docente-tabla-progreso">
+                              <thead><tr>
+                                <th>Estudiante</th>
+                                <th>Progreso global</th>
+                                <th>Módulo actual</th>
+                                <th>Progreso módulo</th>
+                                <th>Estado</th>
+                              </tr></thead>
+                              <tbody>
+                                @for (est of det.estudiantes; track est.id) {
+                                  <tr>
+                                    <td>
+                                      <div style="display:flex;align-items:center;gap:0.6rem">
+                                        <div class="est-mini-avatar" style="width:30px;height:30px;font-size:0.75rem">{{ est.nombre.charAt(0) }}</div>
+                                        <div>
+                                          <p style="margin:0;font-weight:600;font-size:0.85rem">{{ est.nombre }} {{ est.apellido }}</p>
+                                          <p style="margin:0;font-size:0.75rem;color:#94a3b8">{{ est.email }}</p>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div class="est-progreso-wrap">
+                                        <div class="est-progreso-bar-track" style="width:90px">
+                                          <div class="est-progreso-bar-fill"
+                                            [style.width.%]="est.progreso"
+                                            [class.bar-riesgo]="est.progreso < 25"
+                                            [class.bar-progreso]="est.progreso >= 25 && est.progreso < 100"
+                                            [class.bar-completo]="est.progreso >= 100"></div>
+                                        </div>
+                                        <span class="est-progreso-pct">{{ est.progreso }}%</span>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      @if (est.estado === 'completado') {
+                                        <span style="color:#10b981;font-weight:600;font-size:0.82rem"><i class="fas fa-check-circle"></i> Completado</span>
+                                      } @else if (est.moduloActual) {
+                                        <span style="font-size:0.82rem">{{ est.moduloActual }}</span>
+                                      } @else {
+                                        <span style="color:#94a3b8;font-size:0.82rem">Sin iniciar</span>
+                                      }
+                                    </td>
+                                    <td>
+                                      <div class="est-progreso-wrap">
+                                        <div class="est-progreso-bar-track" style="width:70px">
+                                          <div class="est-progreso-bar-fill"
+                                            [style.width.%]="est.progresoModulo ?? 0"
+                                            [class.bar-riesgo]="(est.progresoModulo ?? 0) < 25"
+                                            [class.bar-progreso]="(est.progresoModulo ?? 0) >= 25 && (est.progresoModulo ?? 0) < 100"
+                                            [class.bar-completo]="(est.progresoModulo ?? 0) >= 100"></div>
+                                        </div>
+                                        <span class="est-progreso-pct">{{ est.progresoModulo ?? 0 }}%</span>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <span class="estado-badge" [ngClass]="estadoProgresoClass(est.progreso)">
+                                        {{ estadoProgresoLabel(est.progreso) }}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                }
+                              </tbody>
+                            </table>
+                          </div>
+                        }
+                      } @else if (cursosDetalleLoading) {
+                        <p style="color:#94a3b8;font-size:0.85rem;margin:0.5rem 0"><i class="fas fa-spinner fa-spin"></i> Cargando estudiantes…</p>
+                      } @else {
+                        <p style="color:#64748b;font-style:italic;margin:0.5rem 0">Sin estudiantes inscritos aún.</p>
+                      }
+                    </div>
+                  </div>
+                }
+              }
+
+              <!-- ══ SECCIÓN PROGRESO GLOBAL (drill-down) ═══════════ -->
+              <!-- Modal detalle estudiante -->
+              @if (estudianteDetalleId() !== null) {
+                <div class="est-detalle-overlay" (click)="cerrarDetalle()">
+                  <div class="est-detalle-modal" (click)="$event.stopPropagation()">
+                    <div class="est-detalle-modal__header">
+                      @if (estudianteDetalle(); as det) {
+                        <div class="est-detalle-modal__title-group">
+                          <div class="est-detalle-modal__avatar">{{ det.nombre.charAt(0) }}</div>
+                          <div>
+                            <h2 class="est-detalle-modal__name">{{ det.nombre }} {{ det.apellido }}</h2>
+                            <p class="est-detalle-modal__email">{{ det.email }}</p>
+                          </div>
+                        </div>
+                        <div class="est-detalle-modal__global">
+                          <div class="est-detalle-global-ring">
+                            <svg viewBox="0 0 36 36" class="est-ring-svg">
+                              <path class="est-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                              <path class="est-ring-fill" [style.stroke-dasharray]="det.progresoGlobal + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                              <text x="18" y="20.35" class="est-ring-text">{{ det.progresoGlobal }}%</text>
+                            </svg>
+                          </div>
+                          <div class="est-detalle-global-stats">
+                            <span class="est-stat-chip"><i class="fas fa-check-circle"></i> {{ det.totalLeccionesCompletadas }} / {{ det.totalLecciones }} lecciones</span>
+                          </div>
+                        </div>
+                      }
+                      <button type="button" class="est-detalle-modal__close" (click)="cerrarDetalle()">✕</button>
+                    </div>
+                    <div class="est-detalle-modal__body">
+                      @if (estudianteDetalleLoading) {
+                        <div class="est-detalle-loading"><i class="fas fa-spinner fa-spin"></i> Cargando detalle…</div>
+                      } @else if (estudianteDetalleError) {
+                        <div class="alert alert-error">{{ estudianteDetalleError }}</div>
+                      } @else if (estudianteDetalle(); as det) {
+                        <h3 class="est-detalle-section-title">Progreso por Módulo</h3>
+                        <div class="est-modulos-grid">
+                          @for (mod of det.progresoModulos; track mod.moduloId) {
+                            <div class="est-modulo-card" [class.completado]="mod.porcentaje >= 100">
+                              <div class="est-modulo-card__header">
+                                <div>
+                                  <span class="est-modulo-card__nombre">{{ mod.moduloTitulo }}</span>
+                                  <span class="est-modulo-card__curso">{{ mod.cursoNombre }}</span>
+                                </div>
+                                <span class="est-modulo-pct" [class.pct-completo]="mod.porcentaje >= 100">{{ mod.porcentaje }}%</span>
+                              </div>
+                              <div class="est-modulo-bar-track">
+                                <div class="est-modulo-bar-fill" [style.width.%]="mod.porcentaje"
+                                  [class.bar-riesgo]="mod.porcentaje < 25"
+                                  [class.bar-progreso]="mod.porcentaje >= 25 && mod.porcentaje < 100"
+                                  [class.bar-completo]="mod.porcentaje >= 100"></div>
+                              </div>
+                              <p class="est-modulo-card__lecciones">{{ mod.leccionesCompletadas }} / {{ mod.totalLecciones }} lecciones</p>
+                              <div class="est-lecciones-lista">
+                                @for (lec of mod.lecciones; track lec.id) {
+                                  <div class="est-leccion-chip" [class.completada]="lec.completada">
+                                    <span class="est-leccion-chip__icon">{{ lec.completada ? '✓' : '○' }}</span>
+                                    <span>{{ lec.titulo }}</span>
+                                  </div>
+                                }
+                              </div>
+                            </div>
+                          }
+                        </div>
+                        @if (det.tareasEntregas.length > 0) {
+                          <h3 class="est-detalle-section-title" style="margin-top:1.5rem">Entregas de Tareas</h3>
+                          <div class="est-entregas-lista">
+                            @for (entrega of det.tareasEntregas; track entrega.id) {
+                              <div class="est-entrega-item">
+                                <div class="est-entrega-item__info">
+                                  <span class="est-entrega-item__tarea">{{ entrega.tarea?.titulo ?? 'Tarea' }}</span>
+                                  @if (entrega.tarea?.leccion) {
+                                    <span class="est-entrega-item__leccion"><i class="fas fa-book"></i> {{ entrega.tarea!.leccion!.titulo }}</span>
+                                  }
+                                </div>
+                                <span class="estado-badge" [ngClass]="{
+                                  'estado-entregado': entrega.estado === 'entregado',
+                                  'estado-no-entregado': entrega.estado === 'no_entregado',
+                                  'estado-calificado': entrega.estado === 'calificado'
+                                }">{{ entrega.estado }}</span>
+                                @if (entrega.resultado) {
+                                  <span class="calificacion-resultado" [ngClass]="{
+                                    'resultado-aprobado': entrega.resultado === 'APROBADO',
+                                    'resultado-no-aprobado': entrega.resultado === 'NO_APROBADO'
+                                  }">{{ entrega.resultado === 'APROBADO' ? '✓ Aprobado' : '✗ No aprobado' }}</span>
+                                }
+                              </div>
+                            }
+                          </div>
+                        }
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <!-- Tabla global de todos los estudiantes -->
+              <div class="glass-card" style="margin-top:0.5rem">
+                <div style="padding:1.25rem 1.75rem 0.75rem;border-bottom:1px solid rgb(124 58 237/0.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem">
+                  <h2 style="margin:0;font-size:1rem;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:0.5rem">
+                    <i class="fas fa-users" style="color:#7c3aed"></i> Progreso Global de Estudiantes
+                  </h2>
+                  <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+                    <div class="est-busqueda-wrap">
+                      <i class="fas fa-search est-busqueda-icon"></i>
+                      <input type="text" class="est-busqueda-input" placeholder="Buscar…"
+                        [(ngModel)]="busquedaEstudiante" [ngModelOptions]="{standalone: true}" />
+                    </div>
+                    <div class="est-filtro-chips">
+                      <button type="button" class="est-filtro-chip" [class.active]="filtroEstado() === 'todos'" (click)="filtroEstado.set('todos')">Todos</button>
+                      <button type="button" class="est-filtro-chip chip--riesgo" [class.active]="filtroEstado() === 'en_riesgo'" (click)="filtroEstado.set('en_riesgo')">🔴 Riesgo</button>
+                      <button type="button" class="est-filtro-chip chip--progreso" [class.active]="filtroEstado() === 'en_progreso'" (click)="filtroEstado.set('en_progreso')">🟡 Progreso</button>
+                      <button type="button" class="est-filtro-chip chip--completado" [class.active]="filtroEstado() === 'completado'" (click)="filtroEstado.set('completado')">🟢 Completos</button>
+                    </div>
+                    <span class="est-conteo-badge">{{ estudiantesFiltrados().length }} estudiante(s)</span>
+                  </div>
+                </div>
+
+                @if (estudiantesListaLoading) {
+                  <div class="est-loading-state"><i class="fas fa-spinner fa-spin fa-2x" style="color:#7c3aed"></i><p>Cargando estudiantes…</p></div>
+                } @else if (estudiantesFiltrados().length === 0) {
+                  <div class="est-empty-state"><i class="fas fa-user-graduate fa-3x" style="opacity:0.3"></i><p>No hay estudiantes que coincidan.</p></div>
+                } @else {
+                  <table class="est-tabla">
+                    <thead class="est-tabla__head"><tr>
+                      <th class="est-tabla__th est-th-sortable" (click)="toggleSort('nombre')">
+                        Estudiante @if (sortCampo() === 'nombre') { <lucide-icon [img]="sortAsc() ? iChevUp : iChevDown" [size]="14" /> }
+                      </th>
+                      <th class="est-tabla__th">Cursos</th>
+                      <th class="est-tabla__th est-th-sortable" (click)="toggleSort('progreso')">
+                        Progreso @if (sortCampo() === 'progreso') { <lucide-icon [img]="sortAsc() ? iChevUp : iChevDown" [size]="14" /> }
+                      </th>
+                      <th class="est-tabla__th est-th-sortable" (click)="toggleSort('estado')">
+                        Estado @if (sortCampo() === 'estado') { <lucide-icon [img]="sortAsc() ? iChevUp : iChevDown" [size]="14" /> }
+                      </th>
+                      <th class="est-tabla__th">Detalle</th>
+                    </tr></thead>
+                    <tbody>
+                      @for (est of estudiantesFiltrados(); track est.id) {
+                        <tr class="est-tabla__row" [class.row-riesgo]="est.progreso < 25" [class.row-completado]="est.progreso >= 100">
+                          <td class="est-tabla__td">
+                            <div class="est-tabla-avatar">
+                              <div class="est-mini-avatar">{{ est.nombre.charAt(0) }}</div>
+                              <div>
+                                <p class="est-tabla-nombre">{{ est.nombre }} {{ est.apellido }}</p>
+                                <p class="est-tabla-email">{{ est.email }}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="est-tabla__td">
+                            <div class="est-cursos-chips">
+                              @for (curso of est.cursos; track curso) {
+                                <span class="est-curso-chip">{{ curso }}</span>
+                              }
+                            </div>
+                          </td>
+                          <td class="est-tabla__td est-td-progreso">
+                            <div class="est-progreso-wrap">
+                              <div class="est-progreso-bar-track">
+                                <div class="est-progreso-bar-fill" [style.width.%]="est.progreso"
+                                  [class.bar-riesgo]="est.progreso < 25"
+                                  [class.bar-progreso]="est.progreso >= 25 && est.progreso < 100"
+                                  [class.bar-completo]="est.progreso >= 100"></div>
+                              </div>
+                              <span class="est-progreso-pct">{{ est.progreso }}%</span>
+                            </div>
+                          </td>
+                          <td class="est-tabla__td">
+                            <span class="estado-badge" [ngClass]="estadoProgresoClass(est.progreso)">
+                              {{ estadoProgresoLabel(est.progreso) }}
+                            </span>
+                          </td>
+                          <td class="est-tabla__td">
+                            <button type="button" class="est-detalle-btn" (click)="loadEstudianteDetalle(est.id)">
+                              <i class="fas fa-chart-line"></i> Ver detalle
+                            </button>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                }
+              </div>
+
+            </div>
           }
 
           @case ('tareas') {
@@ -617,22 +926,51 @@
                           <ul class="docente-foro-lista">
                             @for (foro of forosPorCurso(curso.id); track foro.id) {
                               <li class="docente-foro-item">
-                                <div class="docente-foro-item__header">
-                                  <a [routerLink]="['/docente/foros', foro.id]" class="docente-foro-link">
-                                    <strong>{{ foro.titulo }}</strong>
-                                  </a>
-                                  <div class="docente-foro-item__actions">
-                                    <a [routerLink]="['/docente/foros', foro.id]" class="action-btn edit-btn font-outfit" style="margin-right: 0.5rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                      <i class="fas fa-eye"></i> Ver foro
-                                    </a>
-                                    <button type="button" class="btn-icon btn-danger-sm" (click)="eliminarForo(foro.id)" title="Eliminar foro">
-                                      <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                @if (editandoForoId === foro.id) {
+                                  <!-- Formulario de edición inline -->
+                                  <div class="docente-foro-edit-form">
+                                    <div class="form-group" style="margin-bottom:0.6rem">
+                                      <label style="font-size:0.8rem;font-weight:600;color:#7c3aed;margin-bottom:0.25rem;display:block">Título:</label>
+                                      <input type="text" class="docente-foro-input" [(ngModel)]="editandoForoTitulo" [ngModelOptions]="{standalone: true}" />
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:0.6rem">
+                                      <label style="font-size:0.8rem;font-weight:600;color:#7c3aed;margin-bottom:0.25rem;display:block">Descripción:</label>
+                                      <textarea class="docente-foro-input" rows="2" [(ngModel)]="editandoForoDescripcion" [ngModelOptions]="{standalone: true}"></textarea>
+                                    </div>
+                                    @if (editandoForoError) {
+                                      <p style="color:#c0392b;font-size:0.8rem;margin-bottom:0.5rem"><i class="fas fa-exclamation-circle"></i> {{ editandoForoError }}</p>
+                                    }
+                                    <div style="display:flex;gap:0.5rem">
+                                      <button type="button" class="btn-primary" style="padding:0.35rem 0.9rem;font-size:0.82rem" [disabled]="editandoForoGuardando" (click)="guardarEdicionForo()">
+                                        <i class="fas fa-save"></i> {{ editandoForoGuardando ? 'Guardando…' : 'Guardar' }}
+                                      </button>
+                                      <button type="button" class="action-btn delete-btn" style="padding:0.35rem 0.9rem;font-size:0.82rem" (click)="cancelarEdicionForo()">
+                                        <i class="fas fa-times"></i> Cancelar
+                                      </button>
+                                    </div>
                                   </div>
-                                </div>
-                                <p class="docente-foro-item__desc">{{ foro.descripcion }}</p>
-                                @if (foro.fechaCreacion) {
-                                  <small class="docente-foro-item__fecha">{{ foro.fechaCreacion | date:'dd/MM/yyyy' }}</small>
+                                } @else {
+                                  <!-- Vista normal del foro -->
+                                  <div class="docente-foro-item__header">
+                                    <a [routerLink]="['/docente/foros', foro.id]" class="docente-foro-link">
+                                      <strong>{{ foro.titulo }}</strong>
+                                    </a>
+                                    <div class="docente-foro-item__actions">
+                                      <button type="button" class="action-btn edit-btn" style="margin-right:0.4rem;font-size:0.8rem;display:inline-flex;align-items:center;gap:0.25rem" (click)="iniciarEdicionForo(foro)" title="Editar foro">
+                                        <i class="fas fa-edit"></i> Editar
+                                      </button>
+                                      <a [routerLink]="['/docente/foros', foro.id]" class="action-btn edit-btn font-outfit" style="margin-right: 0.5rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                        <i class="fas fa-eye"></i> Ver foro
+                                      </a>
+                                      <button type="button" class="btn-icon btn-danger-sm" (click)="eliminarForo(foro.id)" title="Eliminar foro">
+                                        <i class="fas fa-trash-alt"></i>
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <p class="docente-foro-item__desc">{{ foro.descripcion }}</p>
+                                  @if (foro.fechaCreacion) {
+                                    <small class="docente-foro-item__fecha">{{ foro.fechaCreacion | date:'dd/MM/yyyy' }}</small>
+                                  }
                                 }
                               </li>
                             }
@@ -663,13 +1001,13 @@
                     Centro de mensajes
                   </h2>
                   <div class="docente-tabs-mensajes">
-                    <button type="button" class="docente-tab-btn" [class.active]="activeTabMensajes === 'enviar'" (click)="activeTabMensajes = 'enviar'">
+                    <button type="button" class="docente-tab-btn" [class.active]="activeTabMensajes === 'enviar'" (click)="cambiarTabMensajes('enviar')">
                       <i class="fas fa-paper-plane"></i> Enviar mensaje
                     </button>
-                    <button type="button" class="docente-tab-btn" [class.active]="activeTabMensajes === 'enviados'" (click)="activeTabMensajes = 'enviados'">
+                    <button type="button" class="docente-tab-btn" [class.active]="activeTabMensajes === 'enviados'" (click)="cambiarTabMensajes('enviados')">
                       <i class="fas fa-share-square"></i> Enviados
                     </button>
-                    <button type="button" class="docente-tab-btn" [class.active]="activeTabMensajes === 'recibidos'" (click)="activeTabMensajes = 'recibidos'">
+                    <button type="button" class="docente-tab-btn" [class.active]="activeTabMensajes === 'recibidos'" (click)="cambiarTabMensajes('recibidos')">
                       <i class="fas fa-inbox"></i> Recibidos
                     </button>
                   </div>
@@ -770,3 +1108,4 @@
 
   </app-dashboard-layout>
 </div>
+

@@ -22,3 +22,4 @@ export class PerfilService {
     return this.http.patch(`${this.API}/users/${userId}/avatar`, body);
   }
 }
+

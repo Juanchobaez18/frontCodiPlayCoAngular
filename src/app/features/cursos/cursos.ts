@@ -42,7 +42,7 @@ export class CursosComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.http.get<Curso[]>('http://localhost:3000/curso').subscribe({
+    this.http.get<Curso[]>('https://codiplayconest.onrender.com/curso').subscribe({
       next: (data) => {
         this.cursos = data.filter(c => c.estado);
         this.loading = false;
@@ -96,3 +96,4 @@ export class CursosComponent implements OnInit {
     return text.length > max ? text.slice(0, max) + '…' : text;
   }
 }
+

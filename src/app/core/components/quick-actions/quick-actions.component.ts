@@ -8,3 +8,4 @@ import { RouterLink } from '@angular/router';
   templateUrl: './quick-actions.component.html',
 })
 export class QuickActionsComponent {}
+

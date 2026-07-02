@@ -151,3 +151,4 @@ export class AdminApiService {
     return this.http.patch<CursoRow>(`${this.adminUrl}/cursos/${id}/toggle-active`, {});
   }
 }
+

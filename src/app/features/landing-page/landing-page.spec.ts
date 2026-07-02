@@ -20,3 +20,4 @@ describe('LandingPage', () => {
     expect(component).toBeTruthy();
   });
 });
+

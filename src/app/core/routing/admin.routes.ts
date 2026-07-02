@@ -50,3 +50,4 @@ export const ADMIN_ROUTES: Routes = [
     redirectTo: '/admin/dashboard',
   },
 ];
+
