@@ -11,6 +11,7 @@ import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.c
 import { AdminLucideIconsModule } from '../admin-lucide-icons.module';
 import { MisCursosComponent } from '../../../features/docente/mis-cursos/mis-cursos.component';
 import { LayoutDashboard, BookOpen, LogOut, ClipboardList, MessageSquare, Mail, Sun, Moon } from 'lucide-angular';
+import { environment } from '../../../../environments/environment';
 
 export type DocentePanelView = 'dashboard' | 'mis-cursos' | 'tareas' | 'foros' | 'mensajes' | null;
 
@@ -61,7 +62,12 @@ export class DocenteLayoutComponent implements OnInit {
     return (name.split(/\s+/)[0]?.[0] ?? 'D').toUpperCase();
   });
 
-  readonly userAvatar = computed(() => this.authService.currentUser()?.avatar ?? null);
+  readonly userAvatar = computed(() => {
+    const path = this.authService.currentUser()?.avatar;
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `${environment.apiUrl}/${path.replace(/^\//, '')}`;
+  });
 
   perfilError: string | null = null;
   uploadError: string | null = null;
@@ -266,7 +272,7 @@ export class DocenteLayoutComponent implements OnInit {
         this.selectedFile = null;
         const url: string | undefined = res?.fotoPerfil?.url;
         if (url) {
-          this.authService.patchAvatar(`http://localhost:3000${url}`);
+          this.authService.patchAvatar(`${environment.apiUrl}/${url.replace(/^\//, '')}`);
         }
       },
       error: () => {

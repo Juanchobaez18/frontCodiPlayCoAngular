@@ -13,6 +13,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { Auth, User } from '../core/services/auth';
 import { PerfilService } from './services/perfil.service';
 import { UserService } from '../users/services/user.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-perfil',
@@ -77,7 +78,7 @@ export class Perfil implements OnInit {
 
   private resolveAvatar(avatar: string | undefined) {
     this.avatarUrl = avatar?.startsWith('uploads/')
-      ? `http://localhost:3000/${avatar}`
+      ? `${environment.apiUrl}/${avatar}`
       : null;
     const u = this.user;
     this.avatarInitials =
@@ -112,7 +113,13 @@ export class Perfil implements OnInit {
       next: (updated: any) => {
         this.isLoadingAvatar = false;
         this.avatarSuccess = '¡Foto actualizada correctamente!';
+        
+        // El servidor devuelve una nueva URL con UUID para evitar caché, pero actualizamos ambos componentes
         this.resolveAvatar(updated.avatar);
+        
+        // Actualizamos el servicio Auth global para que cambie en la barra lateral
+        this.authService.patchAvatar(updated.avatar);
+        
         input.value = '';
       },
       error: (err: any) => {

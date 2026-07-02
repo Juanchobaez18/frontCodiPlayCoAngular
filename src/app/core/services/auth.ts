@@ -4,6 +4,8 @@ import { catchError, map, Observable, of, tap } from 'rxjs';
 import { LoginInterface } from '../../auth/interfaces/login';
 import { Router } from '@angular/router';
 
+import { environment } from '../../../environments/environment';
+
 export interface Module {
   id: number;
   name: string;
@@ -40,7 +42,7 @@ export interface AuthResponse {
 export class Auth {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly API_URL = 'http://localhost:3000/auth';
+  private readonly API_URL = `${environment.apiUrl}/auth`;
 
   private readonly _authStatus = signal<AuthResponse | null>(null);
 

@@ -7,14 +7,6 @@
       class="admin-sidebar fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center border-t border-muted/15 bg-card px-2 shadow-sm lg:bottom-auto lg:right-auto lg:flex-col lg:items-stretch lg:border-0 lg:px-0 lg:py-5"
       aria-label="Menú administrador"
     >
-      <!-- Móvil: logo compacto -->
-      <div class="flex shrink-0 items-center gap-3 px-3 lg:hidden">
-        <div class="admin-sidebar-brand__icon flex h-10 w-10 shrink-0 items-center justify-center" aria-hidden="true">
-          <img src="img/logo.png" alt="CodiPlayCo" class="admin-sidebar-logo" />
-        </div>
-        <p class="truncate font-outfit text-base font-bold text-foreground">CodiPlayCo</p>
-      </div>
-
       <!-- Escritorio: logo + perfil -->
       <div class="admin-sidebar-desktop-head hidden shrink-0 lg:flex">
         <div class="admin-sidebar-brand">
@@ -79,8 +71,26 @@
       </div>
     </aside>
 
+    <!-- ═══════════ TOPBAR MÓVIL ═══════════ -->
+    <header class="flex items-center justify-between px-4 py-3 bg-card border-b border-muted/15 lg:hidden sticky top-0 z-30 shadow-sm">
+      <div class="flex items-center gap-3">
+        <div class="flex h-8 w-8 shrink-0 items-center justify-center bg-transparent rounded-md overflow-hidden">
+          <img src="img/logo.png" alt="CodiPlayCo" class="h-full w-full object-contain" />
+        </div>
+        <p class="font-outfit text-base font-bold text-foreground">CodiPlayCo</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" class="p-2 rounded-md bg-transparent hover:bg-muted/10 text-foreground transition-colors" (click)="toggleDarkMode()" [title]="isDarkMode() ? 'Modo claro' : 'Modo oscuro'">
+          <lucide-icon [img]="isDarkMode() ? iSun : iMoon" [size]="20" class="stroke-[2]" />
+        </button>
+        <button type="button" class="p-2 rounded-md bg-transparent hover:bg-muted/10 text-foreground transition-colors" (click)="logout()" title="Cerrar sesión">
+          <lucide-icon [img]="iLogOut" [size]="20" class="stroke-[2]" />
+        </button>
+      </div>
+    </header>
+
     <!-- ═══════════ CONTENIDO PRINCIPAL ═══════════ -->
-    <main class="admin-main-content flex-1 px-4 pt-8 pb-6 lg:px-8 lg:pt-10">
+    <main class="admin-main-content flex-1 px-4 py-6 lg:px-8 lg:py-10">
 
       @switch (adminPanelView()) {
 

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Auth } from '../../core/services/auth';
+import { environment } from '../../../environments/environment';
 
 export interface Curso {
   id: number;
@@ -36,7 +37,7 @@ export interface EstudianteProfile {
 export class UserService {
   private http = inject(HttpClient);
   private authService = inject(Auth);
-  private api = 'http://localhost:3000';
+  private api = environment.apiUrl;
 
   getEstudianteProfile(): Observable<EstudianteProfile> {
     const userId = this.authService.currentUser()?.id;
