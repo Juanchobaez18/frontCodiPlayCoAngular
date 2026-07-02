@@ -68,7 +68,7 @@ export class PagoExitosoComponent implements OnInit, OnDestroy {
       if (current <= 1) {
         clearInterval(this.countdownInterval!);
         this.countdownInterval = null;
-        this.router.navigateByUrl('/estudiante/inicio');
+        this.router.navigateByUrl('/auth/login');
       } else {
         this.countdown.set(current - 1);
       }
@@ -80,7 +80,7 @@ export class PagoExitosoComponent implements OnInit, OnDestroy {
       clearInterval(this.countdownInterval);
       this.countdownInterval = null;
     }
-    this.router.navigateByUrl('/estudiante/inicio');
+    this.router.navigateByUrl('/auth/login');
   }
 }
 
