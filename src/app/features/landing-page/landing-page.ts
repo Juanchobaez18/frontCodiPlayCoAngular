@@ -15,6 +15,19 @@ export class LandingPage {
   codeLines: string[] = ['// Inicia la aventura', 'robot.posicion(0, 0);'];
   missionAccomplished = false;
 
+  // Menu State
+  isMenuOpen = false;
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+    document.body.style.overflow = this.isMenuOpen ? 'hidden' : 'auto';
+  }
+
+  closeMenu() {
+    this.isMenuOpen = false;
+    document.body.style.overflow = 'auto';
+  }
+
   // Helpers para la plantilla
   get gridRows() {
     return Array(this.gridSize).fill(0).map((_, i) => i);

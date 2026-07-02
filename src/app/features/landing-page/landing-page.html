@@ -12,22 +12,22 @@
 			</nav>
 
 			<div class="actions-wrapper">
-<div class="hamburger" [class.active]="mobileMenuOpen" (click)="toggleMenu()">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <a class="btn-launch" routerLink="/auth/login">
-        <span>Iniciar Sesión</span>
-      </a>
-    </div>
-  </div>
-</header>
+				<div id="nav-toggle" class="hamburger" [class.active]="isMenuOpen" (click)="toggleMenu()">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+				<a class="btn-launch" routerLink="/auth/login">
+					<span>Iniciar Sesión</span>
+				</a>
+			</div>
+		</div>
+	</header>
 
-<div class="mobile-menu" [class.active]="mobileMenuOpen">
-  <a class="nav-link-glass" routerLink="/cursos" (click)="closeMenu()">Cursos</a>
-  <a class="nav-link-glass" routerLink="/quienes-somos" (click)="closeMenu()">Quienes Somos</a>
-  <a class="nav-link-glass" routerLink="/preguntas-frecuentes" (click)="closeMenu()">Preguntas Frecuentes</a>
+	<div id="mobile-menu" class="mobile-menu" [class.active]="isMenuOpen">
+		<a class="nav-link-glass" routerLink="/cursos" (click)="closeMenu()">Cursos</a>
+		<a class="nav-link-glass" routerLink="/quienes-somos" (click)="closeMenu()">Quienes Somos</a>
+		<a class="nav-link-glass" routerLink="/preguntas-frecuentes" (click)="closeMenu()">Preguntas Frecuentes</a>
 	</div>
 
 	<main class="container">
@@ -121,6 +121,4 @@
 <footer>
 	<p>&copy; 2025 CodiPlayCo — Hecho para pequeños programadores</p>
 </footer>
-
-
 
