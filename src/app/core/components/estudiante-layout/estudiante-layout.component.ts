@@ -731,10 +731,19 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
 
   /** Returns the TareaEntrega for the given module/lesson (0-based: prev lesson gates this one). */
   private entregaForPrevLesson(moduloNum: number, leccionOrden: number): TareaEntregaEstudiante | undefined {
-    if (leccionOrden <= 1) return undefined;
-    const prevOrden = leccionOrden - 1;
+    if (moduloNum <= 1 && leccionOrden <= 1) return undefined;
+    
+    let targetModuloNum = moduloNum;
+    let targetLeccionOrden = leccionOrden - 1;
+
+    if (leccionOrden <= 1) {
+      targetModuloNum = moduloNum - 1;
+      const prevModConfig = getModuloConfig(targetModuloNum);
+      targetLeccionOrden = prevModConfig ? prevModConfig.totalLecciones : 0;
+    }
+
     return (this.profile()?.tareasEntregas ?? []).find(
-      (e) => e.tarea?.modulo?.orden === moduloNum && e.tarea?.leccion?.orden === prevOrden,
+      (e) => e.tarea?.modulo?.orden === targetModuloNum && e.tarea?.leccion?.orden === targetLeccionOrden,
     );
   }
 
@@ -743,6 +752,11 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
     if (gate) {
       return gate.resultado === 'APROBADO';
     }
+    
+    if (moduloNum > 1 && leccionOrden === 1) {
+      return false; // Prevent skipping modules if no delivery exists yet
+    }
+    
     const max = this.getMaxLessonCompleted(moduloNum);
     return leccionOrden <= max + 1;
   }

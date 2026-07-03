@@ -1,4 +1,4 @@
 export const environment = {
-  apiUrl: 'https://codiplayconest.onrender.com/api'
+  apiUrl: 'http://localhost:3000'
 };
 
