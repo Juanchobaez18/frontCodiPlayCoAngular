@@ -189,3 +189,16 @@ body.dark-mode.estudiante-panel-root {
   color: transparent;
 }
 
+/* Responsive Global Overrides */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

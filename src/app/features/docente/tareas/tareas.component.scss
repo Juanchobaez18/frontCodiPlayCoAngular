@@ -96,9 +96,29 @@
   font-size: 0.78rem;
   font-weight: 600;
 
-  &--entregado    { background: #e3f2fd; color: #1565c0; }
-  &--no_entregado { background: #fafafa; color: #aaa; border: 1px solid #ddd; }
   &--calificado   { background: #e8f5e9; color: #2e7d32; }
+}
+
+/* ========================================================================= */
+/* Responsive Media Queries                                                  */
+/* ========================================================================= */
+@media (max-width: 768px) {
+  .leccion-badge {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+    
+    > i {
+      font-size: 1.25rem;
+    }
+  }
+  
+  .tarea-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 }
 
 .calificacion-chip {
