@@ -180,3 +180,31 @@ header {
     transform: translateY(0);
   }
 }
+
+/* ========================================================================= */
+/* Responsive Media Queries                                                  */
+/* ========================================================================= */
+@media (max-width: 768px) {
+  .panel {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .header-logo-title h1 {
+    font-size: 1.4rem;
+  }
+  
+  /* Prevent table overflow on small screens by making it scrollable horizontally */
+  .tabla-progreso {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .progreso-container {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
