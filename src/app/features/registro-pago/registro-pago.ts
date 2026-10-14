@@ -4,6 +4,7 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Auth } from '../../core/services/auth';
 import { PendingCourseService } from '../../core/services/pending-course.service';
+import { environment } from '../../../environments/environment';
 
 interface CursoDetalle {
   id: number;
@@ -28,7 +29,7 @@ export class RegistroPagoComponent implements OnInit {
   private readonly pendingCourse = inject(PendingCourseService);
   readonly auth = inject(Auth);
 
-  private readonly API = 'https://codiplayconest.onrender.com';
+  private readonly API = environment.apiUrl;
 
   curso: CursoDetalle | null = null;
   cursoLoading = true;

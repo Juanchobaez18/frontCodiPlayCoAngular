@@ -5,6 +5,7 @@ import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Auth, type AuthResponse } from '../../core/services/auth';
 import { PendingCourseService } from '../../core/services/pending-course.service';
+import { environment } from '../../../environments/environment';
 
 interface CursoResumen {
   id: number;
@@ -25,7 +26,7 @@ export class Register implements OnInit {
   private readonly router = inject(Router);
   private readonly pendingCourse = inject(PendingCourseService);
 
-  private readonly API = 'https://codiplayconest.onrender.com/auth/register';
+  private readonly API = `${environment.apiUrl}/auth/register`;
 
   loading = false;
   errorMessage = '';
@@ -49,7 +50,7 @@ export class Register implements OnInit {
   ngOnInit(): void {
     const cursoId = this.pendingCourse.peek();
     if (cursoId) {
-      this.http.get<CursoResumen>(`https://codiplayconest.onrender.com/curso/${cursoId}`).subscribe({
+      this.http.get<CursoResumen>(`${environment.apiUrl}/curso/${cursoId}`).subscribe({
         next: (c) => { this.cursoPendiente = c; },
         error: () => { /* Banner is optional — form still works without it */ },
       });
