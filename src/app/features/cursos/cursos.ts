@@ -4,6 +4,7 @@ import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Auth } from '../../core/services/auth';
 import { PendingCourseService } from '../../core/services/pending-course.service';
+import { environment } from '../../../environments/environment';
 
 interface Curso {
   id: number;
@@ -42,7 +43,7 @@ export class CursosComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.http.get<Curso[]>('https://codiplayconest.onrender.com/curso').subscribe({
+    this.http.get<Curso[]>(`${environment.apiUrl}/curso`).subscribe({
       next: (data) => {
         this.cursos = data.filter(c => c.estado);
         this.loading = false;

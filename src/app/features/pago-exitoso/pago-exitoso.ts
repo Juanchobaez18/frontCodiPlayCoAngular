@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'https://codiplayconest.onrender.com';
+const API_BASE = environment.apiUrl;
 
 @Component({
   selector: 'app-pago-exitoso',
