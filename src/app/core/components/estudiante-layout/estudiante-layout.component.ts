@@ -748,6 +748,9 @@ export class EstudianteLayoutComponent implements OnInit, OnDestroy {
   }
 
   isLeccionPanelUnlocked(moduloNum: number, leccionOrden: number): boolean {
+    // DEMO: primera lección del Módulo 2 siempre desbloqueada. Quitar después de la demostración.
+    if (moduloNum === 2 && leccionOrden === 1) return true;
+
     const gate = this.entregaForPrevLesson(moduloNum, leccionOrden);
     if (gate) {
       return gate.resultado === 'APROBADO';
